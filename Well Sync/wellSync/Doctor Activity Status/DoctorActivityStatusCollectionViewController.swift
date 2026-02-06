@@ -11,7 +11,7 @@ private let reuseIdentifier = "Cell"
 
 class DoctorActivityStatusCollectionViewController: UICollectionViewController {
 
-    var activities = ["Art","Journal","Breathing","Walking"]
+    var activities = ["Art","Journal","Breathing","Walking","Jogging"]
     override func viewDidLoad() {
         super.viewDidLoad()
 
