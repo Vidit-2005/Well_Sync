@@ -12,5 +12,5 @@ struct Activity {
     let dateText: String
     let subtitle: String
     let iconName: String   
-    let completed: Bool
+    let completed: Float
 }
