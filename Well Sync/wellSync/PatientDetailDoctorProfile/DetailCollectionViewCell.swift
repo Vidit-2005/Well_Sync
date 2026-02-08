@@ -41,7 +41,7 @@ class DetailCollectionViewCell: UICollectionViewCell {
         UIImage(systemName: "waveform.path.ecg"),
         UIImage(systemName: "heart.text.square")
     ]
-    let iconsColor: [UIColor] = [.red, .green, .blue, .yellow, .orange, .purple]
+    let iconsColor: [UIColor] = [.systemIndigo , .systemPink, .systemCyan, .systemOrange, .systemMint, .systemPurple]
     let titles: [String] = [
         "Session Notes",
         "Summarised Report",

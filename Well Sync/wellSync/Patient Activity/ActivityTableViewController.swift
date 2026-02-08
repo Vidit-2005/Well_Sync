@@ -12,19 +12,19 @@ class ActivityTableViewController: UITableViewController {
 
     var sectionData: [[Activity]] = [
         [
-            Activity(title: "Journaling", dateText: "Wed, Nov 20 at 02:00 PM", subtitle: "Want to write something? I am here...", iconName: "book", completed: false),
-            Activity(title: "Art", dateText: "Wed, Nov 20 at 08:00 PM", subtitle: "How was your day?", iconName: "paintpalette", completed: false),
-            Activity(title: "Breathing Exercises", dateText: "Wed, Nov 20 at 07:00 AM", subtitle: "Just relax your mind...", iconName: "wind", completed: true)
+            Activity(title: "Journaling", dateText: "Wed, Nov 20 at 02:00 PM", subtitle: "Want to write something? I am here...", iconName: "book", completed: 0),
+            Activity(title: "Art", dateText: "Wed, Nov 20 at 08:00 PM", subtitle: "How was your day?", iconName: "paintpalette", completed: 0),
+            Activity(title: "Breathing Exercises", dateText: "Wed, Nov 20 at 07:00 AM", subtitle: "Just relax your mind...", iconName: "wind", completed: 1)
         ],
         [
-            Activity(title: "Journaling", dateText: "Total: 15", subtitle: "", iconName: "book", completed: false),
-            Activity(title: "Art", dateText: "Total: 5", subtitle: "", iconName: "paintpalette", completed: false)
+            Activity(title: "Journaling", dateText: "Total: 15", subtitle: "", iconName: "book", completed: 0),
+            Activity(title: "Art", dateText: "Total: 5", subtitle: "", iconName: "paintpalette", completed: 0)
         ]
     ]
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.separatorStyle = .none
-        tableView.backgroundColor = UIColor.systemGroupedBackground
+//        tableView.backgroundColor = UIColor.systemGroupedBackground
         tableView.rowHeight = UITableView.automaticDimension
 //        tableView.estimatedRowHeight = 180
     }
@@ -67,7 +67,7 @@ class ActivityTableViewController: UITableViewController {
 
         if section == 0 {
             let todayActivities = sectionData[0]
-            let completed = todayActivities.filter { $0.completed }.count
+            let completed = todayActivities.filter { $0.completed == 1 }.count
             let pending = todayActivities.count - completed
 
             titleLabel.text = "Today"
