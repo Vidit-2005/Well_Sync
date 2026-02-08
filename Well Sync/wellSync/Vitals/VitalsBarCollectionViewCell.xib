@@ -30,6 +30,9 @@
                                 <buttonConfiguration key="configuration" style="plain" image="chevron.left" catalog="system">
                                     <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" scale="small"/>
                                 </buttonConfiguration>
+                                <connections>
+                                    <action selector="prevRangeTapped:" destination="6JC-Ah-DjT" eventType="touchUpInside" id="Vx7-FQ-0FZ"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="9 Feb - 15 Feb 2026" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="200" translatesAutoresizingMaskIntoConstraints="NO" id="b20-Ly-UZJ">
                                 <rect key="frame" x="69" y="0.0" width="231" height="15"/>
@@ -47,6 +50,9 @@
                                 <buttonConfiguration key="configuration" style="plain" image="chevron.right" catalog="system">
                                     <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" scale="small"/>
                                 </buttonConfiguration>
+                                <connections>
+                                    <action selector="nextRangeTapped:" destination="6JC-Ah-DjT" eventType="touchUpInside" id="DMZ-UX-vQR"/>
+                                </connections>
                             </button>
                         </subviews>
                         <constraints>
@@ -115,8 +121,12 @@
             </collectionViewCellContentView>
             <size key="customSize" width="393" height="322"/>
             <connections>
+                <outlet property="ValueLabel" destination="8Gd-EW-3fQ" id="gno-RL-MWo"/>
                 <outlet property="barChartView" destination="NHa-iI-Fcm" id="PZW-Qd-knh"/>
+                <outlet property="chartRangeLabel" destination="b20-Ly-UZJ" id="zl6-kH-S28"/>
                 <outlet property="iconImageView" destination="2Re-PX-1VC" id="4iZ-09-dFk"/>
+                <outlet property="nextUnitbutton" destination="lZL-i2-E75" id="osM-EY-y9A"/>
+                <outlet property="previousUnitButton" destination="0wu-Dg-EUu" id="1Fj-qi-raA"/>
             </connections>
             <point key="canvasLocation" x="-515" y="171"/>
         </collectionViewCell>

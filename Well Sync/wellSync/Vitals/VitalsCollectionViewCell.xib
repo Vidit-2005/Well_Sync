@@ -30,6 +30,9 @@
                                 <buttonConfiguration key="configuration" style="plain" image="chevron.left" catalog="system">
                                     <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" scale="small"/>
                                 </buttonConfiguration>
+                                <connections>
+                                    <action selector="prevRangeTapped:" destination="yic-87-WgH" eventType="touchUpInside" id="Cwh-dj-0oJ"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="9 Feb - 15 Feb 2026" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="200" translatesAutoresizingMaskIntoConstraints="NO" id="0mt-zO-qXd">
                                 <rect key="frame" x="68" y="0.0" width="225" height="15"/>
@@ -47,6 +50,9 @@
                                 <buttonConfiguration key="configuration" style="plain" image="chevron.right" catalog="system">
                                     <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" scale="small"/>
                                 </buttonConfiguration>
+                                <connections>
+                                    <action selector="nextRangeTapped:" destination="yic-87-WgH" eventType="touchUpInside" id="M4G-Un-HPB"/>
+                                </connections>
                             </button>
                         </subviews>
                         <constraints>
@@ -116,6 +122,9 @@
             <size key="customSize" width="393" height="345"/>
             <connections>
                 <outlet property="lineChart" destination="4NR-8Y-L4Q" id="3fM-0y-cQU"/>
+                <outlet property="nextrangeButton" destination="a8i-Sb-SvT" id="lQZ-dZ-Ofq"/>
+                <outlet property="prevRangeButton" destination="4uu-Bq-ZOq" id="nKU-Ww-J66"/>
+                <outlet property="rangeLabel" destination="0mt-zO-qXd" id="Mga-Kl-hgH"/>
             </connections>
             <point key="canvasLocation" x="171.75572519083968" y="55.985915492957751"/>
         </collectionViewCell>

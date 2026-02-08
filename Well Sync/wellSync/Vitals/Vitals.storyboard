@@ -36,6 +36,9 @@
                                                 <segment title="Weekly"/>
                                                 <segment title="Monthly"/>
                                             </segments>
+                                            <connections>
+                                                <action selector="valueChnaged:" destination="tpw-qc-xW0" eventType="valueChanged" id="qPI-YK-Wn2"/>
+                                            </connections>
                                         </segmentedControl>
                                     </subviews>
                                     <constraints>
