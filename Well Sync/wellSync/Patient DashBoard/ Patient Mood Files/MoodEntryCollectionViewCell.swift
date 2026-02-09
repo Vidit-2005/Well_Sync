@@ -15,8 +15,15 @@ class MoodEntryCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
 
         for view in moodView {
-            view.layer.cornerRadius = 8
+//            view.layer.cornerRadius = 8
             view.isUserInteractionEnabled = true
+            view.layer.cornerRadius = 16
+//            view.layer.masksToBounds = true
+//            view.layer.shadowColor = UIColor.black.cgColor
+//            view.layer.shadowOpacity = 0.5
+//            view.layer.shadowOffset = CGSize(width: 0, height: 4)
+//            view.layer.shadowRadius = 8
+//            view.layer.masksToBounds = false
         }
         for (index, view) in moodView.enumerated() {
             view.layer.cornerRadius = 8

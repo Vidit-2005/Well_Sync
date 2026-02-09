@@ -17,11 +17,11 @@ class MoodLogCollectionViewController:
     }
 
     let moodFeelings: [MoodLevel: [String]] = [
-        .verySad: ["Overwhelmed", "Drained", "Anxious", "Lonely","one", "two", "three"],
-        .sad: ["Low", "Tired", "Irritated", "Unmotivated"],
-        .neutral: ["Calm", "Balanced", "Okay", "Indifferent"],
-        .happy: ["Content", "Grateful", "Relaxed", "Hopeful"],
-        .veryHappy: ["Excited", "Joyful", "Energized", "Confident"]
+        .verySad: ["Angry", "Anxious", "Afraid", "Disgusted", "Sad"],
+        .sad: ["Annoyed", "Frustrated", "Irritated", "Lonely", "Worried", "Drained", "Disappointed", "Stressed"],
+        .neutral: ["Calm", "Balanced", "Okay", "Indifferent", "Content"],
+        .happy: ["Happy", "Grateful", "Relieved", "Proud", "Satisfied", "Hopeful", "Inspired"],
+        .veryHappy: ["Joyful", "Excited", "Thrilled", "Delighted", "Amazed", "Peaceful", "Loved"]
     ]
     
     
@@ -47,21 +47,21 @@ class MoodLogCollectionViewController:
     }
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        2
+        3
     }
 
     override func collectionView(_ collectionView: UICollectionView,
                                  numberOfItemsInSection section: Int) -> Int {
-        if section == 0 {
-                return 1 // Mood selector cell
-            }
-            
-        guard let mood = MoodLevel(rawValue: selectedMood ?? 2),
-            let feelings = moodFeelings[mood] else {
-                return 0
-        }
+//        if section == 0 {
+//                return 1 // Mood selector cell
+//            }
+//            
+//        guard let mood = MoodLevel(rawValue: selectedMood ?? 2),
+//            let feelings = moodFeelings[mood] else {
+//                return 0
+//        }
         
-        return feelings.count
+        return 1
     }
 
     override func collectionView(_ collectionView: UICollectionView,
@@ -76,28 +76,35 @@ class MoodLogCollectionViewController:
             
             cell.configureTap(target: self, action: #selector(moodTapped(_:)))
             cell.configure(selectedIndex: selectedMood ?? 2)
-            cell.layer.cornerRadius = 16
-            cell.layer.masksToBounds = true
-            cell.layer.shadowColor = UIColor.black.cgColor
-            cell.layer.shadowOpacity = 0.2
-            cell.layer.shadowOffset = CGSize(width: 0, height: 4)
-            cell.layer.shadowRadius = 8
-            cell.layer.masksToBounds = false
+//            cell.layer.cornerRadius = 16
+//            cell.layer.masksToBounds = true
+//            cell.layer.shadowColor = UIColor.black.cgColor
+//            cell.layer.shadowOpacity = 0.2
+//            cell.layer.shadowOffset = CGSize(width: 0, height: 4)
+//            cell.layer.shadowRadius = 8
+//            cell.layer.masksToBounds = false
 
             return cell
         }
-        
-        let cell = collectionView.dequeueReusableCell(
+        if indexPath.section == 1 {
+            let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: "FeelingCell",
                 for: indexPath
             ) as! FeelingCollectionViewCell
             
             if let mood = MoodLevel(rawValue: selectedMood ?? 2),
-               let feelings = moodFeelings[mood] {
-                cell.configure(title: feelings[indexPath.item])
+                let feelings = moodFeelings[mood] {
+                cell.configure(feelings: feelings)
             }
-            
+                
             return cell
+        }
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: "noteCell",
+            for: indexPath
+        )
+        return cell
+        
     }
 
     @objc func moodTapped(_ sender: UITapGestureRecognizer) {
@@ -113,9 +120,6 @@ class MoodLogCollectionViewController:
         }
         let moodIndex = selectedView.tag
         selectedMood = moodIndex
-//        collectionView.reloadSections(IndexSet(integer: 0))
-//
-//        collectionView.reloadSections(IndexSet(integer: 1))
         collectionView.reloadData()
 
     }
@@ -127,8 +131,10 @@ class MoodLogCollectionViewController:
         if indexPath.section == 0 {
             return CGSize(width: collectionView.frame.width, height: 180)
         }
-
-        return CGSize(width: collectionView.frame.width, height: 240)
+        if indexPath.section == 1{
+            return CGSize(width: collectionView.frame.width, height: 192)
+        }
+        return CGSize(width: collectionView.frame.width, height: 220)
 
     }
     
