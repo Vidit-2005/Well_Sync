@@ -7,26 +7,94 @@
 
 import UIKit
 
-class FeelingCollectionViewCell: UICollectionViewCell {
+
+class FeelingCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate {
     
-//    private let titleLabel = UILabel()
-    @IBOutlet weak var titleLabel: UILabel!
-    
-        override func awakeFromNib() {
-            super.awakeFromNib()
+    @IBOutlet weak var cardView: UIView!
+    @IBOutlet weak var collectionView: UICollectionView!
+        
+    private var feelings: [String] = []
+        
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        // Card styling
+        cardView.layer.cornerRadius = 16
+        
+        
+        cardView.layer.shadowColor = UIColor.black.cgColor
+        cardView.layer.shadowOpacity = 0.08
+        cardView.layer.shadowOffset = CGSize(width: 0, height: 6)
+        cardView.layer.shadowRadius = 12
+        
+        cardView.layer.masksToBounds = true
+        
+        // Inner collection
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.isScrollEnabled = false
+        
+        if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+//            layout.estimatedItemSize = CGSize(width: 80, height: 36)
+            layout.minimumInteritemSpacing = 10
+            layout.minimumLineSpacing = 10
+//            layout.sectionInset = UIEdgeInsets(top: 16, left: 0, bottom: 16, right: 0)
+            layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
 
-            contentView.backgroundColor = .systemGray5
-            contentView.layer.cornerRadius = 18
-            contentView.clipsToBounds = true
-
-            titleLabel.font = .systemFont(ofSize: 14, weight: .medium)
-            titleLabel.textAlignment = .center
         }
-
-        func configure(title: String) {
-            titleLabel.text = title
-        }
+        
+//        collectionView.backgroundColor = .clear
+        
+        collectionView.register(
+            FeelingChipCell.self,
+            forCellWithReuseIdentifier: "FeelingChipCell"
+        )
     }
+        
+    func configure(feelings: [String]) {
+        self.feelings = feelings
+        collectionView.reloadData()
+    }
+}
+extension FeelingCollectionViewCell {
+        
+    func collectionView(_ collectionView: UICollectionView,
+                            numberOfItemsInSection section: Int) -> Int {
+        return feelings.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+            
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: "FeelingChipCell",
+            for: indexPath
+        ) as! FeelingChipCell
+            
+        cell.configure(title: feelings[indexPath.item])
+        return cell
+    }
+}
+
+//
+////    private let titleLabel = UILabel()
+//    @IBOutlet weak var titleLabel: UILabel!
+//    
+//        override func awakeFromNib() {
+//            super.awakeFromNib()
+//
+//            contentView.backgroundColor = .systemGray5
+//            contentView.layer.cornerRadius = 18
+//            contentView.clipsToBounds = true
+//
+//            titleLabel.font = .systemFont(ofSize: 14, weight: .medium)
+//            titleLabel.textAlignment = .center
+//        }
+//
+//        func configure(title: String) {
+//            titleLabel.text = title
+//        }
+//    }
 
 //    override init(frame: CGRect) {
 //        super.init(frame: frame)
