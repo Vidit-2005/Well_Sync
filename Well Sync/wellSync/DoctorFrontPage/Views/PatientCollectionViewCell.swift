@@ -20,14 +20,13 @@ class PatientCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+//        ontentView.backgroundColor = .secondarySystemBackground
         setupTag(conditionLabel)
         setupTag(sessionLabel)
     }
 
     private func setupTag(_ label: UILabel) {
-        label.backgroundColor = UIColor.systemGray3
-        label.layer.cornerRadius = 12
+        label.layer.cornerRadius = 11
         label.layer.masksToBounds = true
         label.textAlignment = .center
     }
