@@ -75,6 +75,11 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
     
     // cell names....
     let items = ["Streak", "Activity Ring", "Mood Count", "Next Session", "Mood Log", "Logs", "Journaling", "Art"]
+    let  images = [
+        UIImage(systemName: "book"),
+        UIImage(systemName: "paintpalette")
+    ]
+    
     
     private func makeDashboardMenu() -> UIMenu {
         let profile = UIAction(title: "Profile", image: UIImage(systemName: "person")) { _ in
@@ -185,7 +190,10 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         if let label = cell.viewWithTag(1) as? UILabel {
             label.text = items[indexPath.row]
         }
-        
+        if let image = cell.viewWithTag(2) as? UIImageView {
+            image.image = images[indexPath.row-6]
+            
+        }
         // Adding shadow to the cell
         cell.layer.cornerRadius = 16
         cell.layer.masksToBounds = true
