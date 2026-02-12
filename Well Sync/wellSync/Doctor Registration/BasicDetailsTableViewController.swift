@@ -11,6 +11,11 @@ class BasicDetailsTableViewController: UITableViewController, UIImagePickerContr
     
     @IBOutlet weak var DoctorImageView: UIImageView!
     @IBOutlet weak var addPhotoButton: UIButton!
+    
+    @IBOutlet weak var nameTextField: UITextField!
+    @IBOutlet weak var dobTextField: UITextField!
+    @IBOutlet weak var addressTextField: UITextField!
+    @IBOutlet weak var experienceTextField: UITextField!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +28,9 @@ class BasicDetailsTableViewController: UITableViewController, UIImagePickerContr
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
+    var username: String?
+    var password: String?
+    var email: String?
     // MARK: - Table view data source
 
 //    override func numberOfSections(in tableView: UITableView) -> Int {
