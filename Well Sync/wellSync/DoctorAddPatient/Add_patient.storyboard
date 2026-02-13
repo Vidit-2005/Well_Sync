@@ -267,7 +267,15 @@
                     </navigationItem>
                     <connections>
                         <outlet property="addPhotoButton" destination="aqM-HZ-PUG" id="TME-Ks-BNv"/>
+                        <outlet property="address" destination="kBT-t7-bnz" id="m33-kg-buf"/>
+                        <outlet property="contact" destination="8PV-cP-DPo" id="uKP-sx-2Mc"/>
+                        <outlet property="dateOfBirth" destination="0vU-AX-apB" id="6ty-5D-ewn"/>
+                        <outlet property="email" destination="GC4-7s-wRm" id="Pvd-OI-sAh"/>
+                        <outlet property="fullName" destination="JYl-Nj-BS0" id="De6-ex-Y5N"/>
+                        <outlet property="moreInfo" destination="yEi-zv-m7O" id="7Kb-r1-auh"/>
+                        <outlet property="patientCase" destination="kHo-8o-qaK" id="g7Q-oi-wHE"/>
                         <outlet property="patientImageView" destination="Csm-tj-G5Q" id="JJa-Bq-1VS"/>
+                        <outlet property="weight" destination="2uc-vB-D1T" id="afK-Ml-hJL"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WNU-kh-rqX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

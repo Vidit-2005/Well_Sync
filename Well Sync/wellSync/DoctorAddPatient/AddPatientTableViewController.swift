@@ -6,82 +6,30 @@
 //
 
 import UIKit
+import Foundation
 
 class AddPatientTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
+    var patient: Patient?
+//    var doctor: Doctor -> this would be passsed from screen to screen
+    
+    @IBOutlet weak var fullName: UITextField!
+    @IBOutlet weak var dateOfBirth: UITextField!
+    @IBOutlet var address: UITextField!
+    @IBOutlet var contact: UITextField!
+    @IBOutlet var email: UITextField!
+    @IBOutlet var patientCase: UITextField!
+    @IBOutlet var weight: UITextField!
+    @IBOutlet var moreInfo: UITextField!
+    
+    
     @IBOutlet var patientImageView: UIImageView!
     @IBOutlet var addPhotoButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         setupPhotoMenu()
+        
     }
-
-    // MARK: - Table view data source
-
-//    override func numberOfSections(in tableView: UITableView) -> Int {
-//        // #warning Incomplete implementation, return the number of sections
-//        return 0
-//    }
-//
-//    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        // #warning Incomplete implementation, return the number of rows
-//        return 0
-//    }
-
-    /*
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
-        return cell
-    }
-    */
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
     func setupPhotoMenu() {
            
@@ -135,4 +83,57 @@ class AddPatientTableViewController: UITableViewController, UIImagePickerControl
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             dismiss(animated: true)
         }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?){
+        guard
+            let name = fullName.text,
+            let emailText = email.text,
+            let contactText = contact.text,
+            let addressText = address.text
+        else {
+            return
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yyyy"
+        let dobDate = formatter.date(from: dateOfBirth.text ?? "") ?? Date()
+        
+        let generatedPass = generateSecurePassword()
+        patient = Patient(
+            patientID: UUID(),
+//            docID: doctor.docID, //this would be passsed from screen to screen
+            docID: UUID(),
+            name: name,
+            email: emailText,
+            password: generatedPass,
+            contact: contactText,
+            dob: dobDate,
+            nextSessionDAte: Date(),
+            image: nil,
+            adddress: addressText
+        )
+//        AllPatients.append(patient!)
+
+    }
+    func generateSecurePassword() -> String {
+
+        let uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        let lowercase = "abcdefghijklmnopqrstuvwxyz"
+        let numbers = "0123456789"
+        let symbols = "!@#$%^&*-_?"
+
+        let allChars = uppercase + lowercase + numbers + symbols
+
+        var password = ""
+
+        password.append(uppercase.randomElement()!)
+        password.append(lowercase.randomElement()!)
+        password.append(numbers.randomElement()!)
+        password.append(symbols.randomElement()!)
+
+        while password.count < 8 {
+            password.append(allChars.randomElement()!)
+        }
+
+        return String(password.shuffled())
+    }
 }
