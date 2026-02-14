@@ -188,9 +188,10 @@ struct ActivityLog {
     var duration: String?
 }
 
-enum SessionStatus{
+enum SessionStatus {
     case upcoming
     case done
     case missed
+    case completed
 }
 
