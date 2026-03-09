@@ -35,7 +35,7 @@ import UIKit
 
 var UserDoctors: [Doctor] = []
 struct Doctor{
-    var docID: UUID = UUID()
+    var doctorID: UUID = UUID()
     var username: String?
     var email: String?
     var password: String?
@@ -58,7 +58,7 @@ struct Doctor{
 
 struct Patient{
     var patientID: UUID
-    var docID: UUID
+    var doctorID: UUID
     var name: String
     var email: String
     var password: String
@@ -78,7 +78,7 @@ struct CaseHistory{
     
 }
 struct MoodLog{
-    var patientId: UUID
+    var patientID: UUID
     var logId: UUID
     var mood: MoodLevel
     var date: Date

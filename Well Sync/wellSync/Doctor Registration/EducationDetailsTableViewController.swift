@@ -246,7 +246,7 @@ class EducationDetailsTableViewController: UITableViewController, UIImagePickerC
     let identityImage = identityImageView.image
     let registrationImage = registrationImageView.image
     
-    let doctor = Doctor(docID: UUID(), username: username, email: email, password: password, name: name, dob: dob, address: address, experience: experience, Patients: [], contact:"", doctorImage: docImage, qualification: qualification, registrationNumber: registrationNumber, identityNumber: identityNumber, educationImage: educationImage, registrationImage: registrationImage, identityImage: identityImage)
+    let doctor = Doctor(doctorID: UUID(), username: username, email: email, password: password, name: name, dob: dob, address: address, experience: experience, Patients: [], contact:"", doctorImage: docImage, qualification: qualification, registrationNumber: registrationNumber, identityNumber: identityNumber, educationImage: educationImage, registrationImage: registrationImage, identityImage: identityImage)
     print("Doctor object created")
     print(doctor)
     UserDoctors.append(doctor)
