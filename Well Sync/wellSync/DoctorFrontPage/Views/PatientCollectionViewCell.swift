@@ -48,7 +48,14 @@ class PatientCollectionViewCell: UICollectionViewCell {
         default:
             color = .systemYellow
         }
-        profileImage.image = UIImage(named: with.imageURL ?? "")
+//        profileImage.image = UIImage(named: URL(string: with.imageURL ?? ""))
+        if let urlString = with.imageURL,
+           let url = URL(string: urlString),
+           let data = try? Data(contentsOf: url) {
+            
+            profileImage.image = UIImage(data: data)
+        }
+        
         nameLabel.text = with.name
         conditionLabel.text = with.condition
         sessionLabel.text = "7  Sessions"
