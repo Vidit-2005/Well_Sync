@@ -14,7 +14,7 @@ class SessionNoteCollectionViewController: UICollectionViewController {
     var sessions:[SessionNote]?
     override func viewDidLoad() {
         super.viewDidLoad()
-        sessions = [SessionNote(sessoinId: UUID(), patientId: UUID(), date: Date(), notes: "HElloeee how are you brdr", image: nil, voice: nil),SessionNote(sessoinId: UUID(), patientId: UUID(), date: Date(), notes: "HElloeee how are you brdr", image: nil, voice: nil),SessionNote(sessoinId: UUID(), patientId: UUID(), date: Date(), notes: "HElloeee how are you brdr", image: nil, voice: nil),SessionNote(sessoinId: UUID(), patientId: UUID(), date: Date(), notes: "HElloeee how are you brdr", image: nil, voice: nil),SessionNote(sessoinId: UUID(), patientId: UUID(), date: Date(), notes: "HElloeee how are you brdr", image: nil, voice: nil)]
+        sessions = [SessionNote(sessionId: UUID(), patientId: UUID(), date: Date(), notes: "HElloeee how are you brdr", images: nil, voice: nil, title: "dhd"),SessionNote(sessionId: UUID(), patientId: UUID(), date: Date(), notes: "HElloeee how are you brdr", images: nil, voice: nil, title: "dhd"),SessionNote(sessionId: UUID(), patientId: UUID(), date: Date(), notes: "HElloeee how are you brdr", images: nil, voice: nil, title: "dhd"),SessionNote(sessionId: UUID(), patientId: UUID(), date: Date(), notes: "HElloeee how are you brdr", images: nil, voice: nil, title: "dhd"),SessionNote(sessionId: UUID(), patientId: UUID(), date: Date(), notes: "HElloeee how are you brdr", images: nil, voice: nil, title: "dhd")]
         self.collectionView.collectionViewLayout = generateLayout()
     }
 

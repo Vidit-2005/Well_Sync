@@ -40,7 +40,6 @@ class HomeCollectionViewController: UICollectionViewController {
 
     // Categorize function
     private func categorizePatients() {
-        print("/",patient)
         upcoming.removeAll()
         missed.removeAll()
         done.removeAll()
@@ -49,21 +48,15 @@ class HomeCollectionViewController: UICollectionViewController {
         let calendar = Calendar.current
 
         for p in patient ?? [] {
-            // 1) If sessionStatus == true, it's done
+
             if p.sessionStatus == true {
                 done.append(p)
-                continue
             }
-
-            // 2) Not done -> decide by comparing nextSessionDate with now
-            // Use minute granularity so small seconds don't flip results unnecessarily
-            let comparison = calendar.compare(p.nextSessionDate, to: now, toGranularity: .minute)
-            if comparison == .orderedAscending {
-                // nextSessionDate < now => missed
-                missed.append(p)
-            } else {
-                // nextSessionDate == or > now => upcoming
+            else if calendar.isDate(p.nextSessionDate, inSameDayAs: now) && p.nextSessionDate > now {
                 upcoming.append(p)
+            }
+            else if p.nextSessionDate < now {
+                missed.append(p)
             }
         }
     }
