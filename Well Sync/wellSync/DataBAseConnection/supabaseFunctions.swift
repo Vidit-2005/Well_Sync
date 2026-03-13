@@ -38,35 +38,7 @@ class AccessSupabase{
 
 
     func fetchPatients(for doctorId: UUID) async -> [Patient] {
-//        do {
-//                let response = try await SupabaseManager.shared.client
-//                    .database
-//                    .from("patients")
-//                    .select()
-//                    .eq("doc_id", value: doctorId.uuidString)
-//                    .execute()
-//
-//                var patients = try decoder.decode([Patient].self, from: response.data)
-//
-//                await withTaskGroup(of: (Int, Int?, Date?).self) { group in
-//                    for (idx, p) in patients.enumerated() {
-//                        group.addTask {
-//                            let mood = await self.fetchMood(for: p.patientID)
-//                            let prev = await self.fetchSession(for: p.patientID)
-//                            return (idx, mood, prev)
-//                        }
-//                    }
-//
-//                    for await (idx, mood, prev) in group {
-//                        patients[idx].mood = mood
-//                        patients[idx].previousSessionDate = prev
-//                    }
-//                }
-//                print("---------------->",patients)
-//                return patients
 
-            
-        
         do {
             let response = try await SupabaseManager.shared.client
                 .database
@@ -79,11 +51,15 @@ class AccessSupabase{
 
             var patients = try JSONDecoder().decode([Patient].self, from: response.data)
 //            let patients = try decoder.decode([Patient].self, from: response.data)
-            for var i in patients{
-
-                    i.mood = await fetchMood(for: i.patientID)
-                    i.previousSessionDate = await fetchSession(for: i.patientID)
-//                print("//\(String(describing: i.mood)) \t \(String(describing: i.previousSessionDate))\n")
+//            for var i in patients{
+//               
+////                    i.mood = await fetchMood(for: i.patientID)
+//                    i.previousSessionDate = await fetchSession(for: i.patientID)
+////                print("//\(String(describing: i.mood)) \t \(String(describing: i.previousSessionDate))\n")
+//            }
+            for index in patients.indices {
+                    patients[index].mood = await fetchMood(for: patients[index].patientID)
+                    patients[index].previousSessionDate = await fetchSession(for: patients[index].patientID)
             }
 //            print("------------>",patients)
             return patients
@@ -108,7 +84,7 @@ class AccessSupabase{
 //            print("\n\n\n\n\n\n")
             let mood = try JSONDecoder().decode([MoodLog].self, from: response.data)
 //            print("\n\(mood)\n")
-            return mood[0].mood
+            return mood.first?.mood
 
         } catch {
             print("Supabase Error:", error)

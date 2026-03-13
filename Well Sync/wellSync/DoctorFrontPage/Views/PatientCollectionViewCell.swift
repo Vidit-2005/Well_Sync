@@ -8,8 +8,8 @@
 import UIKit
 
 class PatientCollectionViewCell: UICollectionViewCell {
-   
- 
+    
+    
     @IBOutlet var profileImage: UIImageView!
     @IBOutlet weak var sessionLabel: UILabel!
     
@@ -21,11 +21,11 @@ class PatientCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-//        ontentView.backgroundColor = .secondarySystemBackground
+        //        ontentView.backgroundColor = .secondarySystemBackground
         setupTag(conditionLabel)
         setupTag(sessionLabel)
     }
-
+    
     private func setupTag(_ label: UILabel) {
         label.layer.cornerRadius = 11
         label.layer.masksToBounds = true
@@ -35,56 +35,68 @@ class PatientCollectionViewCell: UICollectionViewCell {
         
         contentView.layer.masksToBounds = true
     }
+    
+    
+        func configureCell(with: Patient) {
+            switch with.mood{
+            case 4:
+                color = .systemGreen
+            case 3:
+                color = .systemOrange
+            case 2:
+                color = .systemRed
+            default:
+                color = .systemYellow
+            }
+    //        profileImage.image = UIImage(named: URL(string: with.imageURL ?? ""))
+//            if let urlString = with.imageURL,
+//               let url = URL(string: urlString),
+//               let data = try? Data(contentsOf: url) {
+//    
+//                profileImage.image = UIImage(data: data)
+//            }
+            profileImage.image = UIImage(systemName: "person.circle") // placeholder while loading
 
-
-    func configureCell(with: Patient) {
-        switch with.mood{
-        case 4:
-            color = .systemGreen
-        case 3:
-            color = .systemOrange
-        case 2:
-            color = .systemRed
-        default:
-            color = .systemYellow
+            if let urlString = with.imageURL, let url = URL(string: urlString) {
+                URLSession.shared.dataTask(with: url) { data, _, error in
+                    guard let data = data, let image = UIImage(data: data) else { return }
+                    DispatchQueue.main.async {
+                        self.profileImage.image = image
+                    }
+                }.resume()
+            }
+        
+            nameLabel.text = with.name
+            conditionLabel.text = with.condition
+            sessionLabel.text = "7 Sessions"
+            let sessionDate = with.nextSessionDate
+            print(sessionDate)
+    
+            let timeFormatter = DateFormatter()
+            timeFormatter.locale = Locale(identifier: "en_US_POSIX")
+            timeFormatter.timeZone = TimeZone(secondsFromGMT: 0)   // keeps time as 10:00:00
+            timeFormatter.dateFormat = "HH:mm"
+    
+            time.text = timeFormatter.string(from: sessionDate)
+    
+    
+    //        formatter.dateFormat = "HH:mm:ss"
+    
+    
+            print("---->>>>",sessionDate.formatted(date: .omitted, time: .standard))
+            print("---->>>>",time.text)
+    
+            var formatter = DateFormatter()
+            guard let date = with.previousSessionDate else { return}
+            formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            formatter.dateStyle = .medium
+    
+            let dateString = formatter.string(from: date)
+            lastDate.text = dateString
+    //        lastDate.text = "\(with.previousSessionDate?.formatted(date: .numeric, time: .omitted))"
+            contentView.layer.borderColor = color.cgColor
         }
-//        profileImage.image = UIImage(named: URL(string: with.imageURL ?? ""))
-        if let urlString = with.imageURL,
-           let url = URL(string: urlString),
-           let data = try? Data(contentsOf: url) {
-            
-            profileImage.image = UIImage(data: data)
-        }
-        
-        nameLabel.text = with.name
-        conditionLabel.text = with.condition
-        sessionLabel.text = "7 Sessions"
-        let sessionDate = with.nextSessionDate
-        print(sessionDate)
-        
-        let timeFormatter = DateFormatter()
-        timeFormatter.locale = Locale(identifier: "en_US_POSIX")
-        timeFormatter.timeZone = TimeZone(secondsFromGMT: 0)   // keeps time as 10:00:00
-        timeFormatter.dateFormat = "HH:mm:ss"
 
-        time.text = timeFormatter.string(from: sessionDate)
-        
-
-//        formatter.dateFormat = "HH:mm:ss"
-        
-        
-        print("---->>>>",sessionDate.formatted(date: .omitted, time: .standard))
-        print("---->>>>",time.text)
-        
-        var formatter = DateFormatter()
-        guard let date = with.previousSessionDate else { return}
-        formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        formatter.dateStyle = .medium
-
-        let dateString = formatter.string(from: date)
-        lastDate.text = dateString
-//        lastDate.text = "\(with.previousSessionDate?.formatted(date: .numeric, time: .omitted))"
-        contentView.layer.borderColor = color.cgColor
-    }
 }
+

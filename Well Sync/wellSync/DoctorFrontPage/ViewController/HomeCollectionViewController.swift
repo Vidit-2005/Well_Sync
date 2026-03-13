@@ -6,7 +6,7 @@ class HomeCollectionViewController: UICollectionViewController {
    
     @IBOutlet weak var ellipsisButtonTapped: UIBarButtonItem!
     
-    // adding selected patient
+//     adding selected patient
     var selectedPatient: Patient?
     
     
@@ -20,10 +20,11 @@ class HomeCollectionViewController: UICollectionViewController {
             await loadPatients()
         }
         self.collectionView.collectionViewLayout = createLayout()
+        setupMenu()
     }
     
     @MainActor
-    private func loadPatients() async {
+    func loadPatients() async {
         guard let id = UUID(uuidString: "6bf94a4d-cc66-4d87-a90d-be2500434e3d") else { return }
 
         let fetched = await viewModel?.fetchPatients(for: id)
@@ -47,8 +48,10 @@ class HomeCollectionViewController: UICollectionViewController {
 
         let now = Date()
         let calendar = Calendar.current
+        
 
         for p in patient ?? [] {
+            guard calendar.isDateInToday(p.nextSessionDate) else { continue }
 
             if p.sessionStatus == true {
                 done.append(p)
@@ -128,14 +131,27 @@ class HomeCollectionViewController: UICollectionViewController {
         ])
 
         ellipsisButtonTapped.menu = menu
-       // ellipsisButtonTapped.showsMenuAsPrimaryAction = true
+//        ellipsisButtonTapped.showsMenuAsPrimaryAction = true
     }
     func openAllPatients() {
-        print("All Patients")
+
+        let storyboard = UIStoryboard(name: "AllPatient", bundle: nil)
+
+        let vc = storyboard.instantiateViewController(
+            withIdentifier: "AllPatientViewController"
+        )
+
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     func openAppointments() {
-        print("Appointments")
+
+        let storyboard = UIStoryboard(name: "Appointment", bundle: nil)
+
+        let vc = storyboard.instantiateViewController(
+            withIdentifier: "AppointmentsCollectionViewController"
+        )
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     func openReminder() {
@@ -200,9 +216,9 @@ extension HomeCollectionViewController {
             ) as! TopSectionCollectionViewCell
 
             if indexPath.row == 0 {
-                cell.configure(title: "Active Patients", subtitle: "24")
+                    cell.configure(title: "Active Patients", subtitle: "\(patient.count)")
             } else {
-                cell.configure(title: "Today's Session", subtitle: "5")
+                    cell.configure(title: "Today's Session", subtitle: "\(upcoming.count)")
             }
 
             applyShadow(cell: cell)

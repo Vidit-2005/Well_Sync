@@ -4,6 +4,7 @@
 //
 //  Created by Pranjal on 11/03/26.
 //
+
 import UIKit
 
 class AllPatientCollectionViewController: UICollectionViewController {
@@ -11,15 +12,35 @@ class AllPatientCollectionViewController: UICollectionViewController {
     var patients: [Patient] = []
     var filteredPatients: [Patient] = []
 
+    var viewModel: AccessSupabase?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupCollectionView()
-        loadPatients()
+        viewModel = AccessSupabase()
 
-        filteredPatients = patients
+        setupCollectionView()
 
         collectionView.setCollectionViewLayout(createLayout(), animated: false)
+
+        Task {
+            await loadPatients()
+        }
+    }
+
+    // MARK: Load Patients
+
+    @MainActor
+    func loadPatients() async {
+
+        guard let doctorId = UUID(uuidString: "6bf94a4d-cc66-4d87-a90d-be2500434e3d") else { return }
+
+        let fetched = await viewModel?.fetchPatients(for: doctorId)
+
+        patients = fetched ?? []
+        filteredPatients = patients
+
+        collectionView.reloadSections(IndexSet(integer: 1))
     }
 
     // MARK: Register Cells
@@ -35,54 +56,6 @@ class AllPatientCollectionViewController: UICollectionViewController {
             UINib(nibName: "TopSecCollectionViewCell", bundle: nil),
             forCellWithReuseIdentifier: "TopCell"
         )
-    }
-
-    // MARK: Data
-
-    func makeDate(_ string: String) -> Date {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd MMM yy"
-        return formatter.date(from: string) ?? Date()
-    }
-
-    func loadPatients() {
-
-        patients = [
-
-            Patient(
-                patientID: UUID(),
-                docID: UUID(),
-                name: "Vidit Saran Agarwal",
-                email: "vidit@email.com",
-                password: "123",
-                contact: "9876543210",
-                dob: makeDate("10 Jan 00"),
-                nextSessionDate: makeDate("11 Nov 25"),
-                imageURL: "profile",
-                address: "Delhi",
-                condition: "BPD",
-                sessionStatus: true,
-                mood: 7,
-                previousSessionDate: makeDate("11 Nov 25")
-            ),
-
-            Patient(
-                patientID: UUID(),
-                docID: UUID(),
-                name: "Arjun Mehta",
-                email: "arjun@email.com",
-                password: "123",
-                contact: "9876543211",
-                dob: makeDate("05 Mar 01"),
-                nextSessionDate: makeDate("15 Nov 25"),
-                imageURL: "profile",
-                address: "Mumbai",
-                condition: "Anxiety",
-                sessionStatus: false,
-                mood: 5,
-                previousSessionDate: makeDate("15 Nov 25")
-            )
-        ]
     }
 
     // MARK: Sections
@@ -133,12 +106,14 @@ class AllPatientCollectionViewController: UICollectionViewController {
 
     func filterPatients(searchText: String) {
 
-        if searchText.isEmpty {
+        let search = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if search.isEmpty {
             filteredPatients = patients
         } else {
 
             filteredPatients = patients.filter {
-                $0.name.lowercased().contains(searchText.lowercased())
+                $0.name.lowercased().contains(search.lowercased())
             }
         }
 
@@ -223,3 +198,4 @@ class AllPatientCollectionViewController: UICollectionViewController {
         return section
     }
 }
+
