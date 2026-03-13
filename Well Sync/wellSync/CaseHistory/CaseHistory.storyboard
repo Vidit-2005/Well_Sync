@@ -10,27 +10,27 @@
     </dependencies>
     <scenes>
         <!--Case History-->
-        <scene sceneID="wlS-aN-qBl">
+        <scene sceneID="eJQ-Bv-cGd">
             <objects>
-                <viewController id="wC9-yu-mN8" customClass="CaseHistoryViewController" customModule="wellSync" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="PZ0-08-UeY">
+                <viewController id="m2W-0C-H4G" customClass="CaseHistoryViewController" customModule="wellSync" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="gJA-47-EOg">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Le4-xd-F2F">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="UdF-ux-50X">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="784"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="liP-wd-CCZ">
+                                <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="4GD-KI-iJM">
                                     <size key="itemSize" width="128" height="128"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="lCI-AE-Mj1">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="3Mu-bT-oEB">
                                         <rect key="frame" x="0.0" y="0.0" width="127.99999999999997" height="128"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="e8u-6t-dgH">
+                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="T6h-rb-KyE">
                                             <rect key="frame" x="0.0" y="0.0" width="127.99999999999997" height="128"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </collectionViewCellContentView>
@@ -38,41 +38,41 @@
                                 </cells>
                             </collectionView>
                         </subviews>
-                        <viewLayoutGuide key="safeArea" id="DPe-wu-UNR"/>
+                        <viewLayoutGuide key="safeArea" id="Mot-sY-YnX"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="DPe-wu-UNR" firstAttribute="trailing" secondItem="Le4-xd-F2F" secondAttribute="trailing" id="3fw-Wn-khM"/>
-                            <constraint firstItem="DPe-wu-UNR" firstAttribute="bottom" secondItem="Le4-xd-F2F" secondAttribute="bottom" id="8J2-rr-hJS"/>
-                            <constraint firstItem="Le4-xd-F2F" firstAttribute="top" secondItem="PZ0-08-UeY" secondAttribute="top" id="bIP-ZE-Pv5" userLabel="Case History Collection View.top = View.top"/>
-                            <constraint firstItem="Le4-xd-F2F" firstAttribute="leading" secondItem="DPe-wu-UNR" secondAttribute="leading" id="tHY-ID-0Sr"/>
+                            <constraint firstItem="UdF-ux-50X" firstAttribute="leading" secondItem="Mot-sY-YnX" secondAttribute="leading" id="KdM-Mb-erJ"/>
+                            <constraint firstItem="Mot-sY-YnX" firstAttribute="trailing" secondItem="UdF-ux-50X" secondAttribute="trailing" id="WHz-u5-fZv"/>
+                            <constraint firstItem="Mot-sY-YnX" firstAttribute="bottom" secondItem="UdF-ux-50X" secondAttribute="bottom" id="mR7-b4-XXe"/>
+                            <constraint firstItem="UdF-ux-50X" firstAttribute="top" secondItem="gJA-47-EOg" secondAttribute="top" id="wT5-j2-LvF" userLabel="Case History Collection View.top = View.top"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Case History" largeTitleDisplayMode="always" id="lGE-Oj-42D"/>
+                    <navigationItem key="navigationItem" title="Case History" largeTitleDisplayMode="always" id="KyQ-Hg-JC6"/>
                     <connections>
-                        <outlet property="CaseHistoryCollectionView" destination="Le4-xd-F2F" id="AtA-DY-G1p"/>
+                        <outlet property="CaseHistoryCollectionView" destination="UdF-ux-50X" id="36f-qf-fxt"/>
                     </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="RaS-Z6-Lv1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dOL-YR-pKn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2275.5725190839694" y="167.6056338028169"/>
+            <point key="canvasLocation" x="2424" y="620"/>
         </scene>
         <!--Navigation Controller-->
-        <scene sceneID="VAu-Ll-v5I">
+        <scene sceneID="sUX-lc-tFs">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="MJ3-6y-9Mw" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="orj-hh-7an" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="3mi-x2-7fx">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="oGS-lB-9p9">
                         <rect key="frame" x="0.0" y="118" width="393" height="106"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="wC9-yu-mN8" kind="relationship" relationship="rootViewController" id="YSE-MZ-yOz"/>
+                        <segue destination="m2W-0C-H4G" kind="relationship" relationship="rootViewController" id="CA6-sq-Gvw"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="McO-Qj-cxO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eMf-IE-aTs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1348.854961832061" y="167.6056338028169"/>
+            <point key="canvasLocation" x="1230" y="620"/>
         </scene>
     </scenes>
     <resources>

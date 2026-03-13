@@ -21,8 +21,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="275" height="78"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qrL-mL-8JC">
-                                <rect key="frame" x="16.000000000000004" y="16" width="32.333333333333343" height="38"/>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                                <rect key="frame" x="16" y="20" width="28.666666666666671" height="15.666666666666664"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -42,9 +42,8 @@
                         <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="7dG-BA-X6G" secondAttribute="trailing" id="30Y-Qb-ENa" userLabel="Description Label.trailing = trailing + 4"/>
-                            <constraint firstAttribute="bottom" secondItem="qrL-mL-8JC" secondAttribute="bottom" constant="24" id="Irk-Ue-qaV" userLabel="Date Label.bottom  = bottom+44"/>
                             <constraint firstItem="JjB-a5-qfs" firstAttribute="leading" secondItem="ABv-gb-g55" secondAttribute="leading" constant="104" id="KKh-VL-csy"/>
-                            <constraint firstItem="qrL-mL-8JC" firstAttribute="top" secondItem="ABv-gb-g55" secondAttribute="top" constant="16" id="NZF-5b-JbF"/>
+                            <constraint firstItem="qrL-mL-8JC" firstAttribute="top" secondItem="ABv-gb-g55" secondAttribute="top" constant="20" id="NZF-5b-JbF"/>
                             <constraint firstItem="7dG-BA-X6G" firstAttribute="top" secondItem="JjB-a5-qfs" secondAttribute="bottom" constant="8" id="QjW-yi-UQT"/>
                             <constraint firstItem="JjB-a5-qfs" firstAttribute="top" secondItem="ABv-gb-g55" secondAttribute="top" constant="16" id="TuN-je-SUK"/>
                             <constraint firstItem="qrL-mL-8JC" firstAttribute="leading" secondItem="ABv-gb-g55" secondAttribute="leading" constant="16" id="aE8-md-kWQ"/>

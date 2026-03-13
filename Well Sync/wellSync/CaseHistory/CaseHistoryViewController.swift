@@ -29,6 +29,7 @@ class CaseHistoryViewController: UIViewController {
         CaseHistoryCollectionView.register(UINib(nibName: "ReportCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "ReportCell")
         CaseHistoryCollectionView.register(UINib(nibName: "TimelineCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "TimelineCell")
         CaseHistoryCollectionView.register(UINib(nibName: "HeaderView", bundle: nil), forSupplementaryViewOfKind: "header", withReuseIdentifier: "Heading")
+        CaseHistoryCollectionView.register(UINib(nibName: "ReportAddHeadingView", bundle: nil), forSupplementaryViewOfKind: "header", withReuseIdentifier: "MedicalHeading")
     }
   
 
@@ -72,13 +73,26 @@ extension CaseHistoryViewController: UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         var Heading: HeaderView!
+        var MedicalHeading: ReportAddHeadingView!
         
         if kind == "header"{
-            Heading = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "Heading", for: indexPath) as? HeaderView
             if indexPath.section == 0{
-                Heading.configure(title: "Medical Report")
+                MedicalHeading = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "MedicalHeading", for: indexPath) as? ReportAddHeadingView
+                MedicalHeading.configure(title: "Medical Report")
+//                MedicalHeading.selectedMenu = { [weak self] option in
+//                    if option == "camera"{
+//                        self.openCamera()
+//                    }else if option == "photo"{
+//                        self.Gallery()
+//                    }else if option == "docment"{
+//                        self.openDocument()
+//                    }
+//                }
+                return MedicalHeading
             }else if indexPath.section == 1{
+                Heading = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "Heading", for: indexPath) as? HeaderView
                 Heading.configure(title: "Treatment Timeline")
+                return Heading
             }
         }
         return Heading
@@ -142,3 +156,9 @@ extension CaseHistoryViewController: UICollectionViewDataSource{
     }
    
 }
+
+//extension CaseHistoryViewController{
+//    @objc func addMenu(){
+//        let camera = UIAction(
+//    }
+//}

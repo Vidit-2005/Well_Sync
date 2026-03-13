@@ -17,5 +17,6 @@ class HeaderView: UICollectionReusableView {
     
     func configure(title: String){
         self.titleLabel.text = title
+
     }
 }
