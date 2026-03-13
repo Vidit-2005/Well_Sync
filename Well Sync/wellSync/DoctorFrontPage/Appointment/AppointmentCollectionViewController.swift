@@ -14,22 +14,32 @@ class AppointmentCollectionViewController: UICollectionViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        collectionView.register(
+                UINib(nibName: "AppointmentCalenderCollectionViewCell", bundle: nil),
+                forCellWithReuseIdentifier: "AppointmentViewCell"
+            )
+
+            collectionView.register(
+                UINib(nibName: "PatientCellAppointment", bundle: nil),
+                forCellWithReuseIdentifier: "PatientCellAppointment"
+            )
     }
 
     var appointmentsForSelectedDay: [Patient] {
 
         guard let doctor = currentDoctor else { return [] }
 
+        let calendar = Calendar.current
+
         return doctor.Patients.filter {
-
-            Calendar.current.isDate($0.nextSessionDate,
-                                    inSameDayAs: selectedDate)
-
-        }.sorted {
-
-            $0.nextSessionDate < $1.nextSessionDate
-
+            calendar.isDate($0.nextSessionDate,
+                            equalTo: selectedDate,
+                            toGranularity: .day)
         }
+        .sorted {
+            $0.nextSessionDate < $1.nextSessionDate
+        }
+        
     }
 
     // MARK: - Sections
@@ -56,9 +66,9 @@ class AppointmentCollectionViewController: UICollectionViewController {
         if indexPath.section == 0 {
 
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: "CalendarCollectionViewCell",
+                withReuseIdentifier: "AppointmentViewCell",
                 for: indexPath
-            ) as! CalendarCollectionViewCell
+            ) as! AppointmentCalenderCollectionViewCell
 
             cell.delegate = self
             return cell
@@ -67,11 +77,11 @@ class AppointmentCollectionViewController: UICollectionViewController {
         let patient = appointmentsForSelectedDay[indexPath.row]
 
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: "PatientCollectionViewCell",
+            withReuseIdentifier: "PatientCellAppointment",
             for: indexPath
-        ) as! PatientCollectionViewCell
+        ) as! PatientCellAppointment
 
-        cell.configure(patient: patient)
+        cell.configure(with: patient)
 
         return cell
     }
@@ -94,12 +104,12 @@ extension AppointmentCollectionViewController: UICollectionViewDelegateFlowLayou
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        let width = collectionView.frame.width - 32
+        
 
         if indexPath.section == 0 {
-            return CGSize(width: width, height: 320)
+            return CGSize(width: collectionView.frame.width, height: 250)
         }
 
-        return CGSize(width: width, height: 120)
+        return CGSize(width: collectionView.frame.width, height: 120)
     }
 }

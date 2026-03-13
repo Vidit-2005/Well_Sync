@@ -12,7 +12,7 @@ protocol CalendarSelectionDelegate: AnyObject {
     func didSelectDate(_ date: Date)
 }
 
-class AppointmentCalendarCollectionViewCell: UICollectionViewCell {
+class AppointmentCalenderCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var calendarContainerView: UIView!
 
@@ -43,9 +43,10 @@ class AppointmentCalendarCollectionViewCell: UICollectionViewCell {
 
           calendarView.calendar = Calendar.current
           calendarView.locale = Locale.current
+          calendarView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
       }
   }
-extension AppointmentCalendarCollectionViewCell: UICalendarSelectionSingleDateDelegate {
+extension AppointmentCalenderCollectionViewCell: UICalendarSelectionSingleDateDelegate {
 
     func dateSelection(_ selection: UICalendarSelectionSingleDate,
                        didSelectDate dateComponents: DateComponents?) {

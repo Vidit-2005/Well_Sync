@@ -53,10 +53,18 @@ class PatientCell: UICollectionViewCell {
             }
 
             // profile image
-            if let image = patient.imageURL {
-                profileImage.image = UIImage(named: image)
-            } else {
-                profileImage.image = UIImage(systemName: "person.circle.fill")
+//            if let image = patient.imageURL {
+//                profileImage.image = UIImage(named: image)
+//            } else {
+//                profileImage.image = UIImage(systemName: "person.circle.fill")
+//            }
+            if let urlStr = patient.imageURL, let url=URL(string: urlStr) {
+                URLSession.shared.dataTask(with: url) { (data, _, _) in
+                    guard let data = data, let image = UIImage(data: data) else { return }
+                    DispatchQueue.main.async {
+                        self.profileImage.image = image
+                    }
+                }.resume()
             }
         }
     }
