@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import UniformTypeIdentifiers
 
 class CaseHistoryViewController: UIViewController {
     @IBOutlet weak var CaseHistoryCollectionView: UICollectionView!
@@ -13,6 +14,8 @@ class CaseHistoryViewController: UIViewController {
     var caseHistory: CaseHistory!
     var timeline: [Timeline] = []
     var reports: [Report] = []
+    var selectedImage: UIImage?
+    var selectedURL: URL?
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -79,15 +82,15 @@ extension CaseHistoryViewController: UICollectionViewDataSource{
             if indexPath.section == 0{
                 MedicalHeading = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "MedicalHeading", for: indexPath) as? ReportAddHeadingView
                 MedicalHeading.configure(title: "Medical Report")
-//                MedicalHeading.selectedMenu = { [weak self] option in
-//                    if option == "camera"{
-//                        self.openCamera()
-//                    }else if option == "photo"{
-//                        self.Gallery()
-//                    }else if option == "docment"{
-//                        self.openDocument()
-//                    }
-//                }
+                MedicalHeading.selectedMenu = { [weak self] option in
+                    if option == "camera"{
+                        self?.openCamera()
+                    }else if option == "photo"{
+                        self?.gallery()
+                    }else if option == "document"{
+                        self?.openDocument()
+                    }
+                }
                 return MedicalHeading
             }else if indexPath.section == 1{
                 Heading = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "Heading", for: indexPath) as? HeaderView
@@ -157,8 +160,74 @@ extension CaseHistoryViewController: UICollectionViewDataSource{
    
 }
 
-//extension CaseHistoryViewController{
-//    @objc func addMenu(){
-//        let camera = UIAction(
-//    }
-//}
+extension CaseHistoryViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIDocumentPickerDelegate{
+    
+
+    func openCamera() {
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.allowsEditing = true
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    func gallery(){
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.allowsEditing = true
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    func openDocument(){
+        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.pdf, .text, .jpeg, .png])
+        picker.delegate = self
+        picker.allowsMultipleSelection = true
+        present(picker, animated: true)
+    }
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image = info[.originalImage] as? UIImage?{
+        selectedImage = image
+        }
+        picker.dismiss(animated: true)
+        self.NamingAlert()
+    }
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let url = urls.first else { return }
+        selectedURL = url
+        if let data = try? Data(contentsOf: url),
+            let image = UIImage(data: data){
+            selectedImage = image
+        }
+        self.NamingAlert()
+    }
+    
+    func NamingAlert(){
+        let alert = UIAlertController(title: "Add Report", message: "\n\n\n\n", preferredStyle: .alert)
+        let preview = UIImageView(frame: CGRect(x: 30, y: 50, width: 100, height: 100))
+        preview.contentMode = .scaleAspectFill
+        preview.image = selectedImage
+        preview.clipsToBounds = true
+        preview.layer.cornerRadius = 20
+        preview.layer.masksToBounds = true
+        
+        alert.view.addSubview(preview)
+        alert.addTextField{textField in
+          textField.placeholder = "Enter Report Name"
+        }
+        
+        let nameAction = UIAlertAction(title: "Add", style: .default) { _ in
+            let text = alert.textFields?.first?.text ?? ""
+            let name = text.isEmpty ? "Report" : text
+            let newReport = Report(
+                caseId: self.caseHistory.caseId,
+                    title: name,
+                    date: Date(),
+                reportPath: [self.selectedURL?.path ?? ""]
+                )
+            self.reports.insert(newReport, at: 0)
+            self.CaseHistoryCollectionView.reloadSections(IndexSet(integer: 0))
+        }
+        alert.addAction(nameAction)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
+    }
+}
