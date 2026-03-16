@@ -24,7 +24,12 @@ class HomeCollectionViewController: UICollectionViewController {
         print("->->->->",moodLogs)
         print("ended")
     }
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        patient = globalPatient
+        categorizePatients()
+        collectionView.reloadData()
+    }
     @MainActor
     func loadPatients() async {
         guard let id = UUID(uuidString: "6bf94a4d-cc66-4d87-a90d-be2500434e3d") else { return }
