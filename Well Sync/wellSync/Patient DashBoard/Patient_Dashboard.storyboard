@@ -669,10 +669,12 @@
                                                 </imageView>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" tag="3" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Screenshot 2026-03-16 at 10.53.56" translatesAutoresizingMaskIntoConstraints="NO" id="mie-yL-E1n">
                                                     <rect key="frame" x="220" y="92" width="60" height="60"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="60" id="LrP-ss-SAg"/>
                                                         <constraint firstAttribute="height" constant="60" id="p6V-BQ-4bh"/>
                                                     </constraints>
+                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="default"/>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                             <integer key="value" value="30"/>
@@ -800,7 +802,7 @@
                                     <outlet property="collectionView" destination="yfp-Gk-4MR" id="0TC-wj-WEn"/>
                                 </connections>
                             </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="noteCell" id="5Jl-Rq-KLP">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="noteCell" id="5Jl-Rq-KLP" customClass="moodLogNoteCollectionViewCell" customModule="wellSync" customModuleProvider="target">
                                 <rect key="frame" x="4.666666666666667" y="396" width="384" height="128"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="6KB-oi-4cT">
@@ -852,6 +854,9 @@
                                         <constraint firstAttribute="trailing" secondItem="DIj-Tb-7wj" secondAttribute="trailing" constant="8" id="xdM-I7-x4k"/>
                                     </constraints>
                                 </collectionViewCellContentView>
+                                <connections>
+                                    <outlet property="note" destination="9Vk-mM-D4d" id="YbN-5l-aGo"/>
+                                </connections>
                             </collectionViewCell>
                         </cells>
                         <connections>

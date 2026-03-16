@@ -21,6 +21,8 @@ class HomeCollectionViewController: UICollectionViewController {
         }
         self.collectionView.collectionViewLayout = createLayout()
         setupMenu()
+        print("->->->->",moodLogs)
+        print("ended")
     }
     
     @MainActor

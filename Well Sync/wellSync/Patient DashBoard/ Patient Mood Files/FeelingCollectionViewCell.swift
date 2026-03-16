@@ -94,4 +94,5 @@ extension FeelingCollectionViewCell {
         let selected = selectedIndexes.sorted().map { feelings[$0] }
         onSelectionChanged?(selected)
     }
+    
 }

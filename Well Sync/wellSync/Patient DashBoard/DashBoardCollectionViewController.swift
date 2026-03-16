@@ -73,7 +73,6 @@ class ActivityRingView: UIView {
 
 class DashboardCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
-    // cell names....
     let items = ["Streak", "Activity Ring", "Mood Count", "Next Session", "Mood Log", "Logs", "Journaling", "Art"]
     let  images = [
         UIImage(systemName: "book"),
@@ -108,14 +107,10 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         navigationItem.rightBarButtonItem = more
     }
     
-    // MARK: - Data Source
-    
-    // number of sections in a collection view
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         1
     }
-    
-    // Number of items in a single section
+
     override func collectionView(_ collectionView: UICollectionView,
                                  numberOfItemsInSection section: Int) -> Int {
         items.count
@@ -124,7 +119,6 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: UICollectionViewCell
         
-        // setting custom cells to every index path
         if indexPath.row == 0{
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "streakCell", for: indexPath)
         }
@@ -180,13 +174,11 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
             image.image = images[indexPath.row-6]
             
         }
-        // Adding shadow to the cell
         cell.layer.cornerRadius = 16
         cell.layer.masksToBounds = true
         if indexPath.row != 5{
             cell.backgroundColor = .secondarySystemBackground
         }
-        // returning cell
         return cell
     }
     
@@ -196,11 +188,9 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         let leftInset: CGFloat  = 16
             let rightInset: CGFloat = 16
-            let interItemSpacing: CGFloat = 8  // must match layout.minimumInteritemSpacing
+            let interItemSpacing: CGFloat = 8
 
             let fullWidth = collectionView.frame.width - leftInset - rightInset
-
-            // Step 2: Half width = (usable width - the ONE gap between the two cells) / 2
             let halfWidth = (fullWidth - interItemSpacing) / 2
 
             switch indexPath.row {
@@ -214,7 +204,7 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
     }
     func generateLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 8   // ← must match interItemSpacing constant above
+        layout.minimumInteritemSpacing = 8
         layout.minimumLineSpacing = 16
         layout.sectionInset = UIEdgeInsets(top: 16, left: 12, bottom: 16, right: 12)
         return layout
@@ -247,6 +237,8 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
            let data = sender as? Int { 
 
             vc.selectedMood = data
+
+            vc.patientId = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
 
             vc.onDismiss = { [weak self] in
                 self?.resetMoodViews()

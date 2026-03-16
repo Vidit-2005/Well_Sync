@@ -9,14 +9,7 @@ class MoodLogCollectionViewController:
     var selectedMood: Int? = 2
     var selectedFeelings: [String] = []
     
-    enum MoodLevel: Int {
-        case verySad
-        case sad
-        case neutral
-        case happy
-        case veryHappy
-    }
-    
+    var patientId: UUID?          
     
     let moodFeelings: [MoodLevel: [String]] = [
         .verySad: ["Angry", "Anxious", "scared", "Jealous","Overwhelmed", "Embarrassed", "Frustrated", "Anoyed", "Stressed",  "Worried", "Guilty", "Hopeless", "Iritated", "Lonely", "Discouraged","Disappointed", "Drained", "Sad"],
@@ -85,7 +78,7 @@ class MoodLogCollectionViewController:
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: "noteCell",
             for: indexPath
-        )
+        ) as! moodLogNoteCollectionViewCell
         return cell
         
     }
@@ -155,7 +148,70 @@ class MoodLogCollectionViewController:
     }
     
     @IBAction func logMood(_ sender: UIBarButtonItem) {
+
+        guard
+            let rawMood = selectedMood,
+            let moodLevel = MoodLevel(rawValue: rawMood)
+        else {
+            let alert = UIAlertController(
+                title: "No Mood Selected",
+                message: "Please select how you're feeling before saving your mood log.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+
+        if selectedFeelings.isEmpty {
+            let alert = UIAlertController(
+                title: "No Feelings Selected",
+                message: "Would you like to log your mood without selecting any feelings?",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "Go Back", style: .cancel))
+
+            alert.addAction(UIAlertAction(title: "Log Anyway", style: .default) { [weak self] _ in
+                guard let self = self else { return }
+                self.saveLog(rawMood: rawMood, moodLevel: moodLevel)
+            })
+
+            present(alert, animated: true)
+            return
+        }
+        saveLog(rawMood: rawMood, moodLevel: moodLevel)
+    }
+    private func saveLog(rawMood: Int, moodLevel: MoodLevel) {
+
+        let feelingObjects: [Feeling] = selectedFeelings.map { feelingName in
+            Feeling(
+                feelingId: UUID(),
+                moodLevel: moodLevel,
+                name: feelingName
+            )
+        }
         
+        let cell = collectionView.cellForItem(
+            at: IndexPath(row: 0, section: 2)
+        ) as! moodLogNoteCollectionViewCell
+        
+        let newLog = MoodLog(
+            logId: UUID(),
+            patientId: patientId,
+            mood: rawMood+1,
+            date: Date(),
+            moodNote: cell.note.text ?? "",
+            selectedFeeling: feelingObjects
+        )
+        moodLogs.append(newLog)
+
+        print("✅ Mood logged: \(moodLevel) | Feelings: \(selectedFeelings) | Date: \(newLog.date!) | \(cell.note.text ?? "")")
+        print("📋 Total logs: \(moodLogs.count)")
+
+        dismiss(animated: true) {
+            self.onCheck?()
+            self.onDismiss?()
+        }
     }
     
 }
