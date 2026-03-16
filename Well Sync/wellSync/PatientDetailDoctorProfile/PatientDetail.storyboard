@@ -105,6 +105,7 @@
                         <segue destination="m2C-vu-s9U" kind="show" identifier="activity" id="ouO-jZ-GCq"/>
                         <segue destination="3LQ-hf-pyg" kind="show" identifier="mood" id="A5U-yi-3xG"/>
                         <segue destination="TIj-9T-WrR" kind="show" identifier="sessionNotes" id="7fz-jQ-a10"/>
+                        <segue destination="qeh-mm-v8B" kind="show" identifier="case" id="auK-3n-HBP"/>
                     </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eGB-rC-TCV" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -178,6 +179,16 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gZX-Zl-hSZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3673" y="1382"/>
+        </scene>
+        <!--caseHistory-->
+        <scene sceneID="vyD-b7-c6N">
+            <objects>
+                <viewControllerPlaceholder storyboardName="CaseHistory" referencedIdentifier="caseHistory" id="qeh-mm-v8B" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="YM9-5F-ntp"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gNP-jZ-fZc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3705" y="1704"/>
         </scene>
     </scenes>
     <resources>

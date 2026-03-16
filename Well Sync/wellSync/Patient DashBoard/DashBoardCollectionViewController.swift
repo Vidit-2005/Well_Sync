@@ -99,11 +99,7 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         super.viewDidLoad()
         navigationItem.largeTitleDisplayMode = .always
         
-        if let layout = collectionViewLayout as? UICollectionViewFlowLayout {
-            layout.scrollDirection = .vertical
-            layout.minimumLineSpacing = 0
-            layout.minimumInteritemSpacing = 0
-        }
+        collectionView.collectionViewLayout = generateLayout()
         
         collectionView.alwaysBounceVertical = true
 
@@ -146,12 +142,7 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
             }
             cell.layer.cornerRadius = 16
             cell.layer.masksToBounds = true
-
-            cell.layer.shadowColor = UIColor.black.cgColor
-            cell.layer.shadowOpacity = 0.2
-            cell.layer.shadowOffset = CGSize(width: 0, height: 4)
-            cell.layer.shadowRadius = 8
-            cell.layer.masksToBounds = false
+            cell.backgroundColor = .secondarySystemBackground
             return cell
         }
         
@@ -173,12 +164,7 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
             if let label = cell.viewWithTag(1) as? UILabel { label.text = items[indexPath.row] }
             cell.layer.cornerRadius = 16
             cell.layer.masksToBounds = true
-
-            cell.layer.shadowColor = UIColor.black.cgColor
-            cell.layer.shadowOpacity = 0.2
-            cell.layer.shadowOffset = CGSize(width: 0, height: 4)
-            cell.layer.shadowRadius = 8
-            cell.layer.masksToBounds = false
+            cell.backgroundColor = .secondarySystemBackground
             return cell
         }
         else if indexPath.row == 5{
@@ -197,12 +183,9 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         // Adding shadow to the cell
         cell.layer.cornerRadius = 16
         cell.layer.masksToBounds = true
-        cell.layer.shadowColor = UIColor.black.cgColor
-        cell.layer.shadowOpacity = 0.2
-        cell.layer.shadowOffset = CGSize(width: 0, height: 4)
-        cell.layer.shadowRadius = 8
-        cell.layer.masksToBounds = false
-        
+        if indexPath.row != 5{
+            cell.backgroundColor = .secondarySystemBackground
+        }
         // returning cell
         return cell
     }
@@ -211,17 +194,30 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let fullWidth = collectionView.frame.width
-        let halfWidth = (fullWidth - 3) / 2
-        
-        switch indexPath.row {
-        case 1, 2: return CGSize(width: halfWidth, height: 150)
-        case 0:    return CGSize(width: fullWidth, height: 116)
-        case 3:    return CGSize(width: fullWidth, height: 110)
-        case 4:    return CGSize(width: fullWidth, height: 180)
-        case 5:    return CGSize(width: fullWidth, height: 30)
-        default:   return CGSize(width: fullWidth, height: 70)
-        }
+        let leftInset: CGFloat  = 16
+            let rightInset: CGFloat = 16
+            let interItemSpacing: CGFloat = 8  // must match layout.minimumInteritemSpacing
+
+            let fullWidth = collectionView.frame.width - leftInset - rightInset
+
+            // Step 2: Half width = (usable width - the ONE gap between the two cells) / 2
+            let halfWidth = (fullWidth - interItemSpacing) / 2
+
+            switch indexPath.row {
+            case 0:       return CGSize(width: fullWidth, height: 116)
+            case 1, 2:    return CGSize(width: halfWidth, height: 150)
+            case 3:       return CGSize(width: fullWidth, height: 110)
+            case 4:       return CGSize(width: fullWidth, height: 180)
+            case 5:       return CGSize(width: fullWidth, height: 30)
+            default:      return CGSize(width: fullWidth, height: 70)
+            }
+    }
+    func generateLayout() -> UICollectionViewLayout {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumInteritemSpacing = 8   // ← must match interItemSpacing constant above
+        layout.minimumLineSpacing = 16
+        layout.sectionInset = UIEdgeInsets(top: 16, left: 12, bottom: 16, right: 12)
+        return layout
     }
     
     // what to done after mood view is tapped
@@ -240,7 +236,7 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.performSegue(
                         withIdentifier: "moodLog",
-                        sender: (selectedIndex, selectedView.backgroundColor))
+                        sender: (selectedIndex))
         }
     }
     
@@ -248,24 +244,25 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         if segue.identifier == "moodLog",
            let nav = segue.destination as? UINavigationController,
            let vc = nav.viewControllers.first as? MoodLogCollectionViewController,
-           let data = sender as? (Int, UIColor) {
+           let data = sender as? Int { 
 
-            vc.selectedMood = data.0
-            vc.selectedMoodColor = data.1
+            vc.selectedMood = data
 
             vc.onDismiss = { [weak self] in
                 self?.resetMoodViews()
             }
+            vc.onCheck = { [weak self] in
+                self?.resetMoodViews()
+            }
         }
     }
-
     
     // resting back the scale of mood view
     func resetMoodViews() {
         for cell in collectionView.visibleCells {
             if let moodCell = cell as? MoodLogCollectionViewCell {
                 UIView.animate(withDuration: 0.1) {
-                    for view in moodCell.moodView {
+                    for view in moodCell.moodViews {
                         view.transform = .identity
                     }
                 }
