@@ -7,6 +7,7 @@
 
 import Foundation
 
+var moodLogs: [MoodLog] = []
 let docID = UUID(uuidString: "6bf94a4d-cc66-4d87-a90d-be2500434e3d")!
 var currentDoctor: Doctor?
 var globalDoctor: [Doctor] = [
