@@ -5,11 +5,15 @@
 //  Created by Rishika Mittal on 07/02/26.
 //
 
+
 import UIKit
 
 class SummarisedReportTableViewController: UITableViewController {
+    
+    var patient: Patient?
 
     let sections = ["Mood","Activity","Patient notes","Session Notes", "Journal Summary"]
+    var todayItems: [TodayActivityItem] = []
     let activities :[Activity] = [
 //        Activity(title: "Journaling", dateText: "Today, 09:00 AM", subtitle: "Personal reflection", iconName: "book", completed: 0.8),
 //        Activity(title: "Meditation", dateText: "Today, 07:30 AM", subtitle: "Mindful session", iconName: "wind", completed: 1.0),
@@ -25,7 +29,13 @@ class SummarisedReportTableViewController: UITableViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 250
         tableView.dataSource = self
-
+        
+        guard let patientID = patient?.patientID else {
+            print("SummaryViewController: no patient passed")
+            return
+        }
+        todayItems    = buildTodayItems(for: patientID)
+        tableView.reloadData()
     }
 
     // MARK: - Table view data source
@@ -51,16 +61,29 @@ class SummarisedReportTableViewController: UITableViewController {
             return cell
             
         }
+//        if indexPath.section == 1 {
+//            let cell = tableView.dequeueReusableCell(withIdentifier: "sActivityCell", for: indexPath) as! SummaryActivityTableViewCell
+//
+//    //        cell.selectionStyle = .none
+//            cell.selectedBackgroundView = UIView()
+//            cell.selectedBackgroundView?.backgroundColor = .clear
+//
+//            cell.configure(with: activities)
+//            return cell
+//        }
         if indexPath.section == 1 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "sActivityCell", for: indexPath) as! SummaryActivityTableViewCell
+                let cell = tableView.dequeueReusableCell(
+                    withIdentifier: "sActivityCell", for: indexPath
+                ) as! SummaryActivityTableViewCell
 
-    //        cell.selectionStyle = .none
-            cell.selectedBackgroundView = UIView()
-            cell.selectedBackgroundView?.backgroundColor = .clear
+                cell.selectedBackgroundView                  = UIView()
+                cell.selectedBackgroundView?.backgroundColor = .clear
 
-            cell.configure(with: activities)
-            return cell
-        }
+                if let patientID = patient?.patientID {
+                    cell.configure(for: patientID)
+                }
+                return cell
+            }
         let cell = tableView.dequeueReusableCell(withIdentifier: "sPatientNote", for: indexPath)
         return cell
     }
@@ -72,7 +95,7 @@ class SummarisedReportTableViewController: UITableViewController {
         headerView.backgroundColor = .clear
         
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 24, weight: .medium)
+        label.font = UIFont.preferredFont(forTextStyle: .title2)
         label.textColor = .label
         
         label.text = sections[section]
