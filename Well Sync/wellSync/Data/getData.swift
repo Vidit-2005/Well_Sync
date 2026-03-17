@@ -7,6 +7,61 @@
 
 import Foundation
 
+var moodLogs: [MoodLog] = [
+    
+    // Today
+    MoodLog(logId: UUID(), patientId: UUID(), mood: 4,
+            date: Calendar.current.date(byAdding: .day, value: 0, to: Date())!,
+            moodNote: nil, selectedFeeling: []),
+    
+    MoodLog(logId: UUID(), patientId: UUID(), mood: 3,
+            date: Calendar.current.date(byAdding: .day, value: 0, to: Date())!,
+            moodNote: nil, selectedFeeling: []),
+    
+    
+    // Yesterday
+    MoodLog(logId: UUID(), patientId: UUID(), mood: 2,
+            date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!,
+            moodNote: nil, selectedFeeling: []),
+    
+    MoodLog(logId: UUID(), patientId: UUID(), mood: 3,
+            date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!,
+            moodNote: nil, selectedFeeling: []),
+    
+    
+    // 2 days ago
+    MoodLog(logId: UUID(), patientId: UUID(), mood: 5,
+            date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!,
+            moodNote: nil, selectedFeeling: []),
+    
+    
+    // 3 days ago
+    MoodLog(logId: UUID(), patientId: UUID(), mood: 1,
+            date: Calendar.current.date(byAdding: .day, value: -3, to: Date())!,
+            moodNote: nil, selectedFeeling: []),
+    
+    MoodLog(logId: UUID(), patientId: UUID(), mood: 2,
+            date: Calendar.current.date(byAdding: .day, value: -3, to: Date())!,
+            moodNote: nil, selectedFeeling: []),
+    
+    
+    // 4 days ago
+    MoodLog(logId: UUID(), patientId: UUID(), mood: 3,
+            date: Calendar.current.date(byAdding: .day, value: -4, to: Date())!,
+            moodNote: nil, selectedFeeling: []),
+    
+    
+    // 5 days ago
+    MoodLog(logId: UUID(), patientId: UUID(), mood: 4,
+            date: Calendar.current.date(byAdding: .day, value: -5, to: Date())!,
+            moodNote: nil, selectedFeeling: []),
+    
+    
+    // 6 days ago
+    MoodLog(logId: UUID(), patientId: UUID(), mood: 2,
+            date: Calendar.current.date(byAdding: .day, value: -6, to: Date())!,
+            moodNote: nil, selectedFeeling: [])
+]
 let docID = UUID(uuidString: "6bf94a4d-cc66-4d87-a90d-be2500434e3d")!
 var currentDoctor: Doctor?
 var globalDoctor: [Doctor] = [
@@ -102,7 +157,7 @@ var globalPatient: [Patient] = [
         name: "Aarav Sharma", email: "aarav.sharma@email.com", password: "Pass@1234",
         contact: "+91-9876543210",
         dob: makeDate(1990, 3, 15),
-        nextSessionDate: makeDate(2026, 3, 16, hour: 10, minute: 0),
+        nextSessionDate: makeDate(2026, 3, 17, hour: 10, minute: 0),
         imageURL: "https://picsum.photos/200.jpg", address: "12, MG Road, Bengaluru, Karnataka",
         condition: "Generalized Anxiety Disorder", sessionStatus: true, mood: 6,
         previousSessionDate: makeDate(2025, 3, 15, hour: 10, minute: 0)
@@ -112,7 +167,7 @@ var globalPatient: [Patient] = [
         name: "Priya Mehta", email: "priya.mehta@email.com", password: "Pass@1234",
         contact: "+91-9823456789",
         dob: makeDate(1995, 7, 22),
-        nextSessionDate: makeDate(2026, 3, 16, hour: 11, minute: 30),
+        nextSessionDate: makeDate(2026, 3, 17, hour: 11, minute: 30),
         imageURL: "https://picsum.photos/200.jpg", address: "45, Linking Road, Mumbai, Maharashtra",
         condition: "Major Depressive Disorder", sessionStatus: false, mood: 3,
         previousSessionDate: makeDate(2025, 3, 20, hour: 11, minute: 30)
@@ -122,7 +177,7 @@ var globalPatient: [Patient] = [
         name: "Rohan Verma", email: "rohan.verma@email.com", password: "Pass@1234",
         contact: "+91-9845671234",
         dob: makeDate(1988, 11, 5),
-        nextSessionDate: makeDate(2026, 3, 16, hour: 9, minute: 0),
+        nextSessionDate: makeDate(2026, 3, 17, hour: 9, minute: 0),
         imageURL: "https://picsum.photos/200.jpg", address: "7, Sector 18, Noida, Uttar Pradesh",
         condition: "PTSD", sessionStatus: true, mood: 5,
         previousSessionDate: makeDate(2025, 3, 22, hour: 9, minute: 0)
@@ -132,7 +187,7 @@ var globalPatient: [Patient] = [
         name: "Sneha Iyer", email: "sneha.iyer@email.com", password: "Pass@1234",
         contact: "+91-9901234567",
         dob: makeDate(1993, 1, 30),
-        nextSessionDate: makeDate(2026, 3, 16, hour: 14, minute: 15),
+        nextSessionDate: makeDate(2026, 3, 17, hour: 14, minute: 15),
         imageURL: "https://picsum.photos/200.jpg", address: "23, Anna Nagar, Chennai, Tamil Nadu",
         condition: "Bipolar Disorder", sessionStatus: nil, mood: 7,
         previousSessionDate: makeDate(2025, 3, 24, hour: 14, minute: 15)
@@ -142,7 +197,7 @@ var globalPatient: [Patient] = [
         name: "Kabir Nair", email: "kabir.nair@email.com", password: "Pass@1234",
         contact: "+91-9812345678",
         dob: makeDate(1985, 6, 18),
-        nextSessionDate: makeDate(2026, 3, 15, hour: 16, minute: 0),
+        nextSessionDate: makeDate(2026, 3, 17, hour: 16, minute: 0),
         imageURL: "https://picsum.photos/200.jpg", address: "8, Indiranagar, Bengaluru, Karnataka",
         condition: "OCD", sessionStatus: true, mood: 4,
         previousSessionDate: makeDate(2025, 3, 25, hour: 16, minute: 0)
@@ -152,7 +207,7 @@ var globalPatient: [Patient] = [
         name: "Ananya Gupta", email: "ananya.gupta@email.com", password: "Pass@1234",
         contact: "+91-9867345612",
         dob: makeDate(1997, 9, 12),
-        nextSessionDate: makeDate(2026, 3, 15, hour: 10, minute: 30),
+        nextSessionDate: makeDate(2026, 3, 16, hour: 10, minute: 30),
         imageURL: "https://picsum.photos/200.jpg", address: "56, Civil Lines, Delhi",
         condition: "Social Anxiety Disorder", sessionStatus: false, mood: 5,
         previousSessionDate: makeDate(2025, 3, 27, hour: 10, minute: 30)
@@ -162,7 +217,7 @@ var globalPatient: [Patient] = [
         name: "Vikram Singh", email: "vikram.singh@email.com", password: "Pass@1234",
         contact: "+91-9754321098",
         dob: makeDate(1982, 4, 25),
-        nextSessionDate: makeDate(2026, 3, 15, hour: 13, minute: 0),
+        nextSessionDate: makeDate(2026, 3, 16, hour: 13, minute: 0),
         imageURL: "https://picsum.photos/200.jpg", address: "34, Banjara Hills, Hyderabad, Telangana",
         condition: "Schizophrenia", sessionStatus: true, mood: 2,
         previousSessionDate: makeDate(2025, 3, 28, hour: 13, minute: 0)
@@ -172,7 +227,7 @@ var globalPatient: [Patient] = [
         name: "Meera Pillai", email: "meera.pillai@email.com", password: "Pass@1234",
         contact: "+91-9934567821",
         dob: makeDate(1991, 12, 8),
-        nextSessionDate: makeDate(2026, 3, 15, hour: 15, minute: 45),
+        nextSessionDate: makeDate(2026, 3, 16, hour: 15, minute: 45),
         imageURL: "https://picsum.photos/200.jpg", address: "19, Thrissur Road, Kochi, Kerala",
         condition: "Panic Disorder", sessionStatus: nil, mood: 6,
         previousSessionDate: makeDate(2025, 3, 29, hour: 15, minute: 45)
@@ -182,7 +237,7 @@ var globalPatient: [Patient] = [
         name: "Arjun Desai", email: "arjun.desai@email.com", password: "Pass@1234",
         contact: "+91-9878901234",
         dob: makeDate(1994, 2, 14),
-        nextSessionDate: makeDate(2026, 4, 15, hour: 11, minute: 0),
+        nextSessionDate: makeDate(2026, 3, 16   , hour: 11, minute: 0),
         imageURL: "https://picsum.photos/200.jpg", address: "88, CG Road, Ahmedabad, Gujarat",
         condition: "ADHD", sessionStatus: true, mood: 8,
         previousSessionDate: makeDate(2025, 3, 31, hour: 11, minute: 0)
@@ -1208,16 +1263,15 @@ var globalSession: [SessionNote] = [
     ),
 ]
 
-let doctorID  = UUID(uuidString: "00000000-0000-0000-0000-000000000099")!
-let patientP1 = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
-let patientP2 = UUID(uuidString: "00000000-0000-0000-0000-000000000002")!
-let patientP3 = UUID(uuidString: "00000000-0000-0000-0000-000000000003")!
+let patientP1 = UUID(uuidString: "00000000-0000-0000-0000-000000000008")!
+let patientP2 = UUID(uuidString: "00000000-0000-0000-0000-000000000004")!
+let patientP3 = UUID(uuidString: "00000000-0000-0000-0000-000000000002")!
 
 let activityCatalog: [Activity] = [
 
     Activity(
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000001")!,
-        doctorID: doctorID,
+        doctorID: docID,
         name: "Morning Walk",
         type: .timer,
         iconName: "figure.walk",
@@ -1226,7 +1280,7 @@ let activityCatalog: [Activity] = [
 
     Activity(
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000002")!,
-        doctorID: doctorID,
+        doctorID: docID,
         name: "Breathing Exercise",
         type: .timer,
         iconName: "lungs.fill",
@@ -1235,25 +1289,25 @@ let activityCatalog: [Activity] = [
 
     Activity(
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000003")!,
-        doctorID: doctorID,
-        name: "Wound Photo Upload",
+        doctorID: docID,
+        name: "Journaling",
         type: .upload,
         iconName: "camera.fill",
-        description: "Upload a clear photo of the wound site daily for remote monitoring and dressing review."
+        description: "Upload handwritten journals."
     ),
 
     Activity(
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000004")!,
-        doctorID: doctorID,
-        name: "Blood Pressure Reading",
+        doctorID: docID,
+        name: "Art",
         type: .upload,
         iconName: "heart.text.square.fill",
-        description: "Take your blood pressure using your home monitor and upload a photo of the reading."
+        description: "Create mandala art with your imagination."
     ),
 
     Activity(
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000005")!,
-        doctorID: doctorID,
+        doctorID: docID,
         name: "Physiotherapy Stretches",
         type: .timer,
         iconName: "figure.cooldown",
@@ -1262,7 +1316,7 @@ let activityCatalog: [Activity] = [
 
     Activity(
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000006")!,
-        doctorID: doctorID,
+        doctorID: docID,
         name: "Medication Photo Confirmation",
         type: .upload,
         iconName: "pills.fill",
@@ -1271,7 +1325,7 @@ let activityCatalog: [Activity] = [
 
     Activity(
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000007")!,
-        doctorID: doctorID,
+        doctorID: docID,
         name: "Balance Training",
         type: .timer,
         iconName: "figure.stand",
@@ -1280,7 +1334,7 @@ let activityCatalog: [Activity] = [
 
     Activity(
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000008")!,
-        doctorID: doctorID,
+        doctorID: docID,
         name: "Rash / Skin Photo Upload",
         type: .upload,
         iconName: "eye.fill",
@@ -1298,7 +1352,7 @@ let assignedActivities: [AssignedActivity] = [
         assignedID: UUID(uuidString: "bbbb0000-0000-0000-0000-000000000001")!,
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000001")!, // Morning Walk
         patientID: patientP1,
-        doctorID: doctorID,
+        doctorID: docID,
         frequency: 1,
         startDate: makeDate(2026, 2, 17, hour: 0, minute: 0),
         endDate:   makeDate(2026, 3, 17, hour: 0, minute: 0),
@@ -1310,7 +1364,7 @@ let assignedActivities: [AssignedActivity] = [
         assignedID: UUID(uuidString: "bbbb0000-0000-0000-0000-000000000002")!,
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000005")!, // Physio Stretches
         patientID: patientP1,
-        doctorID: doctorID,
+        doctorID: docID,
         frequency: 2,
         startDate: makeDate(2026, 2, 17, hour: 0, minute: 0),
         endDate:   makeDate(2026, 3, 17, hour: 0, minute: 0),
@@ -1323,7 +1377,7 @@ let assignedActivities: [AssignedActivity] = [
         assignedID: UUID(uuidString: "bbbb0000-0000-0000-0000-000000000003")!,
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000004")!, // BP Reading
         patientID: patientP1,
-        doctorID: doctorID,
+        doctorID: docID,
         frequency: 1,
         startDate: makeDate(2026, 2, 1, hour: 0, minute: 0),
         endDate:   makeDate(2026, 2, 14, hour: 0, minute: 0),
@@ -1337,7 +1391,7 @@ let assignedActivities: [AssignedActivity] = [
         assignedID: UUID(uuidString: "bbbb0000-0000-0000-0000-000000000004")!,
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000002")!, // Breathing Exercise
         patientID: patientP2,
-        doctorID: doctorID,
+        doctorID: docID,
         frequency: 3,
         startDate: makeDate(2026, 2, 1, hour: 0, minute: 0),
         endDate:   makeDate(2026, 3, 1, hour: 0, minute: 0),
@@ -1349,7 +1403,7 @@ let assignedActivities: [AssignedActivity] = [
         assignedID: UUID(uuidString: "bbbb0000-0000-0000-0000-000000000005")!,
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000006")!, // Medication Photo
         patientID: patientP2,
-        doctorID: doctorID,
+        doctorID: docID,
         frequency: 1,
         startDate: makeDate(2026, 2, 1, hour: 0, minute: 0),
         endDate:   makeDate(2026, 4, 1, hour: 0, minute: 0),
@@ -1363,7 +1417,7 @@ let assignedActivities: [AssignedActivity] = [
         assignedID: UUID(uuidString: "bbbb0000-0000-0000-0000-000000000006")!,
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000007")!, // Balance Training
         patientID: patientP3,
-        doctorID: doctorID,
+        doctorID: docID,
         frequency: 2,
         startDate: makeDate(2026, 2, 19, hour: 0, minute: 0),
         endDate:   makeDate(2026, 4, 19, hour: 0, minute: 0),
@@ -1375,7 +1429,7 @@ let assignedActivities: [AssignedActivity] = [
         assignedID: UUID(uuidString: "bbbb0000-0000-0000-0000-000000000007")!,
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000001")!, // Morning Walk
         patientID: patientP3,
-        doctorID: doctorID,
+        doctorID: docID,
         frequency: 1,
         startDate: makeDate(2026, 2, 19, hour: 0, minute: 0),
         endDate:   makeDate(2026, 4, 19, hour: 0, minute: 0),
@@ -1388,7 +1442,7 @@ let assignedActivities: [AssignedActivity] = [
         assignedID: UUID(uuidString: "bbbb0000-0000-0000-0000-000000000008")!,
         activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000005")!, // Physio Stretches
         patientID: patientP3,
-        doctorID: doctorID,
+        doctorID: docID,
         frequency: 2,
         startDate: makeDate(2026, 2, 19, hour: 0, minute: 0),
         endDate:   makeDate(2026, 3, 5, hour: 0, minute: 0),
@@ -1628,4 +1682,83 @@ func makeDate(_ year: Int, _ month: Int, _ day: Int, hour: Int = 0, minute: Int 
     components.minute = minute
     print(Calendar.current.date(from: components)!)
     return Calendar.current.date(from: components)!
+}
+
+struct TodayActivityItem {
+    let activity: Activity
+    let assignment: AssignedActivity
+    let completedToday: Int
+    let logs: [ActivityLog]
+
+    var remaining: Int {
+        return max(0, assignment.frequency - completedToday)
+    }
+
+    var progressRatio: Float {
+        guard assignment.frequency > 0 else { return 0 }
+        return min(Float(completedToday) / Float(assignment.frequency), 1.0)
+    }
+
+    var isCompletedToday: Bool {
+        return completedToday >= assignment.frequency
+    }
+
+    var frequencyText: String {
+        return "\(completedToday) of \(assignment.frequency) done today"
+    }
+
+    var actionLabel: String {
+        switch activity.type {
+        case .timer:  return "Start Timer"
+        case .upload: return "Upload Photo"
+        }
+    }
+}
+
+// MARK: - Build Today Items
+func buildTodayItems(for patientID: UUID) -> [TodayActivityItem] {
+    let today = Date()
+
+    let todayAssignments = assignedActivities.filter {
+        $0.patientID == patientID && $0.isActiveToday
+    }
+
+    return todayAssignments.compactMap { assignment in
+        guard let activity = activityCatalog.first(where: {
+            $0.activityID == assignment.activityID
+        }) else { return nil }
+
+        let todayLogs = activityLogs.filter {
+            $0.assignedID == assignment.assignedID &&
+            Calendar.current.isDate($0.date, inSameDayAs: today)
+        }
+
+        return TodayActivityItem(
+            activity: activity,
+            assignment: assignment,
+            completedToday: todayLogs.count,
+            logs: todayLogs
+        )
+    }
+}
+struct LogSummaryItem {
+    let activity: Activity
+    let totalLogs: Int
+}
+
+// MARK: - Build Log Summaries
+func buildLogSummaries(for patientID: UUID) -> [LogSummaryItem] {
+
+    let patientLogs = activityLogs.filter { $0.patientID == patientID }
+
+    let grouped = Dictionary(grouping: patientLogs, by: { $0.activityID })
+
+    return grouped.compactMap { (activityID, logs) in
+        guard let activity = activityCatalog.first(where: {
+            $0.activityID == activityID
+        }) else { return nil }
+
+        return LogSummaryItem(activity: activity, totalLogs: logs.count)
+    }
+    .sorted { $0.totalLogs > $1.totalLogs }
 }

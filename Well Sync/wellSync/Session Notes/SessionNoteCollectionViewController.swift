@@ -9,6 +9,8 @@ import UIKit
 import Foundation
 class SessionNoteCollectionViewController: UICollectionViewController {
 
+    var patient: Patient?
+    
     var sessions:[SessionNote]?
     override func viewDidLoad() {
         super.viewDidLoad()

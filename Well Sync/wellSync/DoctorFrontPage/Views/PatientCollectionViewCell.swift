@@ -74,7 +74,7 @@ class PatientCollectionViewCell: UICollectionViewCell {
     
             let timeFormatter = DateFormatter()
             timeFormatter.locale = Locale(identifier: "en_US_POSIX")
-            timeFormatter.timeZone = TimeZone(secondsFromGMT: 0)   // keeps time as 10:00:00
+//            timeFormatter.timeZone = TimeZone(secondsFromGMT: 0)   // keeps time as 10:00:00
             timeFormatter.dateFormat = "HH:mm"
     
             time.text = timeFormatter.string(from: sessionDate)
