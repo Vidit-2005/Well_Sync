@@ -32,7 +32,7 @@ import Foundation
 //    var sessionStatus: SessionStatus
 //}
 
-var UserDoctors: [Doctor] = [] // education table view controller
+@MainActor var UserDoctors: [Doctor] = [] // education table view controller
 
 
 struct Doctor: Codable, Sendable {
@@ -131,24 +131,24 @@ struct Doctor: Codable, Sendable {
 //        if self.docID == nil { self.docID = UUID() }
 //    }
 
-//    func encode(to encoder: Encoder) throws {
-//        var container = encoder.container(keyedBy: CodingKeys.self)
-//        try container.encodeIfPresent(docID, forKey: .docID)
-//        try container.encodeIfPresent(username, forKey: .username)
-//        try container.encodeIfPresent(email, forKey: .email)
-//        try container.encodeIfPresent(password, forKey: .password)
-//        try container.encodeIfPresent(name, forKey: .name)
-//        try container.encodeIfPresent(dob, forKey: .dob)
-//        try container.encodeIfPresent(address, forKey: .address)
-//        try container.encodeIfPresent(experience, forKey: .experience)
-//        try container.encodeIfPresent(doctorImage, forKey: .doctorImage)
-//        try container.encodeIfPresent(qualification, forKey: .qualification)
-//        try container.encodeIfPresent(registrationNumber, forKey: .registrationNumber)
-//        try container.encodeIfPresent(identityNumber, forKey: .identityNumber)
-//        try container.encodeIfPresent(educationImageData, forKey: .educationImageData)
-//        try container.encodeIfPresent(registrationImageData, forKey: .registrationImageData)
-//        try container.encodeIfPresent(identityImageData, forKey: .identityImageData)
-//    }
+    nonisolated func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(docID, forKey: .docID)
+        try container.encodeIfPresent(username, forKey: .username)
+        try container.encodeIfPresent(email, forKey: .email)
+        try container.encodeIfPresent(password, forKey: .password)
+        try container.encodeIfPresent(name, forKey: .name)
+        try container.encode(dob, forKey: .dob)
+        try container.encodeIfPresent(address, forKey: .address)
+        try container.encode(experience, forKey: .experience)
+        try container.encodeIfPresent(doctorImage, forKey: .doctorImage)
+        try container.encodeIfPresent(qualification, forKey: .qualification)
+        try container.encodeIfPresent(registrationNumber, forKey: .registrationNumber)
+        try container.encodeIfPresent(identityNumber, forKey: .identityNumber)
+        try container.encodeIfPresent(educationImageData, forKey: .educationImageData)
+        try container.encodeIfPresent(registrationImageData, forKey: .registrationImageData)
+        try container.encodeIfPresent(identityImageData, forKey: .identityImageData)
+    }
 }
 struct Patient: Codable, Sendable {
     var patientID: UUID

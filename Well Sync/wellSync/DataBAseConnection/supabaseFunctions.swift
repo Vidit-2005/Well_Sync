@@ -6,7 +6,7 @@
 //
 
 import Supabase
-import UIKit
+import Foundation
 
 class AccessSupabase{
     let decoder = JSONDecoder()
@@ -16,6 +16,19 @@ class AccessSupabase{
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         decoder.dateDecodingStrategy = .formatted(formatter)
     }
+    func saveDoctor(_ doctor: Doctor) async {
+        do {
+            try await SupabaseManager.shared.client
+                .database
+                .from("doctor")
+                .insert(doctor)
+                .execute()
+            print("Doctor saved")
+        } catch {
+            print("Saving Error:", error)
+        }
+    }
+
     func fetchDoctors() async {
         Task {
             do {
