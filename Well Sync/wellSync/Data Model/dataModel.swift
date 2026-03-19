@@ -35,7 +35,7 @@ import Foundation
 var UserDoctors: [Doctor] = [] // education table view controller
 
 
-struct Doctor: Codable {
+struct Doctor: Codable, Sendable {
     // Persisted/decoded properties
     var docID: UUID // generate if missing during decode
     let username: String?
@@ -150,7 +150,7 @@ struct Doctor: Codable {
 //        try container.encodeIfPresent(identityImageData, forKey: .identityImageData)
 //    }
 }
-struct Patient: Codable {
+struct Patient: Codable, Sendable {
     var patientID: UUID
     var docID: UUID
 

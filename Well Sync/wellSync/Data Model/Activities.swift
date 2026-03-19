@@ -36,12 +36,12 @@ import Foundation
 
 // MARK: - Enums
 
-enum ActivityType: String, Codable {
+enum ActivityType: String, Codable, Sendable {
     case timer   // patient runs a countdown timer and submits duration
     case upload  // patient uploads a photo or video as proof
 }
 
-enum AssignmentStatus: String, Codable {
+enum AssignmentStatus: String, Codable, Sendable {
     case active
     case completed
     case cancelled
@@ -51,7 +51,7 @@ enum AssignmentStatus: String, Codable {
 // The master definition of an activity (like a library/catalog entry).
 // Created and owned by a doctor. Reusable across multiple patients.
 
-struct Activity: Codable {
+struct Activity: Codable, Sendable {
     let activityID: UUID
     let doctorID: UUID
     let name: String
@@ -64,7 +64,7 @@ struct Activity: Codable {
 // When a doctor assigns an Activity to a specific patient.
 // This is what drives both the patient dashboard and the doctor view.
 
-struct AssignedActivity: Codable {
+struct AssignedActivity: Codable, Sendable {
     let assignedID: UUID
     let activityID: UUID          // references Activity
     let patientID: UUID
@@ -88,7 +88,7 @@ struct AssignedActivity: Codable {
 // One entry every time a patient completes a single session of an assigned activity.
 // This is the source of truth for completion tracking.
 
-struct ActivityLog: Codable {
+struct ActivityLog: Codable, Sendable {
     let logID: UUID
     let assignedID: UUID          // references AssignedActivity
     let activityID: UUID          // references Activity (for quick lookup)

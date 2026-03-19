@@ -7,13 +7,13 @@
 
 import Foundation
 
-struct moodLogFeelings: Codable{
+struct moodLogFeelings: Codable, Sendable {
     let id:UUID
     let logId:UUID
     let feelingId:UUID
 }
 
-struct MoodLog: Codable{
+struct MoodLog: Codable, Sendable {
     var logId: UUID?
     var patientId: UUID?
     var mood: Int
@@ -22,13 +22,13 @@ struct MoodLog: Codable{
     var selectedFeeling: [Feeling]?
 }
 
-struct Feeling: Codable{
+struct Feeling: Codable, Sendable {
     var feelingId: UUID
     var moodLevel: MoodLevel
     var name: String
 }
 
-enum MoodLevel: Int, Codable {
+enum MoodLevel: Int, Codable, Sendable {
     case verySad 
     case sad
     case neutral

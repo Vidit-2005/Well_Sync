@@ -15,7 +15,7 @@ import Foundation
 //    let image:[String]?
 //    let voice:[String]?
 //}
-struct SessionNote: Codable {
+struct SessionNote: Codable, Sendable {
     let sessionId: UUID?
     let patientId: UUID?
     let date: Date
