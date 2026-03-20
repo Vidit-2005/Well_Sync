@@ -18,44 +18,44 @@ func historyMockData() -> CaseHistory {
 
         Timeline(
             caseID: caseId,
-            title: "Initial Consultation",
+            title: "Intake Assessment",
             date: formatter.date(from: "2026-01-10")!,
-            Description: "Patient visited hospital with fever and fatigue."
+            Description: "Initial screening. Patient reports persistent anxiety and disrupted sleep patterns."
         ),
 
         Timeline(
             caseID: caseId,
-            title: "Blood Test Ordered",
-            date: formatter.date(from: "2026-01-11")!,
-            Description: "Doctor ordered a complete blood test."
+            title: "PHQ-9 & GAD-7 Testing",
+            date: formatter.date(from: "2026-01-17")!,
+            Description: "Administered standardized depression and anxiety scales to establish a baseline."
         ),
 
         Timeline(
             caseID: caseId,
-            title: "Blood Test Result",
-            date: formatter.date(from: "2026-01-12")!,
-            Description: "Lab results confirmed mild infection."
+            title: "Diagnostic Formulation",
+            date: formatter.date(from: "2026-01-24")!,
+            Description: "Assessment results suggest Generalized Anxiety Disorder (GAD). Established treatment goals."
         ),
 
         Timeline(
             caseID: caseId,
             title: "Medication Prescribed",
-            date: formatter.date(from: "2026-01-12")!,
+            date: formatter.date(from: "2026-01-31")!,
             Description: "Antibiotics prescribed for 7 days."
         ),
 
         Timeline(
             caseID: caseId,
-            title: "Follow Up Visit",
-            date: formatter.date(from: "2026-01-18")!,
-            Description: "Patient showing improvement."
+            title: "CBT Protocol Initiated",
+            date: formatter.date(from: "2026-02-08")!,
+            Description: "Started Cognitive Behavioral Therapy. Focus on identifying maladaptive thought patterns."
         ),
 
         Timeline(
             caseID: caseId,
-            title: "Recovery Confirmed",
-            date: formatter.date(from: "2026-01-25")!,
-            Description: "Patient fully recovered."
+            title: "Progress Review",
+            date: formatter.date(from: "2026-02-22")!,
+            Description: "Significant reduction in symptoms. Moving to bi-weekly sessions for relapse prevention."
         )
     ]
 
@@ -63,23 +63,23 @@ func historyMockData() -> CaseHistory {
 
         Report(
             caseId: caseId,
-            title: "Blood Test Report",
+            title: "Psychological Evaluation",
             date: formatter.date(from: "2026-01-12")!,
-            reportPath: ["blood_test.pdf"]
+            reportPath: ["initial_assessment_report.pdf"]
         ),
 
         Report(
             caseId: caseId,
-            title: "Prescription",
-            date: formatter.date(from: "2026-01-12")!,
-            reportPath: ["prescription.pdf"]
-        ),
-
-        Report(
-            caseId: caseId,
-            title: "Follow Up Report",
+            title: "Standardized Test Scores",
             date: formatter.date(from: "2026-01-18")!,
-            reportPath: ["followup.pdf"]
+            reportPath: ["phq9_gad7_results.pdf"]
+        ),
+
+        Report(
+            caseId: caseId,
+            title: "Treatment Plan",
+            date: formatter.date(from: "2026-02-08")!,
+            reportPath: ["cbt_treatment_strategy.pdf"]
         )
     ]
 

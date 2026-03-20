@@ -7,6 +7,7 @@
 
 import UIKit
 import UniformTypeIdentifiers
+import QuickLook
 
 class CaseHistoryViewController: UIViewController {
     @IBOutlet weak var CaseHistoryCollectionView: UICollectionView!
@@ -16,6 +17,8 @@ class CaseHistoryViewController: UIViewController {
     var reports: [Report] = []
     var selectedImage: UIImage?
     var selectedURL: URL?
+    var generatedReportURl: URL?
+    var patient: Patient!
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -229,5 +232,38 @@ extension CaseHistoryViewController: UIImagePickerControllerDelegate, UINavigati
         alert.addAction(nameAction)
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         present(alert, animated: true)
+    }
+}
+
+extension CaseHistoryViewController: QLPreviewControllerDataSource{
+    func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+        return 1
+    }
+    
+    func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+        guard let url = generatedReportURl else{
+            return URL(fileURLWithPath: "") as QLPreviewItem
+        }
+        return url as QLPreviewItem
+    }
+    
+    @IBAction func downLoadButtonTapped(_ sender: Any) {
+//        guard let currentPatient = self.patient else {
+//                print("Error: Patient data is missing")
+//                return
+//            }
+//            
+//            guard let currentHistory = self.caseHistory else {
+//                print("Error: Case History data is missing")
+//                return
+//            }
+      /*  if let url = ReportGenerator.createPDF(patient: currentPatient, history: currentHistory)*/
+        if let url = ReportGenerator.createPDF(history: caseHistory){
+            self.generatedReportURl = url
+            
+            let previewController = QLPreviewController()
+            previewController.dataSource = self
+            present(previewController, animated: true)
+        }
     }
 }
