@@ -1211,71 +1211,71 @@ let patientP1 = UUID(uuidString: "00000000-0000-0000-0000-000000000008")!
 let patientP2 = UUID(uuidString: "00000000-0000-0000-0000-000000000004")!
 let patientP3 = UUID(uuidString: "00000000-0000-0000-0000-000000000002")!
 
-var activityCatalog: [Activity] = [
-
-    Activity(
-        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000001")!,
-        doctorID: docID,
-        name: "Morning Walk",
-        type: .timer,
-        iconName: "figure.walk",
-        description: "A brisk 20-minute morning walk to improve cardiovascular fitness and blood pressure control."
-    ),
-
-    Activity(
-        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000002")!,
-        doctorID: docID,
-        name: "Breathing Exercise",
-        type: .timer,
-        iconName: "lungs.fill",
-        description: "Diaphragmatic breathing exercise to reduce anxiety and improve lung capacity. Inhale 4s, hold 4s, exhale 6s."
-    ),
-
-    Activity(
-        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000003")!,
-        doctorID: docID,
-        name: "Journaling",
-        type: .upload,
-        iconName: "book.pages",
-        description: "Upload handwritten journals."
-    ),
-
-    Activity(
-        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000004")!,
-        doctorID: docID,
-        name: "Art",
-        type: .upload,
-        iconName: "paintpalette",
-        description: "Create mandala art with your imagination."
-    ),
-
-    Activity(
-        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000005")!,
-        doctorID: docID,
-        name: "Yoga",
-        type: .timer,
-        iconName: "figure.yoga",
-        description: "Perform a guided yoga session to improve flexibility, balance, and mental clarity."
-    ),
-
-    Activity(
-        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000006")!,
-        doctorID: docID,
-        name: "Meditation",
-        type: .timer,
-        iconName: "brain.head.profile",
-        description: "Focused mindfulness meditation session to reduce stress and improve mental wellbeing."
-    ),
-
-    Activity(
-        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000007")!,
-        doctorID: docID,
-        name: "Exercise",
-        type: .timer,
-        iconName: "figure.strengthtraining.traditional",
-        description: "Perform the prescribed exercise routine as advised by your doctor."
-    ),
-]
+//var activityCatalog: [Activity] = [
+//
+//    Activity(
+//        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000001")!,
+//        doctorID: docID,
+//        name: "Morning Walk",
+//        type: .timer,
+//        iconName: "figure.walk",
+//        description: "A brisk 20-minute morning walk to improve cardiovascular fitness and blood pressure control."
+//    ),
+//
+//    Activity(
+//        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000002")!,
+//        doctorID: docID,
+//        name: "Breathing Exercise",
+//        type: .timer,
+//        iconName: "lungs.fill",
+//        description: "Diaphragmatic breathing exercise to reduce anxiety and improve lung capacity. Inhale 4s, hold 4s, exhale 6s."
+//    ),
+//
+//    Activity(
+//        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000003")!,
+//        doctorID: docID,
+//        name: "Journaling",
+//        type: .upload,
+//        iconName: "book.pages",
+//        description: "Upload handwritten journals."
+//    ),
+//
+//    Activity(
+//        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000004")!,
+//        doctorID: docID,
+//        name: "Art",
+//        type: .upload,
+//        iconName: "paintpalette",
+//        description: "Create mandala art with your imagination."
+//    ),
+//
+//    Activity(
+//        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000005")!,
+//        doctorID: docID,
+//        name: "Yoga",
+//        type: .timer,
+//        iconName: "figure.yoga",
+//        description: "Perform a guided yoga session to improve flexibility, balance, and mental clarity."
+//    ),
+//
+//    Activity(
+//        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000006")!,
+//        doctorID: docID,
+//        name: "Meditation",
+//        type: .timer,
+//        iconName: "brain.head.profile",
+//        description: "Focused mindfulness meditation session to reduce stress and improve mental wellbeing."
+//    ),
+//
+//    Activity(
+//        activityID: UUID(uuidString: "aaaa0000-0000-0000-0000-000000000007")!,
+//        doctorID: docID,
+//        name: "Exercise",
+//        type: .timer,
+//        iconName: "figure.strengthtraining.traditional",
+//        description: "Perform the prescribed exercise routine as advised by your doctor."
+//    ),
+//]
 
 var assignedActivities: [AssignedActivity] = [
 

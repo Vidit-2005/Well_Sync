@@ -25,13 +25,13 @@ struct Activity: Codable {
     let name: String
     let type: ActivityType
     let iconName: String
-    let description: String
+//    let description: String
     enum CodingKeys: String, CodingKey {
         case activityID = "activity_id"
         case doctorID = "doctor_id"
         case name, type
         case iconName = "icon_name"
-        case description
+//        case description
     }
 
 }

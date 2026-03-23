@@ -13,8 +13,6 @@ final class AccessSupabase {
 
     private init() {}
 
-    // MARK: - DOCTORS
-
     func saveDoctor(doctor: Doctor) async throws {
         let saved: Doctor = try await supabase
             .from("doctors")
@@ -71,8 +69,6 @@ final class AccessSupabase {
 //            .value
 //        return updated
 //    }
-
-    // MARK: - PATIENTS
 
     func savePatient(_ patients:Patient) async throws {
         let saved: Patient = try await supabase
@@ -153,6 +149,17 @@ final class AccessSupabase {
             .value
         return data
     }
+    func fetchActivity(byName name: String, doctorID: UUID) async throws -> Activity? {
+        let results: [Activity] = try await supabase
+            .from("activities")
+            .select()
+            .eq("doctor_id", value: doctorID.uuidString)
+            .ilike("name", value: name)   // case-insensitive match
+            .limit(1)
+            .execute()
+            .value
+        return results.first
+    }
     func fetchLogs(for patientID: UUID) async throws -> [ActivityLog] {
         let data: [ActivityLog] = try await supabase
             .from("activity_logs")
@@ -166,7 +173,6 @@ final class AccessSupabase {
     
     func saveMoodLog(_ log: MoodLog) async throws {
 
-        // 1️⃣ Save mood log first
         let savedLog: MoodLog = try await supabase
             .from("mood_logs")
             .insert(log)
@@ -178,8 +184,7 @@ final class AccessSupabase {
         guard let logID = savedLog.logId else {
             throw NSError(domain: "Missing logID", code: 0)
         }
-
-        // 2️⃣ Save feelings (join table)
+        
         if let feelings = log.selectedFeeling {
 
             let mappings: [MoodLogFeeling] = feelings.map {
@@ -389,36 +394,35 @@ final class AccessSupabase {
             return saved
         }
 
-        func saveTimeline(_ timeline: Timeline) async throws -> Timeline {
-            let saved: Timeline = try await supabase
-                .from("timelines")
-                .insert(timeline)
-                .select("*")
-                .single()
-                .execute()
-                .value
-            return saved
-        }
+    func saveTimeline(_ timeline: Timeline) async throws -> Timeline {
+        let saved: Timeline = try await supabase
+            .from("timelines")
+            .insert(timeline)
+            .select("*")
+            .single()
+            .execute()
+            .value
+        return saved
+    }
 
-        func saveReport(_ report: Report) async throws -> Report {
-            let saved: Report = try await supabase
-                .from("reports")
-                .insert(report)
-                .select("*")
-                .single()
-                .execute()
-                .value
-            return saved
-        }
+    func saveReport(_ report: Report) async throws -> Report {
+        let saved: Report = try await supabase
+            .from("reports")
+            .insert(report)
+            .select("*")
+            .single()
+            .execute()
+            .value
+        return saved
+    }
 
-        func saveCompleteCaseHistory(
-            patientId: UUID,
-            timelines: [Timeline],
-            reports: [Report]
-        ) async throws {
-            let caseHistory = try await saveCaseHistory(patientId)
-            let caseID = caseHistory.caseId
-
+    func saveCompleteCaseHistory(
+        patientId: UUID,
+        timelines: [Timeline],
+        reports: [Report]
+    ) async throws {
+        let caseHistory = try await saveCaseHistory(patientId)
+        let caseID = caseHistory.caseId
             if !timelines.isEmpty {
                 let items = timelines.map {
                     Timeline(

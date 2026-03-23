@@ -104,59 +104,58 @@ class AddActivityTableViewController: UITableViewController {
         typeButton.showsMenuAsPrimaryAction = true
         
         
+    }
+
+    func toggleCustomRows(show: Bool) {
+
+        guard show != isCustomSelected else { return }
+
+        isCustomSelected = show
+
+        let indexPaths = [
+            IndexPath(row: 1, section: 0),
+            IndexPath(row: 2, section: 0)
+        ]
+
+        tableView.beginUpdates()
+        if isCustomSelected {
+            tableView.insertRows(at: indexPaths, with: .fade)
+        } else {
+            tableView.deleteRows(at: indexPaths, with: .fade)
         }
 
-        func toggleCustomRows(show: Bool) {
-
-            guard show != isCustomSelected else { return }
-
-            isCustomSelected = show
-
-            let indexPaths = [
-                IndexPath(row: 1, section: 0),
-                IndexPath(row: 2, section: 0)
-            ]
-
-            tableView.beginUpdates()
-
-            if isCustomSelected {
-                tableView.insertRows(at: indexPaths, with: .fade)
-            } else {
-                tableView.deleteRows(at: indexPaths, with: .fade)
-            }
-
-            tableView.endUpdates()
-        }
-        override func tableView(_ tableView: UITableView,
+        tableView.endUpdates()
+    }
+    override func tableView(_ tableView: UITableView,
                                 numberOfRowsInSection section: Int) -> Int {
 
-            if section == 0 {
-                return isCustomSelected ? 3 : 1
-            }
-
-            return super.tableView(tableView, numberOfRowsInSection: section)
+        if section == 0 {
+            return isCustomSelected ? 3 : 1
         }
 
+        return super.tableView(tableView, numberOfRowsInSection: section)
+    }
 
-        override func tableView(_ tableView: UITableView,
+
+    override func tableView(_ tableView: UITableView,
                                 cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-            if indexPath.section == 0 {
+        if indexPath.section == 0 {
 
-                switch indexPath.row {
-                case 0:
-                    return activityCell
-                case 1:
-                    return nameCell
-                case 2:
-                    return typeCell
-                default:
-                    break
-                }
+            switch indexPath.row {
+            case 0:
+                return activityCell
+            case 1:
+                return nameCell
+            case 2:
+                return typeCell
+            default:
+                break
             }
-
-            return super.tableView(tableView, cellForRowAt: indexPath)
         }
+
+        return super.tableView(tableView, cellForRowAt: indexPath)
+    }
     
     
 //    @IBAction func saveTapped(_ sender: UIBarButtonItem) {
@@ -282,30 +281,34 @@ class AddActivityTableViewController: UITableViewController {
                         showAlert("Please select a type")
                         return
                     }
-                    if let existing = activityCatalog.first(where: {
-                        $0.name.lowercased() == customName.lowercased()}) {
-                        savedActivity = existing
-                    } else {
-                        let newActivity = Activity(
-                            activityID: UUID(),
-                            doctorID: patient!.docID,
-                            name: customName,
-                            type: type,
-                            iconName: "sparkles",
-                            description: doctorNote.text ?? ""
-                        )
-                        savedActivity = try await AccessSupabase.shared.saveActivity(newActivity)
+//                    if let existing = activityCatalog.first(where: {
+//                        $0.name.lowercased() == customName.lowercased()}) {
+//                        savedActivity = existing
+//                    }
+                    let newActivity = Activity(
+                        activityID: UUID(),
+                        doctorID: patient!.docID,
+                        name: customName,
+                        type: type,
+                        iconName: "sparkles"
+                    )
+                    savedActivity = try await AccessSupabase.shared.saveActivity(newActivity)
 //                        activityCatalog.append(savedActivity)
-                    }
-
-                } else {
-                    guard let found = activityCatalog.first(where: {
-                        $0.name.lowercased() == selectedName.lowercased()
-                    }) else {
-                        showAlert("Activity not found in catalog.")
+                }
+                else {
+                    guard !selectedName.isEmpty, selectedName != "Select" else {
+                        showAlert("Please select an activity.")
                         return
                     }
-                    savedActivity = found
+                    if let existing = try await AccessSupabase.shared.fetchActivity(
+                        byName: selectedName,
+                        doctorID: patient!.docID
+                    ) {
+                        savedActivity = existing
+                    } else {
+                        showAlert("Activity not found.")
+                        return
+                    }
                 }
                 guard let frequency = resolveFrequency() else {
                     showAlert("Please select a frequency.")
