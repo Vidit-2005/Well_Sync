@@ -141,10 +141,42 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: UICollectionViewCell
         
-        if indexPath.row == 0{
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "streakCell", for: indexPath)
+//        if indexPath.row == 0 {
+//            let cell = collectionView.dequeueReusableCell(
+//                withReuseIdentifier: "streakCell",
+//                for: indexPath
+//            ) as! StreakCell                           // ✅ cast to StreakCell
+//
+//            // ✅ Build this week's logged dates from your activity logs
+//            let cal = Calendar.current
+//            let thisWeeksLogs: [Date] = toDoItems
+//                .flatMap { $0.logs }
+//                .filter { cal.isDate($0.date, equalTo: Date(), toGranularity: .weekOfYear) }
+//                .map { $0.date }
+//
+////            cell.configure(streakCount: 7, loggedDates: thisWeeksLogs)  // ✅ actually calls configure
+//            return cell                                // ✅ early return
+//        }
+        if indexPath.row == 0 {
+
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: "streakCell",
+                for: indexPath
+            ) as! StreakCell
+
+            let cal = Calendar.current
+
+            let thisWeeksLogs: [Date] = toDoItems
+                .flatMap { $0.logs }
+                .map { $0.date }
+                .filter {
+                    cal.isDate($0, equalTo: Date(), toGranularity: .weekOfYear)
+                }
+
+//            cell.loggedDates = thisWeeksLogs
+
+            return cell
         }
-        
         else if indexPath.row == 1 {
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: "activityRing",
@@ -166,8 +198,19 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "moodCount", for: indexPath)
         }
         
-        else if indexPath.row == 3{
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "nextSession", for: indexPath)
+        else if indexPath.row == 3 {
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: "nextSession",
+                for: indexPath
+            ) as! NextSessionCell
+
+            var comps        = DateComponents()
+            comps.year       = 2026; comps.month = 3; comps.day = 26
+            comps.hour       = 14;   comps.minute = 0
+            let sessionDate  = Calendar.current.date(from: comps) ?? Date()
+
+            cell.configure(doctorName: "Dr. Meena Kumari", sessionDate: sessionDate)
+            return cell
         }
         
         else if indexPath.row == 4 {
@@ -217,9 +260,9 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
             let halfWidth = (fullWidth - interItemSpacing) / 2
 
             switch indexPath.row {
-            case 0:       return CGSize(width: fullWidth, height: 116)
+            case 0:       return CGSize(width: fullWidth, height: 230)
             case 1, 2:    return CGSize(width: halfWidth, height: 150)
-            case 3:       return CGSize(width: fullWidth, height: 110)
+            case 3:       return CGSize(width: fullWidth, height: 122)
             case 4:       return CGSize(width: fullWidth, height: 200)
             case 5:       return CGSize(width: fullWidth, height: 30)
             default:      return CGSize(width: fullWidth, height: 70)
