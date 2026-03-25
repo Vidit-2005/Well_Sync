@@ -15,9 +15,12 @@ class TodayTableViewCell: UITableViewCell {
     @IBOutlet weak var subtitleLabel: UILabel!
     @IBOutlet weak var iconImageView: UIImageView!
     @IBOutlet weak var subtitleBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var addPhotoButton: UIButton! 
     
+    var onPhotoSourceSelected: ((UIImagePickerController.SourceType) -> Void)?
     override func awakeFromNib() {
         super.awakeFromNib()
+        setupPhotoMenu()
         setupCard()
     }
 
@@ -31,6 +34,23 @@ class TodayTableViewCell: UITableViewCell {
         cardView.layer.shadowOffset  = CGSize(width: 0, height: 0)
         cardView.layer.shadowRadius  = 8
         cardView.layer.masksToBounds = false
+    }
+    
+    func setupPhotoMenu() {
+
+        let camera = UIAction(title: "Camera",
+                            image: UIImage(systemName: "camera")) { [weak self] _ in
+            self?.onPhotoSourceSelected?(.camera)
+        }
+
+        let photoLibrary = UIAction(title: "Photo Library",
+                            image: UIImage(systemName: "photo")) { [weak self] _ in
+            self?.onPhotoSourceSelected?(.photoLibrary)
+        }
+
+        let menu = UIMenu(title: "", children: [camera, photoLibrary])
+        addPhotoButton.menu = menu
+        addPhotoButton.showsMenuAsPrimaryAction = true
     }
     
 
@@ -58,6 +78,18 @@ class TodayTableViewCell: UITableViewCell {
 //        checkmarkView.isHidden   = true
         subtitleBottomConstraint.constant = 8
     }
+//    @IBAction func uploadTapped(_ sender: Any) {
+//        let alert = UIAlertController(title: "Add Photo", message: "choose an Option", preferredStyle: .actionSheet)
+//        
+//        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+//            alert.addAction(UIAlertAction(title: "Camera", style: .default) {_ in self.openImagePicker(sourceType: .camera)})
+//        }
+//        
+//        alert.addAction(UIAlertAction(title: "Photo Library", style: .default) {_ in
+//            self.openImagePicker(sourceType: .photoLibrary)})
+//        present(alert, animated: true)
+//    }
+    
 }
 
 

@@ -1,20 +1,22 @@
-////
-////  ActivityTableViewController.swift
-////  patientSide
-////
-////  Created by Rishika Mittal on 27/01/26.
-////
+//
+//  ActivityTableViewController.swift
+//  patientSide
+//
+//  Created by Rishika Mittal on 27/01/26.
+//
 //
 
 import UIKit
+import PhotosUI
 
-class ActivityTableViewController: UITableViewController {
+class ActivityTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, PHPickerViewControllerDelegate {
 
     var todayItems:   [TodayActivityItem] = []
     var logSummaries: [LogSummaryItem]    = []
     var patient:      Patient?
+    var uploads: [UIImage] = []
+    var selectedItem: TodayActivityItem?
 
-    let currentPatientID = UUID(uuidString: "00000000-0000-0000-0000-000000000002")!
     let sectionTitles    = ["Today", "Logs"]
 
     override func viewDidLoad() {
@@ -68,6 +70,14 @@ class ActivityTableViewController: UITableViewController {
 
         if indexPath.section == 0 {
             cell.configure(with: todayItems[indexPath.row])
+            cell.onPhotoSourceSelected = { [weak self] sourceType in
+                
+                self?.selectedItem = self?.todayItems[indexPath.row]
+                self?.uploads = []
+                print("DEBUG 1 — selectedItem:", self?.selectedItem?.activity.name ?? "NIL")
+                print("DEBUG 1 — patient:", self?.patient?.patientID.uuidString ?? "NIL")
+                self?.openImagePicker(sourceType: sourceType)
+            }
         } else {
             let summary = logSummaries[indexPath.row]
             cell.configureAsLog(
@@ -124,5 +134,137 @@ class ActivityTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView,
                             heightForHeaderInSection section: Int) -> CGFloat {
         return 60
+    }
+    func openImagePicker(sourceType: UIImagePickerController.SourceType) {
+        
+        if sourceType == .camera {
+            // Camera still uses UIImagePickerController (PHPicker doesn't support camera)
+            let picker           = UIImagePickerController()
+            picker.delegate      = self
+            picker.sourceType    = .camera
+            picker.allowsEditing = true
+            present(picker, animated: true)
+
+        } else {
+            // Photo Library uses PHPickerViewController for multi-select
+            var config           = PHPickerConfiguration()
+            config.selectionLimit = 5   // ← set 0 for unlimited, or any number you want
+            config.filter        = .images
+
+            let picker           = PHPickerViewController(configuration: config)
+            picker.delegate      = self
+            present(picker, animated: true)
+        }
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController,
+                                   didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+
+        if let editedImage = info[.editedImage] as? UIImage {
+            uploads.append(editedImage)
+        } else if let originalImage = info[.originalImage] as? UIImage {
+            uploads.append(originalImage)
+        }
+
+        dismiss(animated: true){
+            self.saveActivityLog()
+            print("DEBUG 2 — uploads count:", self.uploads.count)
+        }
+    }
+    func picker(_ picker: PHPickerViewController,
+                didFinishPicking results: [PHPickerResult]) {
+
+        picker.dismiss(animated: true)
+        guard !results.isEmpty else { return }
+
+        let total   = results.count   // how many images to wait for
+        var loaded  = 0               // how many have finished loading
+
+        for result in results {
+            result.itemProvider.loadObject(ofClass: UIImage.self) { object, error in
+                DispatchQueue.main.async {
+
+                    if let image = object as? UIImage {
+                        self.uploads.append(image)
+                        print("Got image:", image.size)
+                    }
+
+                    loaded += 1
+
+                    // Only call saveActivityLog when ALL images are done
+                    if loaded == total {
+                        self.saveActivityLog()
+                    }
+                }
+            }
+        }
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true)
+    }
+    private func saveActivityLog() {
+        print("DEBUG 4 — saveActivityLog called")
+        print("DEBUG 4 — selectedItem:", selectedItem?.activity.name ?? "NIL")
+        print("DEBUG 4 — patient:", patient?.patientID.uuidString ?? "NIL")
+        print("DEBUG 4 — uploads count:", uploads.count)
+        guard let item    = selectedItem,
+              let patient = patient else {
+            print("saveActivityLog: missing item or patient")
+            return
+        }
+
+        guard !uploads.isEmpty else {
+            print("saveActivityLog: no images to upload")
+            return
+        }
+
+        Task {
+            do {
+                var uploadedPaths: [String] = []
+                for image in uploads {
+                    let path = try await AccessSupabase.shared.uploadActivityImage(image)
+                    uploadedPaths.append(path)
+                    print("Uploaded:", path)
+                }
+
+                // Step 2: Format current time
+                let formatter        = DateFormatter()
+                formatter.dateFormat = "HH:mm:ss"
+                let timeString       = formatter.string(from: Date())
+
+                // Step 3: Build ActivityLog
+                let log = ActivityLog(
+                    logID:      UUID(),
+                    assignedID: item.assignment.assignedID,
+                    activityID: item.activity.activityID,
+                    patientID:  patient.patientID,
+                    date:       Date(),
+                    time:       timeString,
+                    duration:   nil,
+                    uploadPath: uploadedPaths.joined(separator: ",")
+                )
+
+                let saved = try await AccessSupabase.shared.saveActivityLog(log)
+                print("ActivityLog saved:", saved.logID)
+
+                // Step 5: Reset and reload
+                DispatchQueue.main.async {
+                    self.uploads      = []
+                    self.selectedItem = nil
+                    self.loadData()
+                }
+
+            } catch {
+                print("saveActivityLog error:", error)
+                DispatchQueue.main.async {
+                    let alert = UIAlertController(title: "Upload Failed",
+                                                  message: "\(error)",
+                                                  preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(alert, animated: true)
+                }
+            }
+        }
     }
 }

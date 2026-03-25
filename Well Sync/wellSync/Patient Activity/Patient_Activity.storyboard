@@ -50,34 +50,32 @@
                                                     <color key="textColor" systemColor="systemBlueColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chevron.right" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="coo-FY-17j">
-                                                    <rect key="frame" x="342" y="39.666666666666664" width="15" height="11.333333333333336"/>
-                                                    <color key="tintColor" systemColor="secondaryLabelColor"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="15" id="ETK-FO-SYp"/>
-                                                        <constraint firstAttribute="height" constant="15" id="PpB-2B-vl2"/>
-                                                    </constraints>
-                                                </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="0/0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cd2-zx-blG">
                                                     <rect key="frame" x="84" y="44" width="25.333333333333329" height="21"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                     <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zgd-yZ-ctC">
+                                                    <rect key="frame" x="333" y="17" width="24" height="24"/>
+                                                    <color key="tintColor" systemColor="secondaryLabelColor"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <buttonConfiguration key="configuration" style="plain" image="square.and.arrow.up" catalog="system" buttonSize="small"/>
+                                                </button>
                                             </subviews>
                                             <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                             <constraints>
                                                 <constraint firstItem="cd2-zx-blG" firstAttribute="leading" secondItem="UMa-eB-W2z" secondAttribute="trailing" constant="8" id="9UY-MS-9xb"/>
                                                 <constraint firstItem="bQH-JI-l22" firstAttribute="bottom" secondItem="dac-it-3jt" secondAttribute="bottomMargin" constant="-8" id="AUQ-zT-rLS"/>
-                                                <constraint firstItem="coo-FY-17j" firstAttribute="centerY" secondItem="dac-it-3jt" secondAttribute="centerY" id="Bbq-9B-ZdQ"/>
                                                 <constraint firstItem="5Bn-5H-M4k" firstAttribute="leading" secondItem="UMa-eB-W2z" secondAttribute="trailing" constant="8" id="JDO-vP-daI"/>
                                                 <constraint firstItem="bQH-JI-l22" firstAttribute="leading" secondItem="UMa-eB-W2z" secondAttribute="trailing" constant="8" id="NNu-Lm-iPa"/>
-                                                <constraint firstAttribute="trailing" secondItem="coo-FY-17j" secondAttribute="trailing" constant="12" id="R3Z-94-jdx"/>
+                                                <constraint firstAttribute="trailing" secondItem="Zgd-yZ-ctC" secondAttribute="trailing" constant="12" id="arB-ny-pAo"/>
                                                 <constraint firstItem="5Bn-5H-M4k" firstAttribute="top" secondItem="dac-it-3jt" secondAttribute="top" constant="16" id="eol-pw-oQb"/>
                                                 <constraint firstAttribute="trailing" secondItem="bQH-JI-l22" secondAttribute="trailing" constant="24" id="klu-1F-1PV"/>
                                                 <constraint firstItem="UMa-eB-W2z" firstAttribute="leading" secondItem="dac-it-3jt" secondAttribute="leading" constant="16" id="lw7-Jw-yN2"/>
                                                 <constraint firstItem="bQH-JI-l22" firstAttribute="top" secondItem="cd2-zx-blG" secondAttribute="bottom" constant="4" id="vGC-Md-5iO"/>
                                                 <constraint firstItem="cd2-zx-blG" firstAttribute="top" secondItem="5Bn-5H-M4k" secondAttribute="bottom" constant="4" id="vRh-CN-hZ0"/>
+                                                <constraint firstItem="Zgd-yZ-ctC" firstAttribute="centerY" secondItem="5Bn-5H-M4k" secondAttribute="centerY" id="xUh-LX-Uuq"/>
                                                 <constraint firstItem="UMa-eB-W2z" firstAttribute="centerY" secondItem="dac-it-3jt" secondAttribute="centerY" id="y5u-ya-nj2"/>
                                             </constraints>
                                             <userDefinedRuntimeAttributes>
@@ -102,6 +100,7 @@
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
+                                    <outlet property="addPhotoButton" destination="Zgd-yZ-ctC" id="1SW-CK-Nzq"/>
                                     <outlet property="cardView" destination="dac-it-3jt" id="nDi-ku-6Ca"/>
                                     <outlet property="dateLabel" destination="cd2-zx-blG" id="7DR-Eg-Ugw"/>
                                     <outlet property="iconImageView" destination="UMa-eB-W2z" id="agM-fq-BYR"/>
@@ -145,8 +144,8 @@
     </scenes>
     <resources>
         <image name="book" catalog="system" width="128" height="99"/>
-        <image name="chevron.right" catalog="system" width="97" height="128"/>
         <image name="list.bullet.clipboard" catalog="system" width="98" height="128"/>
+        <image name="square.and.arrow.up" catalog="system" width="110" height="128"/>
         <systemColor name="scrollViewTexturedBackgroundColor">
             <color red="0.43529411764705883" green="0.44313725490196076" blue="0.47450980392156861" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

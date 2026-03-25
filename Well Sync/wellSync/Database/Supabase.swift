@@ -612,29 +612,51 @@ final class AccessSupabase {
     }
     private let bucketName = "Patient_profile"
     func uploadProfileImage(_ image: UIImage, folder: String = "patients") async throws -> String {
-            guard let data = image.jpegData(compressionQuality: 0.8) else {
-                throw NSError(domain: "ImageError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Could not convert image to JPEG data"])
-            }
-
-            let fileName = "\(UUID().uuidString).jpg"
-            let path = "\(folder)/\(fileName)"
-
-            try await supabase.storage
-                .from(bucketName)
-                .upload(
-                    path: path,
-                    file: data,
-                    options: FileOptions(
-                        cacheControl: "3600",
-                        contentType: "image/jpeg",
-                        upsert: false
-                    )
-                )
-
-            return path
+        guard let data = image.jpegData(compressionQuality: 0.8) else {
+            throw NSError(domain: "ImageError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Could not convert image to JPEG data"])
         }
 
-        func getPublicImageURL(path: String) throws -> URL {
+        let fileName = "\(UUID().uuidString).jpg"
+        let path = "\(folder)/\(fileName)"
+        try await supabase.storage
+            .from(bucketName)
+            .upload(
+                path: path,
+                file: data,
+                options: FileOptions(
+                    cacheControl: "3600",
+                    contentType: "image/jpeg",
+                    upsert: false
+                )
+            )
+        return path
+    }
+
+    func uploadActivityImage(_ image: UIImage, folder: String = "activity_logs") async throws -> String {
+        guard let data = image.jpegData(compressionQuality: 0.8) else {
+            throw NSError(domain: "ImageError", code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "Could not convert image to JPEG"])
+        }
+
+        let fileName = "\(UUID().uuidString).jpg"
+        let path     = "\(folder)/\(fileName)"
+
+        try await supabase.storage
+            .from(bucketName)
+            .upload(
+                path: path,
+                file: data,
+                options: FileOptions(
+                    cacheControl: "3600",
+                    contentType: "image/jpeg",
+                    upsert: false
+                )
+            )
+
+        return path
+    }
+
+    func getPublicImageURL(path: String) throws -> URL {
             try supabase.storage
                 .from(bucketName)
                 .getPublicURL(path: path)
