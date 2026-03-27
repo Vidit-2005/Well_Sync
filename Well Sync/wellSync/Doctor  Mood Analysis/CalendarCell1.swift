@@ -248,55 +248,6 @@ class CalendarCell1: UICollectionViewCell,
 //        return mood == 3 ? UIColor.label : .white
 //    }
 
-    // MARK: - FSCalendarDelegateAppearance
-
-    func calendar(_ calendar: FSCalendar,
-                  appearance: FSCalendarAppearance,
-                  fillDefaultColorFor date: Date) -> UIColor? {
-        let key = dateFormatter.string(from: date)
-        guard let mood = dominantMoodByDay[key] else { return nil }
-        return moodColor(for: mood).withAlphaComponent(0.35)
-    }
-
-    func calendar(_ calendar: FSCalendar,
-                  appearance: FSCalendarAppearance,
-                  titleDefaultColorFor date: Date) -> UIColor? {
-        let key = dateFormatter.string(from: date)
-        guard let mood = dominantMoodByDay[key] else { return nil }
-        return UIColor.label
-    }
-
-    func calendar(_ calendar: FSCalendar,
-                  appearance: FSCalendarAppearance,
-                  fillTodayColorFor date: Date) -> UIColor? {
-        let key = dateFormatter.string(from: date)
-        if let mood = dominantMoodByDay[key] {
-            return moodColor(for: mood).withAlphaComponent(0.35)
-        }
-        return UIColor.systemIndigo.withAlphaComponent(0.15)
-    }
-
-//    func calendar(_ calendar: FSCalendar,
-//                  appearance: FSCalendarAppearance,
-//                  titleTodayColorFor date: Date) -> UIColor? {
-//        let key = dateFormatter.string(from: date)
-//        if let mood = dominantMoodByDay[key] {
-//            return titleColor(for: mood)
-//        }
-//        return UIColor.systemIndigo
-//    }
-
-    func calendar(_ calendar: FSCalendar,
-                  appearance: FSCalendarAppearance,
-                  fillSelectionColorFor date: Date) -> UIColor? {
-        let key = dateFormatter.string(from: date)
-        if let mood = dominantMoodByDay[key] {
-            return moodColor(for: mood).withAlphaComponent(0.35)
-        }
-        return UIColor.systemIndigo.withAlphaComponent(0.7)
-    }
-
-
     // MARK: - Scope Helpers
 
     func setupForWeek() {

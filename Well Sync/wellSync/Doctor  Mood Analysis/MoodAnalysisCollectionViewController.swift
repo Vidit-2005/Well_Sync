@@ -109,7 +109,7 @@ class MoodAnalysisCollectionViewController: UICollectionViewController {
 //            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "count_cell", for: indexPath) as! MoodCountCollectionViewCell
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "count_cell", for: indexPath) as! MoodDistributionCollectionViewCell
             style(cell)
-//            cell.moodLogs = weeklyMoodLog
+            cell.configure(moodLogs: weeklyMoodLog)
             return cell
 
         case 3:
@@ -225,6 +225,9 @@ class MoodAnalysisCollectionViewController: UICollectionViewController {
                 countCell.moodLogs = monthlyMoodLogs
             }
         }
+        if let countCell = collectionView.cellForItem(at: IndexPath(item: 0, section: 2)) as? MoodDistributionCollectionViewCell {
+                countCell.configure(moodLogs: selectedSegmentIndex == 0 ? weeklyMoodLog : monthlyMoodLogs)
+            }
     }
 }
 

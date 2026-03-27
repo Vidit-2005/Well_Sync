@@ -201,7 +201,8 @@ class MoodChartCollectionViewCell: UICollectionViewCell, ChartViewDelegate {
             let n = pairs.count
             for (idx, (value, log)) in pairs.enumerated() {
                 let t: Double   = n == 1 ? 0.5 : Double(idx) / Double(n - 1)
-                let x           = Double(dayIndex) - 0.1 + 0.2 * t
+//                let x           = Double(dayIndex) - 0.1 + 0.2 * t
+                let x = Double(dayIndex) - 0.175 + 0.35 * t
                 let entry       = ChartDataEntry(x: x, y: value)
                 entries.append((entry, log))
             }

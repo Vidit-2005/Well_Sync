@@ -25,12 +25,14 @@
                             <constraint firstAttribute="height" constant="70" id="tdU-o1-BrJ"/>
                         </constraints>
                     </imageView>
+                    <!-- subtitleLabel: "Upload date & time" (Subhead) -->
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Upload date &amp; time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xdd-c4-WMO">
                         <rect key="frame" x="102" y="52.666666666666664" width="132" height="17.999999999999993"/>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <!-- titleLabel: "Image/Recording title" (Headline) -->
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Image/Recording title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lSx-YR-YK3">
                         <rect key="frame" x="102" y="23.666666666666671" width="170" height="21"/>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
@@ -55,6 +57,11 @@
                     <integer key="value" value="20"/>
                 </userDefinedRuntimeAttribute>
             </userDefinedRuntimeAttributes>
+            <!-- OUTLETS: titleLabel → lSx-YR-YK3, subtitleLabel → xdd-c4-WMO -->
+            <connections>
+                <outlet property="titleLabel"    destination="lSx-YR-YK3" id="Rk2-QW-mNp"/>
+                <outlet property="subtitleLabel" destination="xdd-c4-WMO" id="Tz9-XA-bVq"/>
+            </connections>
             <point key="canvasLocation" x="182" y="121"/>
         </collectionViewCell>
     </objects>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -176,24 +176,37 @@
                 <constraint firstItem="HPJ-uj-8ys" firstAttribute="centerY" secondItem="XF4-5W-HEb" secondAttribute="centerY" id="qz9-S9-nDg"/>
             </constraints>
             <size key="customSize" width="534" height="380"/>
+            <connections>
+                <outlet property="bad" destination="OWY-qA-dtG" id="wdv-Gq-qLo"/>
+                <outlet property="badLabel" destination="HPJ-uj-8ys" id="1Nx-xU-CDU"/>
+                <outlet property="happy" destination="abf-Xd-6pd" id="tcF-Z1-ohJ"/>
+                <outlet property="happyLabel" destination="BbN-FK-0er" id="wf1-Js-j8A"/>
+                <outlet property="neutral" destination="dPB-Bu-nJ5" id="6aF-7l-TOO"/>
+                <outlet property="neutralLabel" destination="qO8-2s-2Dr" id="md9-rj-Esy"/>
+                <outlet property="totalLabel" destination="fvA-w7-hD3" id="13C-Q1-Fxs"/>
+                <outlet property="veryBad" destination="0i6-qS-2RB" id="HwM-DF-gWF"/>
+                <outlet property="veryBadLabel" destination="QbM-BX-I5c" id="0Xq-Ss-HMZ"/>
+                <outlet property="veryHappy" destination="6qg-wm-N2m" id="waF-Pr-FN8"/>
+                <outlet property="veryHappyLabel" destination="tOA-xv-Klz" id="Ide-dQ-NHy"/>
+            </connections>
             <point key="canvasLocation" x="316.03053435114504" y="269.71830985915494"/>
         </collectionViewCell>
     </objects>
     <resources>
         <systemColor name="secondaryLabelColor">
-            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondarySystemBackgroundColor">
-            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGreenColor">
-            <color red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemOrangeColor">
-            <color red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.55294117647058827" blue="0.15686274509803921" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.2196078431372549" blue="0.23529411764705882" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemYellowColor">
             <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
