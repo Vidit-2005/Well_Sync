@@ -1361,29 +1361,6 @@ final class AccessSupabase {
         return path
     }
 
-    func getPublicImageURL(path: String) throws -> URL {
-            try supabase.storage
-                .from(bucketName)
-                .getPublicURL(path: path)
-        }
-
-        func getSignedImageURL(path: String, expiresIn: Int = 3600) async throws -> URL {
-            try await supabase.storage
-                .from(bucketName)
-                .createSignedURL(path: path, expiresIn: expiresIn)
-        }
-
-        func downloadImage(path: String) async throws -> UIImage {
-            let data = try await supabase.storage
-                .from(bucketName)
-                .download(path: path)
-
-            guard let image = UIImage(data: data) else {
-                throw NSError(domain: "ImageError", code: 2, userInfo: [NSLocalizedDescriptionKey: "Could not decode image data"])
-            }
-            return image
-        }
-    // MARK: - Fetch doctor by auth_id (called after login to load profile)
     func fetchDoctorByAuthID(_ authID: UUID) async throws -> Doctor {
         let doctor: Doctor = try await supabase
             .from("doctors")
