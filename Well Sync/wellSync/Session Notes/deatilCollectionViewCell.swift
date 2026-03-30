@@ -19,7 +19,7 @@ class deatilCollectionViewCell: UICollectionViewCell,AVAudioPlayerDelegate {
     override func awakeFromNib() {
         super.awakeFromNib()
         audioPlayer?.delegate = self
-        setupAudioPlayer()
+//        setupAudioPlayer()
     }
     func setupAudioPlayer() {
         guard let soundURL = Bundle.main.url(forResource: "test", withExtension: "mp3") else {
@@ -40,7 +40,21 @@ class deatilCollectionViewCell: UICollectionViewCell,AVAudioPlayerDelegate {
             print("Error initializing audio player: \(error.localizedDescription)")
         }
     }
-    
+    func configure(with url: URL) {
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.delegate = self
+            audioPlayer?.prepareToPlay()
+
+            let duration = audioPlayer?.duration ?? 0
+            totalTime.text = formatTime(duration)
+            playedTime.text = "00:00"
+            timeer.progress = 0
+
+        } catch {
+            print("❌ Audio load error:", error)
+        }
+    }
     func formatTime(_ time: TimeInterval) -> String {
         let minutes = Int(time) / 60
         let seconds = Int(time) % 60

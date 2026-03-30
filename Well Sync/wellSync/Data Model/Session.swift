@@ -19,10 +19,11 @@ struct SessionNote: Codable {
     let sessionId: UUID?
     let patientId: UUID?
     let date: Date
-    let notes: String
+    let notes: String?
     let images: [String]?
-    let voice: String?
+    let voice: [String]?
     let title: String
+    let appointmentId: UUID?
     enum CodingKeys: String, CodingKey {
         case sessionId = "session_id"
         case patientId = "patient_id"
@@ -31,6 +32,7 @@ struct SessionNote: Codable {
         case images
         case voice
         case title
+        case appointmentId = "appointment_id"
     }
 }
 

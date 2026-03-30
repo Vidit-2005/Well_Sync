@@ -89,20 +89,6 @@ final class SupabaseManager {
 }
 
 extension SupabaseManager {
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // MARK: - Image Upload
-    // ─────────────────────────────────────────────────────────────────────────
-
-    /// Compresses `image` to JPEG, uploads it to the `session-media` bucket
-    /// under `images/<uuid>.jpg`, and returns the resulting **storage path**
-    /// (e.g. "images/7F3A...jpg").
-    ///
-    /// Usage:
-    /// ```swift
-    /// let path = try await SupabaseManager.shared.uploadImage(selectedImage)
-    /// let publicURL = SupabaseManager.shared.publicURL(for: path)
-    /// ```
     func uploadImage(_ image: UIImage, compressionQuality: CGFloat = 0.8) async throws -> String {
         // 1. Convert UIImage → JPEG Data
         guard let imageData = image.jpegData(compressionQuality: compressionQuality) else {
@@ -124,19 +110,6 @@ extension SupabaseManager {
 
         return storagePath
     }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // MARK: - Audio Upload
-    // ─────────────────────────────────────────────────────────────────────────
-
-    /// Reads audio data from `localURL` (a file:// URL returned by
-    /// `UIDocumentPickerViewController`), uploads it to the `session-media`
-    /// bucket under `audio/<uuid>.<ext>`, and returns the storage path.
-    ///
-    /// The file must be accessible while this function runs.
-    /// For security-scoped resources (iCloud / Files app), the caller is
-    /// responsible for calling `startAccessingSecurityScopedResource()` before
-    /// and `stopAccessingSecurityScopedResource()` after this call.
     func uploadAudio(from localURL: URL) async throws -> String {
         // 1. Read the file into memory
         let audioData = try Data(contentsOf: localURL)
@@ -167,20 +140,10 @@ extension SupabaseManager {
         return storagePath
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // MARK: - Public URL Helper
-    // ─────────────────────────────────────────────────────────────────────────
-
-    /// Returns the public URL string for a given storage path.
-    /// Only works if the `session-media` bucket has public access enabled.
     func publicURL(for storagePath: String) -> String {
         let base = "https://qzcfmkjvenxbrndlgowp.supabase.co/storage/v1/object/public/session-media"
         return "\(base)/\(storagePath)"
     }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // MARK: - Errors
-    // ─────────────────────────────────────────────────────────────────────────
 
     enum UploadError: LocalizedError {
         case imageConversionFailed
@@ -191,5 +154,39 @@ extension SupabaseManager {
                 return "Failed to convert image to JPEG data."
             }
         }
+    }
+    func downloadAudioToLocal(from path: String) async throws -> URL {
+        let urlString = publicURL(for: path)
+
+        guard let url = URL(string: urlString) else {
+            throw URLError(.badURL)
+        }
+
+        let (data, _) = try await URLSession.shared.data(from: url)
+
+        let tempURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString + ".m4a")
+
+        try data.write(to: tempURL)
+
+        return tempURL
+    }
+    func downloadSessionImage(from path: String) async throws -> UIImage {
+        let urlString = publicURL(for: path)
+        
+        guard let url = URL(string: urlString) else {
+            throw URLError(.badURL)
+        }
+
+        let (data, _) = try await URLSession.shared.data(from: url)
+
+        guard let image = UIImage(data: data) else {
+            throw NSError(domain: "ImageDecodeError", code: 0)
+        }
+
+        return image
+    }
+    func getAudioURL(for path: String) -> URL? {
+        return URL(string: publicURL(for: path))
     }
 }

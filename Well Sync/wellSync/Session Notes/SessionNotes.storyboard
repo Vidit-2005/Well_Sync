@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="dbp-5i-3AU">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="dbp-5i-3AU">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -104,7 +104,7 @@
                     <navigationItem key="navigationItem" title="Session Notes" id="u4Y-by-1sx">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="zRj-3P-hLL">
                             <connections>
-                                <segue destination="Zph-02-Amv" kind="presentation" id="ePT-uE-EBu"/>
+                                <segue destination="Zph-02-Amv" kind="presentation" identifier="addSession" id="ePT-uE-EBu"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -198,16 +198,16 @@
                                             </connections>
                                         </button>
                                         <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="blp-fo-l14">
-                                            <rect key="frame" x="71.666666666666686" y="91.666666666666671" width="250" height="4"/>
+                                            <rect key="frame" x="86.666666666666686" y="91.666666666666671" width="220" height="4"/>
                                             <color key="tintColor" red="0.34509803919999998" green="0.33725490200000002" blue="0.83921568629999999" alpha="0.81541593310000005" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
-                                                <constraint firstAttribute="width" constant="250" id="xI6-6t-jMS"/>
+                                                <constraint firstAttribute="width" constant="220" id="xI6-6t-jMS"/>
                                             </constraints>
                                             <color key="progressTintColor" red="0.34509803919999998" green="0.33725490200000002" blue="0.83921568629999999" alpha="0.81541593310000005" colorSpace="custom" customColorSpace="sRGB"/>
                                         </progressView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="01:00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="83l-gf-CkV">
-                                            <rect key="frame" x="15.999999999999996" y="83" width="48.666666666666657" height="21.333333333333329"/>
-                                            <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="01:00" textAlignment="center" lineBreakMode="clip" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="83l-gf-CkV">
+                                            <rect key="frame" x="15.999999999999996" y="83" width="62.666666666666657" height="21.333333333333329"/>
+                                            <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -217,9 +217,9 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:09" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c5U-lq-bUm">
-                                            <rect key="frame" x="329.66666666666669" y="85.666666666666671" width="47.333333333333314" height="16"/>
-                                            <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:09" textAlignment="center" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c5U-lq-bUm">
+                                            <rect key="frame" x="314.66666666666669" y="86.333333333333329" width="62.333333333333314" height="14.333333333333329"/>
+                                            <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -240,10 +240,10 @@
                                         <constraint firstItem="c5U-lq-bUm" firstAttribute="centerY" secondItem="blp-fo-l14" secondAttribute="centerY" id="kE1-UA-Gbz"/>
                                         <constraint firstItem="iND-lU-5nc" firstAttribute="top" secondItem="CQC-pt-NzL" secondAttribute="top" constant="16" id="l44-K9-7xa"/>
                                         <constraint firstItem="fcO-4s-X7a" firstAttribute="leading" secondItem="QtU-w8-qlU" secondAttribute="trailing" constant="58" id="ltA-6G-rlW"/>
-                                        <constraint firstItem="blp-fo-l14" firstAttribute="leading" secondItem="83l-gf-CkV" secondAttribute="trailing" constant="7" id="qUu-oG-alM"/>
+                                        <constraint firstItem="blp-fo-l14" firstAttribute="leading" secondItem="83l-gf-CkV" secondAttribute="trailing" constant="8" id="qUu-oG-alM"/>
                                         <constraint firstItem="blp-fo-l14" firstAttribute="centerX" secondItem="CQC-pt-NzL" secondAttribute="centerX" id="vZ7-Rk-hfo"/>
                                         <constraint firstItem="fcO-4s-X7a" firstAttribute="centerY" secondItem="8XQ-BJ-16e" secondAttribute="centerY" id="vzK-7y-l3u"/>
-                                        <constraint firstItem="c5U-lq-bUm" firstAttribute="leading" secondItem="blp-fo-l14" secondAttribute="trailing" constant="8" symbolic="YES" id="wXV-Ij-LZA"/>
+                                        <constraint firstItem="c5U-lq-bUm" firstAttribute="leading" secondItem="blp-fo-l14" secondAttribute="trailing" constant="8" id="wXV-Ij-LZA"/>
                                     </constraints>
                                 </collectionViewCellContentView>
                                 <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
@@ -260,7 +260,7 @@
                                     <outlet property="totalTime" destination="83l-gf-CkV" id="28r-lK-Kbt"/>
                                 </connections>
                             </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="images" id="UmG-jK-Lk7">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="images" id="UmG-jK-Lk7" customClass="ImageCollectionViewCell" customModule="wellSync" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="201" width="393" height="338"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="RyN-Dw-oq0">
@@ -290,8 +290,11 @@
                                         <integer key="value" value="20"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <outlet property="imageView" destination="bro-2P-IAL" id="w2t-F4-Znu"/>
+                                </connections>
                             </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="textNote" id="BYJ-cN-u4G">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="textNote" id="BYJ-cN-u4G" customClass="textCollectionViewCell" customModule="wellSync" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="549" width="393" height="216"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="jBx-3y-97I">
@@ -313,13 +316,16 @@
                                         <constraint firstItem="43H-KG-fgf" firstAttribute="top" secondItem="jBx-3y-97I" secondAttribute="top" constant="16" id="r2h-GG-5Qc"/>
                                     </constraints>
                                 </collectionViewCellContentView>
-                                <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                                <color key="backgroundColor" systemColor="tertiarySystemBackgroundColor"/>
                                 <size key="customSize" width="393" height="216"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                         <integer key="value" value="20"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <outlet property="textNote" destination="43H-KG-fgf" id="zEU-MO-of1"/>
+                                </connections>
                             </collectionViewCell>
                         </cells>
                         <connections>
