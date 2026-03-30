@@ -195,6 +195,7 @@
 				DEVELOPMENT_TEAM = 625SMQ6P5N;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = wellSync/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Need Camera For Accessing Some Usefull Features";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app reads your health data.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app updates your health data.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access";
@@ -234,6 +235,7 @@
 				DEVELOPMENT_TEAM = 625SMQ6P5N;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = wellSync/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Need Camera For Accessing Some Usefull Features";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app reads your health data.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app updates your health data.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access";

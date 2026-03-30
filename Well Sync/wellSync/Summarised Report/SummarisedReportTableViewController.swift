@@ -11,7 +11,6 @@ import UIKit
 class SummarisedReportTableViewController: UITableViewController {
     
     var patient: Patient?
-
     let sections = ["Mood","Activity","Patient notes","Session Notes", "Journal Summary"]
     var todayItems: [TodayActivityItem] = []
     let activities :[Activity] = []
@@ -56,23 +55,55 @@ class SummarisedReportTableViewController: UITableViewController {
             return cell
             
         }
+//        if indexPath.section == 1 {
+//                let cell = tableView.dequeueReusableCell(
+//                    withIdentifier: "sActivityCell", for: indexPath
+//                ) as! SummaryActivityTableViewCell
+//
+//                cell.selectedBackgroundView                  = UIView()
+//                cell.selectedBackgroundView?.backgroundColor = .clear
+//            cell.onFetched = { [weak self] in
+//                DispatchQueue.main.async {
+//                    UIView.performWithoutAnimation {
+//                                    self?.tableView.beginUpdates()
+//                                    self?.tableView.endUpdates()
+//                                }
+//                }
+//            }
+//                if let patientID = patient?.patientID {
+//                    Task{
+//                        do{
+//                            await cell.configure(for: patientID)
+//                        }
+//                    }
+//                }
+//                return cell
+//            }
         if indexPath.section == 1 {
-                let cell = tableView.dequeueReusableCell(
-                    withIdentifier: "sActivityCell", for: indexPath
-                ) as! SummaryActivityTableViewCell
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: "sActivityCell", for: indexPath
+            ) as! SummaryActivityTableViewCell
 
-                cell.selectedBackgroundView                  = UIView()
-                cell.selectedBackgroundView?.backgroundColor = .clear
+            cell.selectedBackgroundView = UIView()
+            cell.selectedBackgroundView?.backgroundColor = .clear
 
-                if let patientID = patient?.patientID {
-                    Task{
-                        do{
-                            await cell.configure(for: patientID)
-                        }
+            cell.onFetched = { [weak self] in
+                DispatchQueue.main.async {
+                    UIView.performWithoutAnimation {
+                        self?.tableView.beginUpdates()
+                        self?.tableView.endUpdates()
                     }
                 }
-                return cell
             }
+
+            if let patientID = patient?.patientID {
+                Task {
+                    await cell.configure(for: patientID)
+                }
+            }
+
+            return cell
+        }
         let cell = tableView.dequeueReusableCell(withIdentifier: "sPatientNote", for: indexPath)
         return cell
     }
