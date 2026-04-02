@@ -702,7 +702,7 @@ final class AccessSupabase {
                         caseId: caseID,
                         title: $0.title,
                         date: $0.date,
-                        reportPath: $0.reportPath
+                        reportPaths: $0.reportPaths
                     )
                 }
 
@@ -762,6 +762,34 @@ final class AccessSupabase {
                 report: reports
             )
         }
+    
+    private let reportBucket = "PatientHistory"
+
+    func uploadReport(
+        data: Data,
+        fileName: String,
+        contentType: String
+    ) async throws -> String {
+        
+        let path = "reports/\(UUID().uuidString)_\(fileName)"
+        
+        try await supabase.storage
+            .from(reportBucket)
+            .upload(
+                path: path,
+                file: data,
+                options: FileOptions(
+                    cacheControl: "3600",
+                    contentType: contentType,
+                    upsert: false
+                )
+            )
+        let publicURL = try supabase.storage
+            .from(reportBucket)
+            .getPublicURL(path: path)
+        
+        return publicURL.absoluteString
+    }
     func saveSessionNote(_ note: SessionNote) async throws -> SessionNote {
 
         let saved: SessionNote = try await supabase

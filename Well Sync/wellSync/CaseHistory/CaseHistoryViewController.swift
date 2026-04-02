@@ -21,24 +21,32 @@ class CaseHistoryViewController: UIViewController {
     var patient: Patient!
     override func viewDidLoad() {
         super.viewDidLoad()
-        Task{
-            do{
-                caseHistory = try await AccessSupabase.shared.fetchCaseHistory(for: patient.patientID)
-                timeline = try await AccessSupabase.shared
-                    .fetchTimelines(for: caseHistory.caseId)
-                reports = try await AccessSupabase.shared
-                    .fetchReports(for: caseHistory.caseId)
-            }
-            catch{
-                print("Error Case History: ",error)
-            }
-            
-        }
         registerCells()
+        CaseHistoryCollectionView.dataSource = self
+        
         let layout = generateLayout()
         CaseHistoryCollectionView.setCollectionViewLayout(layout, animated: true)
-        
-        CaseHistoryCollectionView.dataSource = self
+        loadData()
+        CaseHistoryCollectionView.delegate = self
+    }
+    
+    func loadData(){
+        Task {
+               do {
+                   let full = try await AccessSupabase.shared
+                       .fetchFullCaseHistory(for: patient.patientID)
+
+                   self.caseHistory = full
+                   self.timeline = full.timeline ?? []
+                   self.reports = full.report ?? []
+
+                   await MainActor.run {
+                       self.CaseHistoryCollectionView.reloadData()
+                   }
+               } catch {
+                   print("Error:", error)
+               }
+           }
     }
     func registerCells(){
         CaseHistoryCollectionView.register(UINib(nibName: "ReportCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "ReportCell")
@@ -205,10 +213,11 @@ extension CaseHistoryViewController: UIImagePickerControllerDelegate, UINavigati
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let url = urls.first else { return }
         selectedURL = url
-        if let data = try? Data(contentsOf: url),
-            let image = UIImage(data: data){
-            selectedImage = image
-        }
+//        if let data = try? Data(contentsOf: url),
+//            let image = UIImage(data: data){
+//            selectedImage = image
+//        }
+        selectedImage = nil
         self.NamingAlert()
     }
     
@@ -227,25 +236,82 @@ extension CaseHistoryViewController: UIImagePickerControllerDelegate, UINavigati
         }
         
         let nameAction = UIAlertAction(title: "Add", style: .default) { _ in
-            let text = alert.textFields?.first?.text ?? ""
-            let name = text.isEmpty ? "Report" : text
-            let newReport = Report(
-                reportId: UUID(),
-                caseId: self.caseHistory.caseId,
-                    title: name,
-                    date: Date(),
-                reportPath: [self.selectedURL?.path ?? ""]
-                )
-            self.reports.insert(newReport, at: 0)
-            self.CaseHistoryCollectionView.reloadSections(IndexSet(integer: 0))
+//            let text = alert.textFields?.first?.text ?? ""
+//            let name = text.isEmpty ? "Report" : text
+//            let newReport = Report(
+//                reportId: UUID(),
+//                caseId: self.caseHistory.caseId,
+//                    title: name,
+//                    date: Date(),
+//                reportPath: [self.selectedURL?.path ?? ""]
+//                )
+//            self.reports.insert(newReport, at: 0)
+//            self.CaseHistoryCollectionView.reloadSections(IndexSet(integer: 0))
+            
+            guard let name = alert.textFields?.first?.text, !name.isEmpty else { return }
+            self.uploadReportAndSave(name: name)
         }
         alert.addAction(nameAction)
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         present(alert, animated: true)
     }
+    func uploadReportAndSave(name: String) {
+        guard let caseId = caseHistory?.caseId else {
+            print("caseHistory is nil")
+            return }
+        print(" caseId:", caseId)
+        Task {
+            do {
+                var fileData: Data?
+                var fileName = "file"
+                var contentType = "application/octet-stream"
+
+                if let image = selectedImage {
+                    print(" Uploading image")
+                    fileData = image.jpegData(compressionQuality: 0.8)
+                    fileName = "image.jpg"
+                    contentType = "image/jpeg"
+                } else if let url = selectedURL {
+                    print("Uploading document:", url)
+                    fileData = try Data(contentsOf: url)
+                    fileName = url.lastPathComponent
+                    contentType = "application/pdf"
+                }
+
+                guard let data = fileData else { print("No data found")
+                    return }
+                print("Uploading to Supabase...")
+                let url = try await AccessSupabase.shared.uploadReport(
+                    data: data,
+                    fileName: fileName,
+                    contentType: contentType
+                )
+                print("Uploaded URL:", url)
+                let report = Report(
+                    reportId: UUID(),
+                    caseId: caseId,
+                    title: name,
+                    date: Date(),
+                    reportPaths: [url]
+                )
+                print("Saving to DB...")
+                
+                let saved = try await AccessSupabase.shared.saveReport(report)
+                print("Saved in DB:", saved)
+
+                await MainActor.run{
+                    self.reports.insert(saved, at: 0)
+                    self.CaseHistoryCollectionView.reloadSections(IndexSet(integer: 0))
+                }
+
+            } catch {
+                print("Upload Error:", error)
+            }
+        }
+    }
 }
 
-extension CaseHistoryViewController: QLPreviewControllerDataSource{
+extension CaseHistoryViewController: QLPreviewControllerDataSource, UICollectionViewDelegate{
     func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
         return 1
     }
@@ -258,22 +324,36 @@ extension CaseHistoryViewController: QLPreviewControllerDataSource{
     }
     
     @IBAction func downLoadButtonTapped(_ sender: Any) {
-//        guard let currentPatient = self.patient else {
-//                print("Error: Patient data is missing")
-//                return
-//            }
-//            
-//            guard let currentHistory = self.caseHistory else {
-//                print("Error: Case History data is missing")
-//                return
-//            }
-      /*  if let url = ReportGenerator.createPDF(patient: currentPatient, history: currentHistory)*/
+        guard let caseHistory = self.caseHistory else {
+                print("No case history")
+                return
+            }
         if let url = ReportGenerator.createPDF(history: caseHistory){
             self.generatedReportURl = url
             
             let previewController = QLPreviewController()
             previewController.dataSource = self
             present(previewController, animated: true)
+        }else {
+            print("PDF generation failed")
         }
     }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+            if indexPath.section == 0 {
+                let report = reports[indexPath.item]
+                openReport(report)
+            }
+        }
+    
+    func openReport(_ report: Report) {
+        guard let path = report.reportPaths.first,
+              let url = URL(string: path) else { return }
+
+        self.generatedReportURl = url
+        
+        let preview = QLPreviewController()
+        preview.dataSource = self
+        present(preview, animated: true)
+    }
+    
 }
