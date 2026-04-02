@@ -24,6 +24,8 @@ class JournalTableViewController: UITableViewController {
         super.viewDidLoad()
         
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.isUserInteractionEnabled = true
+        tableView.allowsSelection = true  // ADD THIS
         
         // Set navigation title
         if let activity = selectedActivity {
@@ -144,36 +146,46 @@ class JournalTableViewController: UITableViewController {
     
     // MARK: - Table View Delegate
     
+//    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        tableView.deselectRow(at: indexPath, animated: true)
+//        
+//        let entry = indexPath.section == 0
+//            ? currentAssignmentLogs[indexPath.row]
+//            : allActivityLogs[indexPath.row]
+//        
+//        // Navigate to detail view
+//        showLogDetail(for: entry)
+//    }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        print("🔴 Cell tapped at section: \(indexPath.section), row: \(indexPath.row)")  // ADD THIS
         
         let entry = indexPath.section == 0
             ? currentAssignmentLogs[indexPath.row]
             : allActivityLogs[indexPath.row]
         
-        // Navigate to detail view
+        print("🔴 Entry type: \(entry.type)")  // ADD THIS
         showLogDetail(for: entry)
     }
-    
     func showLogDetail(for entry: JournalEntry) {
-        // TODO: Create detail view controller to show full image or play audio
-        print("Selected log: \(entry.logID)")
-        print("Type: \(entry.type)")
-        print("Upload path: \(entry.uploadPath ?? "none")")
+        guard entry.type == .written else {
+            let alert = UIAlertController(title: "Audio", message: "Playback coming soon.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
         
-        // For now, show an alert
-        let message = entry.type == .audio
-            ? "This is an audio recording"
-            : "This is an image upload"
-        
-        let alert = UIAlertController(
-            title: entry.title,
-            message: message,
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        performSegue(withIdentifier: "showImageDetail", sender: entry)
     }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showImageDetail",
+           let imageVC = segue.destination as? JournalImageViewController,
+           let entry = sender as? JournalEntry {
+            imageVC.journalEntry = entry
+        }
+    }
+
 }
 //import UIKit
 //

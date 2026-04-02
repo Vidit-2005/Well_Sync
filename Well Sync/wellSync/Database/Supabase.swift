@@ -893,7 +893,6 @@ final class AccessSupabase {
         return doctor
     }
 
-    // MARK: - Fetch patient by auth_id (called after login to load profile)
     func fetchPatientByAuthID(_ authID: UUID) async throws -> Patient {
         let patient: Patient = try await supabase
             .from("patients")
@@ -903,5 +902,12 @@ final class AccessSupabase {
             .execute()
             .value
         return patient
+    }
+    
+    func downloadFile(path: String) async throws -> Data {
+        let data = try await supabase.storage
+            .from("Patient_profile")   // ← replace with your actual bucket
+            .download(path: path)
+        return data
     }
 }
