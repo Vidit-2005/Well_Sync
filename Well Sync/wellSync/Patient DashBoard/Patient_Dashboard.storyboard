@@ -199,7 +199,7 @@
                                                     <rect key="frame" x="0.0" y="76.666666666666671" width="168" height="53.333333333333329"/>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </view>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+2 today" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NGF-U2-Lxe">
+                                                <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NGF-U2-Lxe">
                                                     <rect key="frame" x="74" y="15" width="86" height="20"/>
                                                     <color key="backgroundColor" red="0.0" green="0.75294117650000003" blue="0.90980392160000001" alpha="0.20000000000000001" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
@@ -254,6 +254,7 @@
                                 <connections>
                                     <outlet property="MoodCount" destination="uyd-cl-eAi" id="VNQ-gf-yZh"/>
                                     <outlet property="indicator" destination="kc7-vC-lIC" id="D4y-w9-ACK"/>
+                                    <outlet property="timerForNext" destination="NGF-U2-Lxe" id="Rgt-Lq-Qxm"/>
                                 </connections>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="nextSession" id="hR8-m1-Zed" customClass="NextSessionCell" customModule="wellSync" customModuleProvider="target">

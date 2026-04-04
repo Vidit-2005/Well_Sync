@@ -190,15 +190,15 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
                 withReuseIdentifier: "streakCell", for: indexPath
             ) as! StreakCell
 
+            // ✅ ActivityLogs has ALL logs, toDoItems only has incomplete ones
             let cal = Calendar.current
-            let thisWeeksLogs: [Date] = toDoItems
-                .flatMap { $0.logs }
+            let thisWeekDates: [Date] = ActivityLogs
                 .map { $0.date }
                 .filter { cal.isDate($0, equalTo: Date(), toGranularity: .weekOfYear) }
 
-            cell.loggedDates = thisWeeksLogs
+            cell.loggedDates = thisWeekDates
             cell.configure()
-            cell.updateStreak(currentStreak)  // ✅ uses precomputed value
+            cell.updateStreak(currentStreak)
             style(cell)
             return cell
 
@@ -285,8 +285,35 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         return layout
     }
 
+//    @objc func moodTapped(_ sender: UITapGestureRecognizer) {
+//        guard let selectedView = sender.view else { return }
+//        let selectedIndex = selectedView.tag
+//        UIView.animate(withDuration: 0.15, delay: 0,
+//                       usingSpringWithDamping: 0.6,
+//                       initialSpringVelocity: 0.8, options: []) {
+//            selectedView.transform = CGAffineTransform(scaleX: 1.15, y: 1.15)
+//        }
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//            self.performSegue(withIdentifier: "moodLog", sender: selectedIndex)
+//        }
+//    }
     @objc func moodTapped(_ sender: UITapGestureRecognizer) {
         guard let selectedView = sender.view else { return }
+
+        // ✅ Find the mood count cell and check cooldown
+        if let moodCell = collectionView.cellForItem(at: IndexPath(row: 1, section: 1)) as? MoodCollectionViewCell,
+           !moodCell.canLogNow {
+            // Shake to signal "not yet"
+            let shake = CAKeyframeAnimation(keyPath: "transform.translation.x")
+            shake.values   = [0, -8, 8, -6, 6, -4, 4, 0]
+            shake.duration = 0.4
+            selectedView.layer.add(shake, forKey: "shake")
+
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.warning)
+            return
+        }
+
         let selectedIndex = selectedView.tag
         UIView.animate(withDuration: 0.15, delay: 0,
                        usingSpringWithDamping: 0.6,
@@ -297,7 +324,6 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
             self.performSegue(withIdentifier: "moodLog", sender: selectedIndex)
         }
     }
-
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "moodLog",
            let nav  = segue.destination as? UINavigationController,

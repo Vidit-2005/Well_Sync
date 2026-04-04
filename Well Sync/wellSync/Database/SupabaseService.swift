@@ -15,7 +15,7 @@ final class SupabaseManager {
     let client: SupabaseClient
 
     private init() {
-        client = SupabaseClient(supabaseURL: URL()
+        client = SupabaseClient()
     }
     
     func signUp(email: String, password: String) async throws -> UUID {
