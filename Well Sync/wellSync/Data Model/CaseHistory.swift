@@ -65,13 +65,13 @@ struct Report: Codable {
     let caseId: UUID
     let title: String
     let date: Date
-    let reportPath: [String]
+    let reportPaths: [String]
 
     enum CodingKeys: String, CodingKey {
         case reportId = "report_id"
         case caseId = "case_id"
         case title
         case date
-        case reportPath = "report_paths"
+        case reportPaths = "report_paths"
     }
 }

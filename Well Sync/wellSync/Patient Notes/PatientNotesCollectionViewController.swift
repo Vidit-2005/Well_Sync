@@ -14,12 +14,20 @@ class PatientNotesCollectionViewController: UICollectionViewController {
     
     var onAdd: (() -> Void)?
     var notes: [PatientNote]?
-    var patient: Patient?
+    var patient: Patient?{
+        didSet{
+            guard patient != nil else {
+                return
+            }
+            load()
+        }
+    }
     var patientID: UUID?
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+    }
+    func load(){
         guard let patientID = patient?.patientID else {
             print("Patient not set yet ❌")
             return
@@ -42,6 +50,8 @@ class PatientNotesCollectionViewController: UICollectionViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: "pateintNoteHeader"
         )
+//        load()
+        collectionView.reloadSections(IndexSet(integer: 1))
         self.collectionView.collectionViewLayout = createLayout()
     }
 
@@ -121,7 +131,6 @@ class PatientNotesCollectionViewController: UICollectionViewController {
         return layout
     }
     func noteSectionLayout() -> NSCollectionLayoutSection {
-
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
             heightDimension: .fractionalHeight(1.0)
@@ -195,7 +204,6 @@ class PatientNotesCollectionViewController: UICollectionViewController {
             return
         }
 
-        // Clear the text field immediately (this is fine — it's on main thread)
         textField.text = ""
         textField.resignFirstResponder()
 
@@ -208,13 +216,8 @@ class PatientNotesCollectionViewController: UICollectionViewController {
 
         Task {
             do {
-                // Step 1: Save the note
                 try await AccessSupabase.shared.savePatientNote(newNote)
-
-                // Step 2: Fetch updated notes (use patient?.patientID, not the separate patientID property)
                 let updatedNotes = try await AccessSupabase.shared.fetchPatientNotes(patientID: patient?.patientID ?? UUID())
-
-                // Step 3: Update UI on the MAIN thread
                 await MainActor.run {
                     self.notes = updatedNotes
                     self.collectionView.reloadData()

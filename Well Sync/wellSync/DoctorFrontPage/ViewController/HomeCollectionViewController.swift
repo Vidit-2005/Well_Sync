@@ -3,7 +3,12 @@ import UIKit
 class HomeCollectionViewController: UICollectionViewController {
     var patient: [Patient] = []
     var viewModel: AccessSupabase?
-    var doctor: Doctor?
+    var doctor: Doctor?{
+        didSet{
+            guard doctor != nil else { return }
+            loadPatients()
+        }
+    }
     @IBOutlet weak var ellipsisButtonTapped: UIBarButtonItem!
 
     var selectedPatient: Patient?
@@ -18,7 +23,6 @@ class HomeCollectionViewController: UICollectionViewController {
         view.addSubview(spinner)
         viewModel = AccessSupabase.shared
         setupCollectionView()
-        loadPatients()
         self.collectionView.collectionViewLayout = createLayout()
         setupMenu()
     }

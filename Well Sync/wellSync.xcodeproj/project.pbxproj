@@ -15,6 +15,8 @@
 		4F0E247F2F6D0A9500BE1499 /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = 4F0E247E2F6D0A9500BE1499 /* Realtime */; };
 		4F0E24812F6D0A9500BE1499 /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 4F0E24802F6D0A9500BE1499 /* Storage */; };
 		4F0E24832F6D0A9500BE1499 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 4F0E24822F6D0A9500BE1499 /* Supabase */; };
+		4FDA5B582F7F9E0200F8219B /* FirebaseAI in Frameworks */ = {isa = PBXBuildFile; productRef = 4FDA5B572F7F9E0200F8219B /* FirebaseAI */; };
+		4FDA5B5A2F7F9E0200F8219B /* FirebaseAILogic in Frameworks */ = {isa = PBXBuildFile; productRef = 4FDA5B592F7F9E0200F8219B /* FirebaseAILogic */; };
 		FABF68DB2F65D57B00CDA277 /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = FABF68DA2F65D57B00CDA277 /* FSCalendar */; };
 /* End PBXBuildFile section */
 
@@ -52,8 +54,10 @@
 				4F0E247F2F6D0A9500BE1499 /* Realtime in Frameworks */,
 				4F0E247D2F6D0A9500BE1499 /* PostgREST in Frameworks */,
 				4F0E247B2F6D0A9500BE1499 /* Functions in Frameworks */,
+				4FDA5B5A2F7F9E0200F8219B /* FirebaseAILogic in Frameworks */,
 				2DE8A8432F619693004F4934 /* AVFoundation.framework in Frameworks */,
 				4F0E24812F6D0A9500BE1499 /* Storage in Frameworks */,
+				4FDA5B582F7F9E0200F8219B /* FirebaseAI in Frameworks */,
 				4F0E24832F6D0A9500BE1499 /* Supabase in Frameworks */,
 				FABF68DB2F65D57B00CDA277 /* FSCalendar in Frameworks */,
 				4F0E24792F6D0A9500BE1499 /* Auth in Frameworks */,
@@ -117,6 +121,8 @@
 				4F0E247E2F6D0A9500BE1499 /* Realtime */,
 				4F0E24802F6D0A9500BE1499 /* Storage */,
 				4F0E24822F6D0A9500BE1499 /* Supabase */,
+				4FDA5B572F7F9E0200F8219B /* FirebaseAI */,
+				4FDA5B592F7F9E0200F8219B /* FirebaseAILogic */,
 			);
 			productName = wellSync;
 			productReference = 2DB79A442F28DD1000E9EF11 /* wellSync.app */;
@@ -151,6 +157,7 @@
 				2DC5A9702F3343D1000F801A /* XCRemoteSwiftPackageReference "Charts" */,
 				FABF68D92F65D57B00CDA277 /* XCRemoteSwiftPackageReference "FSCalendar" */,
 				4F0E24772F6D0A9500BE1499 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				4FDA5B562F7F9E0200F8219B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2DB79A452F28DD1000E9EF11 /* Products */;
@@ -192,7 +199,7 @@
 				CODE_SIGN_ENTITLEMENTS = wellSync/wellSync.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 625SMQ6P5N;
+				DEVELOPMENT_TEAM = 2SHJZNL8XT;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = wellSync/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Need Camera For Accessing Some Usefull Features";
@@ -232,7 +239,7 @@
 				CODE_SIGN_ENTITLEMENTS = wellSync/wellSync.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 625SMQ6P5N;
+				DEVELOPMENT_TEAM = 2SHJZNL8XT;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = wellSync/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Need Camera For Accessing Some Usefull Features";
@@ -423,6 +430,14 @@
 				minimumVersion = 2.5.1;
 			};
 		};
+		4FDA5B562F7F9E0200F8219B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.11.0;
+			};
+		};
 		FABF68D92F65D57B00CDA277 /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/WenchaoD/FSCalendar";
@@ -468,6 +483,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4F0E24772F6D0A9500BE1499 /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
+		};
+		4FDA5B572F7F9E0200F8219B /* FirebaseAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4FDA5B562F7F9E0200F8219B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAI;
+		};
+		4FDA5B592F7F9E0200F8219B /* FirebaseAILogic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4FDA5B562F7F9E0200F8219B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAILogic;
 		};
 		FABF68DA2F65D57B00CDA277 /* FSCalendar */ = {
 			isa = XCSwiftPackageProductDependency;
