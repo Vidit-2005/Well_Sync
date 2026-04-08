@@ -68,9 +68,7 @@
                         </constraints>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" largeTitleDisplayMode="never" style="browser" id="0GB-jt-JUE">
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="Dik-2c-VQV"/>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" largeTitleDisplayMode="never" style="browser" id="0GB-jt-JUE"/>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="imageView" destination="JkS-Rs-SGy" id="dYc-sK-rTF"/>

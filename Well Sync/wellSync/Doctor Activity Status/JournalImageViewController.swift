@@ -69,16 +69,7 @@ class JournalImageViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: - Lifecycle
     var journalEntry: JournalEntry?
-    var loadedImage: UIImage?{
-        didSet{
-            guard loadedImage != nil else { return }
-            let sb = UIStoryboard(name: "JournalImageView", bundle: nil)
-            let summaryVC = sb.instantiateViewController(withIdentifier: "ImageSummarySheetViewController")
-                            as! ImageSummarySheetViewController
-            
-            summaryVC.image = loadedImage
-        }
-    }
+    var loadedImage: UIImage?
         
         // MARK: - Lifecycle
         
@@ -205,7 +196,7 @@ class JournalImageViewController: UIViewController, UIScrollViewDelegate {
             let summaryVC = sb.instantiateViewController(withIdentifier: "ImageSummarySheetViewController")
                             as! ImageSummarySheetViewController
             
-//            summaryVC.image = image
+            summaryVC.image = image
             summaryVC.entryTitle = journalEntry?.title ?? "Journal Entry"
             
             if let sheet = summaryVC.sheetPresentationController {

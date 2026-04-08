@@ -82,14 +82,18 @@ class ActivityStatusRingView: UIView {
 
 class DoctorActivityStatusCollectionViewController: UICollectionViewController {
     
-    var patient: Patient?
+    var patient: Patient?{
+        didSet{
+            
+        }
+    }
 
     var activities: [TodayActivityItem] = []
     var previousActivity: [LogSummaryItem] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadActivity()
+//        loadActivity()
         // Register cell classes
         self.collectionView!.register(UINib(nibName: "UploadCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "uploadCell")
         self.collectionView!.register(UINib(nibName: "GraphCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "graphCell")

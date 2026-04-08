@@ -18,14 +18,7 @@ class ImageSummarySheetViewController: UIViewController {
     @IBOutlet weak var summaryTextView: UITextView!
     
     // MARK: - Properties
-    var image: UIImage?{
-        didSet{
-            guard image != nil else {
-                return
-            }
-            fetchSummary()
-        }
-    }
+    var image: UIImage?
     var entryTitle: String = "Journal Entry"
     
     // MARK: - Lifecycle
@@ -35,6 +28,7 @@ class ImageSummarySheetViewController: UIViewController {
         subtitleLabel.text = entryTitle
         summaryTextView.isHidden = true
         spinner.startAnimating()
+        fetchSummary()
         
     }
     
