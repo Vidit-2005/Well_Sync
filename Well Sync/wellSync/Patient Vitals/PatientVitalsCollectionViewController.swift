@@ -7,19 +7,14 @@
 
 import UIKit
 
-class PatientVitalsCollectionViewController: UICollectionViewController,VitalsRangeNavigating, VitalsBarRangeNavigating1 {
+class PatientVitalsCollectionViewController: UICollectionViewController, VitalsBarRangeNavigating1 {
     
     var patient: Patient?
     enum DisplayRange: Int {
         case weekly = 0
         case monthly = 1
     }
-    
-    private struct LineGraphData {
-        let xLabels: [String]
-        let points: [Double]
-    }
-    
+
     private let allVitals: [(title: String, color: UIColor)] = [
         ("Sleep", .systemIndigo),
         ("Steps", .systemOrange)
@@ -37,9 +32,7 @@ class PatientVitalsCollectionViewController: UICollectionViewController,VitalsRa
             reloadAllCharts()
         }
     }
-    
-    private var lineOffset: Int = 0
-    
+
     private let barMetrics: [PatientBarVitalsCollectionViewCell.MetricType] = [
         .sleep,
         .steps
@@ -50,34 +43,34 @@ class PatientVitalsCollectionViewController: UICollectionViewController,VitalsRa
     private var barOffsets: [Int] = [0, 0]
 
     
-    private func currentRangeText() -> String {
-        let calendar = Calendar.current
-        let today = Date()
-
-        switch displayRange {
-
-        case .weekly:
-            let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: today)!.start
-            let targetStart = calendar.date(byAdding: .weekOfYear, value: lineOffset, to: startOfWeek)!
-
-            let targetEnd = calendar.date(byAdding: .day, value: 6, to: targetStart)!
-
-            let formatter = DateFormatter()
-            formatter.dateFormat = "MMM d"
-
-            return "\(formatter.string(from: targetStart)) – \(formatter.string(from: targetEnd))"
-
-
-        case .monthly:
-            let startOfMonth = calendar.dateInterval(of: .month, for: today)!.start
-            let target = calendar.date(byAdding: .month, value: lineOffset, to: startOfMonth)!
-
-            let formatter = DateFormatter()
-            formatter.dateFormat = "MMM yyyy"
-
-            return formatter.string(from: target)
-        }
-    }
+//    private func currentRangeText() -> String {
+//        let calendar = Calendar.current
+//        let today = Date()
+//
+//        switch displayRange {
+//
+//        case .weekly:
+//            let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: today)!.start
+//            let targetStart = calendar.date(byAdding: .weekOfYear, value: lineOffset, to: startOfWeek)!
+//
+//            let targetEnd = calendar.date(byAdding: .day, value: 6, to: targetStart)!
+//
+//            let formatter = DateFormatter()
+//            formatter.dateFormat = "MMM d"
+//
+//            return "\(formatter.string(from: targetStart)) – \(formatter.string(from: targetEnd))"
+//
+//
+//        case .monthly:
+//            let startOfMonth = calendar.dateInterval(of: .month, for: today)!.start
+//            let target = calendar.date(byAdding: .month, value: lineOffset, to: startOfMonth)!
+//
+//            let formatter = DateFormatter()
+//            formatter.dateFormat = "MMM yyyy"
+//
+//            return formatter.string(from: target)
+//        }
+//    }
     
     private func barRangeText(for index: Int) -> String {
         let calendar = Calendar.current
@@ -101,45 +94,8 @@ class PatientVitalsCollectionViewController: UICollectionViewController,VitalsRa
         }
     }
 
-    private func makeLineGraphData(for range: DisplayRange) -> LineGraphData {
-
-        switch range {
-            case .weekly:
-
-                let calendar = Calendar.current
-                let today = Date()
-
-                let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: today)!.start
-                let targetStart = calendar.date(byAdding: .weekOfYear, value: lineOffset, to: startOfWeek)!
-
-                var labels: [String] = []
-
-                let formatter = DateFormatter()
-                formatter.dateFormat = "EEE"
-
-                for i in 0..<7 {
-                    let date = calendar.date(byAdding: .day, value: i, to: targetStart)!
-                    labels.append(formatter.string(from: date))
-                }
-
-                let points = (0..<7).map { _ in Double.random(in: 60...100) }
-
-                return LineGraphData(xLabels: labels, points: points)
-                
-            case .monthly:
-
-                let labels = ["W1","W2","W3","W4"]
-
-                let points = (0..<4).map { _ in Double.random(in: 400...600) }
-
-                return LineGraphData(xLabels: labels, points: points)
-        }
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.collectionView!.register(UINib(nibName: "PatientVitalsCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "patientVitalsCell")
         self.collectionView!.register(UINib(nibName: "PatientBarVitalsCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "patientBarVitalsCell")
         collectionView.collectionViewLayout = generateLayout()
     }
@@ -153,7 +109,7 @@ class PatientVitalsCollectionViewController: UICollectionViewController,VitalsRa
         if section == 0{
             return 1
         }
-        return 1 + displayedVitals.count
+        return displayedVitals.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -164,20 +120,13 @@ class PatientVitalsCollectionViewController: UICollectionViewController,VitalsRa
             }
         }
         
-        if indexPath.section == 1 && indexPath.row == 0{
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "patientVitalsCell", for: indexPath) as! PatientVitalsCollectionViewCell
-            cell.rangeDelegate = self
-            let lineData = makeLineGraphData(for: displayRange)
-            cell.configure(rangeText: currentRangeText(), xLabels: lineData.xLabels, points: lineData.points)
-            return cell
-        }
         
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: "patientBarVitalsCell",
             for: indexPath
         ) as! PatientBarVitalsCollectionViewCell
 
-        let barIndex = indexPath.row - 1
+        let barIndex = indexPath.row
         guard barIndex >= 0, barIndex < barMetrics.count else { return cell }
 
         if let label = cell.viewWithTag(1) as? UILabel {
@@ -276,17 +225,6 @@ class PatientVitalsCollectionViewController: UICollectionViewController,VitalsRa
         displayRange = range
     }
     
-    
-    func didTapPrevRange() {
-        lineOffset = max(lineOffset - 1, -2)
-        reloadLineSection()
-    }
-    
-    func didTapNextRange() {
-        lineOffset = min(lineOffset + 1, 0)
-        reloadLineSection()
-    }
-    
     func didTapPrevBarRange(for index: Int) {
         barOffsets[index] = max(barOffsets[index] - 1, -2)
         reloadBar(at: index)
@@ -298,7 +236,7 @@ class PatientVitalsCollectionViewController: UICollectionViewController,VitalsRa
     }
 
     func reloadBar(at barIndex: Int) {
-        let indexPath = IndexPath(item: barIndex + 1, section: 1)
+        let indexPath = IndexPath(item: barIndex, section: 1)
         collectionView.reloadItems(at: [indexPath])
     }
 
@@ -311,11 +249,9 @@ class PatientVitalsCollectionViewController: UICollectionViewController,VitalsRa
     }
 
     func reloadAllCharts() {
-        displayedVitals = allVitals
         let items = [
             IndexPath(item: 0, section: 1),
-            IndexPath(item: 1, section: 1),
-            IndexPath(item: 2, section: 1)
+            IndexPath(item: 1, section: 1)
         ]
         collectionView.reloadItems(at: items)
     }

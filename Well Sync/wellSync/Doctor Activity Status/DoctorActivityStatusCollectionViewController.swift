@@ -295,9 +295,6 @@ class DoctorActivityStatusCollectionViewController: UICollectionViewController {
                 self.loadActivity()
             }
         }
-        let s = sender as? IndexPath
-        print( segue.identifier == "Journal")
-        print((segue.destination as? JournalTableViewController))
         print(sender)
         if segue.identifier == "Journal",
            let journalVC = segue.destination as? JournalTableViewController,

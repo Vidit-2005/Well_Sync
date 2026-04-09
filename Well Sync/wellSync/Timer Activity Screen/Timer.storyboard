@@ -12,7 +12,7 @@
         <!--Activity Log-->
         <scene sceneID="2fW-52-skq">
             <objects>
-                <viewController id="3XG-k9-Tgc" customClass="timerViewController" customModule="wellSync" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController useStoryboardIdentifierAsRestorationIdentifier="YES" id="3XG-k9-Tgc" customClass="timerViewController" customModule="wellSync" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dS0-4a-bfM">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -122,7 +122,9 @@
                     <connections>
                         <outlet property="doctorsRecommandation" destination="ZfM-LS-6i9" id="kIU-fT-8AZ"/>
                         <outlet property="durationSelector" destination="6z4-9Z-iiQ" id="8ui-tN-cQS"/>
+                        <outlet property="playButton" destination="sPe-vi-Tip" id="JK7-nS-Vjl"/>
                         <outlet property="ringView" destination="Jmk-n3-JcJ" id="UqP-F4-dJJ"/>
+                        <outlet property="startButton" destination="Txr-5G-Elo" id="ZnY-F8-gYL"/>
                         <outlet property="timerLabel" destination="6Ra-Aw-0HN" id="YSU-m5-JS9"/>
                     </connections>
                 </viewController>

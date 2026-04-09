@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="KE8-lJ-pPC">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="E2Q-MS-23o">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Vitals-->
+        <!--Health Stats-->
         <scene sceneID="qFG-Sb-2IJ">
             <objects>
                 <collectionViewController useStoryboardIdentifierAsRestorationIdentifier="YES" id="7hX-YL-uMx" customClass="PatientVitalsCollectionViewController" customModule="wellSync" customModuleProvider="target" sceneMemberID="viewController">
@@ -64,7 +64,7 @@
                             <outlet property="delegate" destination="7hX-YL-uMx" id="gLu-q0-vrE"/>
                         </connections>
                     </collectionView>
-                    <navigationItem key="navigationItem" title="Vitals" id="Qa4-Z8-oXD">
+                    <navigationItem key="navigationItem" title="Health Stats" id="Qa4-Z8-oXD">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="npi-5C-wat">
                             <connections>
                                 <segue destination="xdp-AV-fq3" kind="presentation" id="Yhy-ds-DeD"/>
@@ -74,7 +74,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XZe-j3-dm7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4466.4122137404574" y="-56.338028169014088"/>
+            <point key="canvasLocation" x="5391.6030534351139" y="-56.338028169014088"/>
         </scene>
         <!--log-->
         <scene sceneID="3Tx-OA-o6Y">
@@ -82,13 +82,13 @@
                 <viewControllerPlaceholder storyboardIdentifier=" log" storyboardName=" Vitallog" referencedIdentifier="log" id="xdp-AV-fq3" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3gV-Jf-ePv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5110" y="-68"/>
+            <point key="canvasLocation" x="6035.8778625954192" y="-68.309859154929583"/>
         </scene>
-        <!--Vitals-->
+        <!--Health Stats-->
         <scene sceneID="YDI-FQ-Dl2">
             <objects>
                 <navigationController storyboardIdentifier="pVitals" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="KE8-lJ-pPC" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Vitals" image="waveform.path.ecg" catalog="system" id="Mge-m9-fVm"/>
+                    <tabBarItem key="tabBarItem" title="Health Stats" image="waveform.path.ecg" catalog="system" id="Mge-m9-fVm"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="oYd-PJ-qZw">
                         <rect key="frame" x="0.0" y="118" width="393" height="106"/>
@@ -100,6 +100,23 @@
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t4a-K2-Zg4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4466.4122137404574" y="-56.338028169014088"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="BR4-NH-CBD">
+            <objects>
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="E2Q-MS-23o" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="aB0-hp-SK5">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="KE8-lJ-pPC" kind="relationship" relationship="viewControllers" id="SC6-Tj-793"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9qX-4h-Za5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3539.6946564885493" y="-56.338028169014088"/>
         </scene>

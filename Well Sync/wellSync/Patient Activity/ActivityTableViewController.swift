@@ -348,11 +348,11 @@ class ActivityTableViewController: UITableViewController, UIImagePickerControlle
 
         Task {
             do {
-                async let todayTask = buildTodayItems(for: patientID)
-                async let logsTask  = buildLogSummaries(for: patientID)
+//                async let todayTask =
+//                async let logsTask  =
 
-                let today = try await todayTask
-                let logs  = try await logsTask
+                let today = try await buildTodayItems(for: patientID)
+                let logs  = try await buildLogSummaries(for: patientID)
 
                 await MainActor.run {
                     self.todayItems   = today
@@ -403,11 +403,10 @@ class ActivityTableViewController: UITableViewController, UIImagePickerControlle
                 cell.configureAsTimer(with: todayItems[indexPath.row])
                 cell.onTimerTapped = { [weak self] in
                         guard let self = self else { return }
-                        self.selectedItem = self.todayItems[indexPath.row]
-                        
-                        // 🔥 Perform segue
-                        self.performSegue(withIdentifier: "Timer", sender: self)
+                        let item = self.todayItems[indexPath.row]
+                        self.performSegue(withIdentifier: "Timer", sender: item)
                     }
+                
             }
         } else {
             let summary = logSummaries[indexPath.row]
@@ -577,6 +576,38 @@ class ActivityTableViewController: UITableViewController, UIImagePickerControlle
                     alert.addAction(UIAlertAction(title: "OK", style: .default))
                     self.present(alert, animated: true)
                 }
+            }
+        }
+    }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print(indexPath,("////"))
+        if indexPath.section == 1 && logSummaries[indexPath.row].isUploadType == true{
+            performSegue(withIdentifier: "Journal", sender: indexPath)
+        }
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "Timer",
+           let VC = segue.destination as? UINavigationController ,
+           let timerVC = VC.viewControllers.first as? timerViewController,
+           let item = sender as? TodayActivityItem {
+            timerVC.onSave = {
+                self.loadData()
+            }
+            timerVC.activityItem = item
+            timerVC.patient      = patient
+        }
+        if segue.identifier == "Journal",
+           let journalVC = segue.destination as? JournalTableViewController,
+           let indexPath = sender as? IndexPath {
+            
+            if indexPath.section == 1 {
+                // Current activity
+                let item = logSummaries[indexPath.row]
+                print(item,self.patient!)
+                journalVC.selectedAssignment = item.assignment
+                journalVC.selectedActivity = item.activity
+                journalVC.patient = self.patient
+                
             }
         }
     }

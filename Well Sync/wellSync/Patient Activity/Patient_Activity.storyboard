@@ -119,6 +119,7 @@
                     <navigationItem key="navigationItem" title="Activity" largeTitleDisplayMode="always" id="SyC-EL-5hE"/>
                     <connections>
                         <segue destination="TFI-bQ-WJw" kind="presentation" identifier="Timer" id="p6D-j6-60J"/>
+                        <segue destination="yKG-xu-u2E" kind="show" identifier="Journal" id="k6K-HQ-znb"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3Ad-XG-cJA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -132,6 +133,16 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vnx-Pw-6Tu" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3019" y="1084"/>
+        </scene>
+        <!--Journal-->
+        <scene sceneID="08h-ST-UVj">
+            <objects>
+                <viewControllerPlaceholder storyboardIdentifier="Journal" storyboardName="Jouranl" referencedIdentifier="Journal" id="yKG-xu-u2E" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="fSA-CR-yr0"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JkF-MC-NQd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3092" y="1165"/>
         </scene>
         <!--Activity-->
         <scene sceneID="CAH-zj-pUu">

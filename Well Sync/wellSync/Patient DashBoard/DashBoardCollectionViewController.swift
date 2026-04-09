@@ -234,7 +234,7 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
                 var comps  = DateComponents()
                 comps.year = 2026; comps.month = 3; comps.day = 26
                 comps.hour = 14;   comps.minute = 0
-                let sessionDate = Calendar.current.date(from: comps) ?? Date()
+                let sessionDate = patient?.nextSessionDate
                 cell.configure(doctorName: "Dr. Meena Kumari", sessionDate: sessionDate)
                 style(cell)
                 return cell
