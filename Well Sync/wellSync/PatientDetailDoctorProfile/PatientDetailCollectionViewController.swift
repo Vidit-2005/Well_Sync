@@ -13,7 +13,7 @@ class PatientDetailCollectionViewController: UICollectionViewController{
     @IBOutlet weak var doneButton: UIBarButtonItem!
     
   var patient: Patient?
-
+    var sessionNotes : [SessionNote] = []
     override func viewDidLoad() {
         super.viewDidLoad()
         registerCells()
@@ -24,6 +24,14 @@ class PatientDetailCollectionViewController: UICollectionViewController{
         PatientProfileCollectionView.dataSource = self
         
         updateDoneButtonColor()
+        loadSessionNotes()
+        if let sessionDate = patient?.nextSessionDate{
+            let cal = Calendar.current
+            
+            if !cal.isDateInToday(sessionDate){
+                doneButton.isEnabled = false
+            }
+        }
     }
     func registerCells(){
         PatientProfileCollectionView.register(UINib(nibName: "ProfileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "ProfileCollectionViewCell")
@@ -189,6 +197,20 @@ extension PatientDetailCollectionViewController{
             
         }
     }
+    
+    func loadSessionNotes(){
+        Task{
+            guard let patientID = patient?.patientID else { return }
+            do{
+                let fetchedNotes = try await AccessSupabase.shared.fetchSessionNotes(patientID: patientID)
+                await MainActor.run{
+                    self.sessionNotes = fetchedNotes
+                }
+            }catch{
+                    print("Session Notes can't be fetched")
+            }
+        }
+    }
     @IBAction func doneButtonTapped(_ sender: UIBarButtonItem){
         guard let patient = self.patient else { return }
         
@@ -197,6 +219,9 @@ extension PatientDetailCollectionViewController{
             showAlreadyDone()
             return
         }
+        if hasSessionNote(){
+            handleAlertFlow(patient)
+        }
         let alert = UIAlertController(title: "Session Note", message: "Add the session Note?", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Later", style: .default, handler: { _ in
                 self.handleAlertFlow(patient)
@@ -204,6 +229,18 @@ extension PatientDetailCollectionViewController{
             alert.addAction(UIAlertAction(title: "Cancel", style: .destructive))
             present(alert, animated: true)
         }
+    
+    func hasSessionNote() -> Bool{
+        guard let sessionDate = patient?.nextSessionDate else { return false }
+        let cal = Calendar.current
+        guard cal.isDateInToday(sessionDate) else { return false }
+        let sessionDay = cal.startOfDay(for: sessionDate)
+        let hasNote = sessionNotes.contains {
+                let noteDay = cal.startOfDay(for: $0.date)
+                return noteDay == sessionDay
+            }
+        return hasNote
+    }
     func handleAlertFlow(_ patient: Patient){
         let calendar = Calendar.current
             if let nextDate = patient.nextSessionDate,
@@ -283,7 +320,7 @@ extension PatientDetailCollectionViewController: ProfileCellDelegate {
         
         popoverVC.modalPresentationStyle = .popover
         
-        popoverVC.preferredContentSize = CGSize(width: 350, height: 620)
+        popoverVC.preferredContentSize = CGSize(width: 300, height: 500)
         
         if let popover = popoverVC.popoverPresentationController {
             popover.sourceView = sourceView
