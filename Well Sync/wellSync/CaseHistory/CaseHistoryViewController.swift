@@ -236,7 +236,7 @@ extension CaseHistoryViewController: UIImagePickerControllerDelegate, UINavigati
                     }), for: .editingChanged)
                 }
         
-            let preview = UIImageView(frame: CGRect(x: 30, y: 50, width: 100, height: 100))
+            let preview = UIImageView(frame: CGRect(x: 30, y: 50, width: 80, height: 80))
             preview.contentMode = .scaleAspectFill
             preview.image = self.selectedImage ?? UIImage(systemName: "doc.fill")
             preview.clipsToBounds = true
@@ -323,9 +323,9 @@ extension CaseHistoryViewController: QLPreviewControllerDataSource, UICollection
     
     @IBAction func downLoadButtonTapped(_ sender: Any) {
         guard let caseHistory = self.caseHistory else {
-                print("No case history")
-                return
-            }
+            print("No case history")
+            return
+        }
         if let url = ReportGenerator.createPDF(patient: patient, history: caseHistory){
             self.generatedReportURl = url
             
@@ -337,26 +337,26 @@ extension CaseHistoryViewController: QLPreviewControllerDataSource, UICollection
         }
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-            if indexPath.section == 0 {
-                let report = reports[indexPath.item]
-                openReport(report)
-            }
+        if indexPath.section == 0 {
+            let report = reports[indexPath.item]
+            openReport(report)
         }
+    }
     
-//    func openReport(_ report: Report) {
-//        guard let path = report.reportPaths.first,
-//              let url = URL(string: path) else { return }
-//
-//        self.generatedReportURl = url
-//        
-//        let preview = QLPreviewController()
-//        preview.dataSource = self
-//        present(preview, animated: true)
-//    }
+    //    func openReport(_ report: Report) {
+    //        guard let path = report.reportPaths.first,
+    //              let url = URL(string: path) else { return }
+    //
+    //        self.generatedReportURl = url
+    //
+    //        let preview = QLPreviewController()
+    //        preview.dataSource = self
+    //        present(preview, animated: true)
+    //    }
     
     func openReport(_ report: Report) {
         guard let publicURLString = report.reportPaths.first else { return }
-
+        
         Task {
             do {
                 // 1. Download data from Supabase
@@ -385,4 +385,50 @@ extension CaseHistoryViewController: QLPreviewControllerDataSource, UICollection
         }
     }
     
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        if indexPath.section != 0 { return nil}
+        
+        let report = reports[indexPath.item]
+        
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            
+            let deleteAction = UIAction(
+                title: "Delete",
+                image: UIImage(systemName: "trash"),
+                attributes: .destructive
+            ){ _ in
+                self.showDeleteAlert(for: report, at: indexPath)
+            }
+            return UIMenu(title: "", children: [deleteAction])
+        }
+    }
+    
+    func showDeleteAlert(for report: Report, at indexPath: IndexPath) {
+        let alert = UIAlertController(title: "Delete Report", message: "Are You Sure you want to delete this Report?" , preferredStyle: .alert)
+        
+        let deletion = UIAlertAction(title: "Delete", style: .destructive){ _ in
+            self.deleteReport(report, indexPath)
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: .default)
+        
+        alert.addAction(deletion)
+        alert.addAction(cancel)
+        
+        present(alert, animated: true)
+    }
+    
+    func deleteReport(_ report: Report, _ indexPath: IndexPath) {
+        Task{
+            do{
+                try await AccessSupabase.shared.deleteReport(report: report)
+                
+                await MainActor.run{
+                    self.reports.remove(at: indexPath.item)
+                    self.CaseHistoryCollectionView.deleteItems(at: [indexPath])
+                }
+            }
+        }
+    }
 }
+    

@@ -791,6 +791,29 @@ final class AccessSupabase {
         return publicURL.absoluteString
     }
     
+    func deleteReport(report: Report) async throws -> Void {
+        guard let fileURL = report.reportPaths.first,
+              let url = URL(string: fileURL)else{
+            throw NSError(domain: "Invalid URL", code: 0)
+        }
+        
+//        let path = url.path.components(separatedBy: "\(reportBucket)/").last ?? ""
+        
+        let path = "reports/" + url.lastPathComponent
+            
+            print("Deleting path:", path)
+        
+        try await supabase.storage
+            .from(reportBucket)
+            .remove(paths: [path])
+        
+        try await supabase
+            .from("reports")
+            .delete()
+            .eq("report_id", value: report.reportId)
+            .execute()
+    }
+    
     func downloadReportData(url: String) async throws -> Data {
         // Extract the path from the full public URL
         // Public URL looks like: .../storage/v1/object/public/PatientHistory/reports/filename.jpg

@@ -46,8 +46,8 @@ class DetailCollectionViewCell: UICollectionViewCell {
         "Summarised Report",
         "Mood Analysis",
         "Activity Status",
-        "Vitals",
-        "Case History",
+        "Health Stats",
+        "Patient History",
     ]
     let describes: [String] = [
         "Previous session logs",
