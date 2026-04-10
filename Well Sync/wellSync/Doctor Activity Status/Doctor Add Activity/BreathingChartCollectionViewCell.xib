@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="breathingGraphCell" id="gTV-IL-0wX" customClass="BreathingChartCollectionViewCell" customModule="sample" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="404" height="230"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="404" height="230"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PyS-rw-MXH">
+                        <rect key="frame" x="0.0" y="0.0" width="404" height="230"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1YG-zt-HPY" customClass="LineChartView" customModule="DGCharts">
+                                <rect key="frame" x="8" y="8" width="388" height="214"/>
+                                <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="a9R-aS-yVc"/>
+                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="1YG-zt-HPY" firstAttribute="top" secondItem="PyS-rw-MXH" secondAttribute="top" constant="8" id="S6I-C9-E7M"/>
+                            <constraint firstAttribute="trailing" secondItem="1YG-zt-HPY" secondAttribute="trailing" constant="8" id="fVf-1n-hHd"/>
+                            <constraint firstAttribute="bottom" secondItem="1YG-zt-HPY" secondAttribute="bottom" constant="8" id="lL1-ri-jLg"/>
+                            <constraint firstItem="1YG-zt-HPY" firstAttribute="leading" secondItem="PyS-rw-MXH" secondAttribute="leading" constant="8" id="vqC-Ax-ZEF"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="PyS-rw-MXH" secondAttribute="bottom" id="4Yh-Op-Fwx"/>
+                <constraint firstAttribute="trailing" secondItem="PyS-rw-MXH" secondAttribute="trailing" id="apD-5e-7Mx"/>
+                <constraint firstItem="PyS-rw-MXH" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="rNC-PL-ckn"/>
+                <constraint firstItem="PyS-rw-MXH" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="vlz-4t-cqa"/>
+            </constraints>
+            <size key="customSize" width="404" height="230"/>
+            <connections>
+                <outlet property="cardView" destination="PyS-rw-MXH" id="V1L-et-Nf2"/>
+                <outlet property="chartView" destination="1YG-zt-HPY" id="uqe-oC-7QO"/>
+            </connections>
+            <point key="canvasLocation" x="409.16030534351142" y="216.90140845070422"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

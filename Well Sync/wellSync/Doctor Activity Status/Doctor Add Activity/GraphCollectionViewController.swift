@@ -20,20 +20,23 @@ class GraphCollectionViewController: UICollectionViewController {
         collectionView.backgroundColor = .systemBackground
         
         collectionView.register(
-            UINib(nibName: "CalendarCell1", bundle: nil),
+            UINib(nibName: "CalendarCellAppointment", bundle: nil),
             forCellWithReuseIdentifier: "calender"
         )
         
         collectionView.register(
-            UINib(nibName: "PatientCellAppointment", bundle: nil),
-            forCellWithReuseIdentifier: "PatientCellAppointment"
+            UINib(nibName: "BreathingChartCollectionViewCell", bundle: nil),
+            forCellWithReuseIdentifier: "breathingGraphCell"
         )
         collectionView.register(
-            UINib(nibName: "SectionHeaderView", bundle: nil),
+            UINib(nibName: "SectionHeaderViewAp", bundle: nil),
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: "SectionHeaderView"
+            withReuseIdentifier: "SectionHeaderViewAp"
         )
-        
+        collectionView.register(
+            UINib(nibName: "insightCollectionViewCellGr", bundle: nil),
+            forCellWithReuseIdentifier: "insightCellGr"
+        )
         
         collectionView.collectionViewLayout = generateLayout()
     }
@@ -41,17 +44,14 @@ class GraphCollectionViewController: UICollectionViewController {
     // MARK: - Sections
     
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 3
+        return 4
     }
     
     override func collectionView(_ collectionView: UICollectionView,
                                  numberOfItemsInSection section: Int) -> Int {
-        switch section {
-        case 2:
-            return filteredPatients().count   // 🔥 MULTIPLE CARDS
-        default:
+       
             return 1
-        }
+        
     }
     
     // MARK: - Cells
@@ -68,7 +68,7 @@ class GraphCollectionViewController: UICollectionViewController {
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: "calender",
                 for: indexPath
-            ) as! CalendarCellAct
+            ) as! CalendarCellAppointment
             
             style(cell)
             
@@ -85,40 +85,28 @@ class GraphCollectionViewController: UICollectionViewController {
                     self.collectionView.layoutIfNeeded()
                 }
             }
-            cell.onDateSelected = { [weak self] date in
-                          guard let self = self else { return }
-                          
-                          self.selectedDate = date
-                          
-                          print("Selected:", date)
-                          
-                          self.collectionView.reloadSections(IndexSet(integer: 2))
-                      }
+          
             cell.configure(segment: selectedSegmentIndex)
             
             return cell
             
         case 2:
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: "PatientCellAppointment",
+                withReuseIdentifier: "breathingGraphCell",
                 for: indexPath
-            ) as! PatientCellAppointment
+            ) as! BreathingChartCollectionViewCell
             
-            let patient = filteredPatients()[indexPath.item]
-            print("Selected Date:", selectedDate)
-            print("Filtered Count:", filteredPatients().count)
-            // ✅ Use your cell's configure method
-            cell.configure(
-                name: patient.name,
-                condition: patient.condition!,
-                previousSessionDate: patient.previousSessionDate,
-                imageName: patient.imageURL   // ⚠️ see note below
-            )
             
-            // 🔥 Set session time (not handled in configure)
-            let formatter = DateFormatter()
-            formatter.dateFormat = "hh:mm a"
-            cell.sessionLabel.text = formatter.string(from: patient.nextSessionDate!)
+            style(cell)
+            
+            return cell
+            
+        case 3:
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: "insightCell",
+                for: indexPath
+            ) as! insightCollectionViewCellGr
+            
             
             style(cell)
             
@@ -131,17 +119,7 @@ class GraphCollectionViewController: UICollectionViewController {
     
     
     
-    func filteredPatients() -> [Patient] {
-           let calendar = Calendar.current
-           
-           return patients.filter {
-               guard let sessionDate = $0.nextSessionDate else { return false }
-               
-               return calendar.isDate(sessionDate,
-                                      equalTo: selectedDate,
-                                      toGranularity: .day)
-           }
-       }
+   
     
     
     override func collectionView(
@@ -156,15 +134,15 @@ class GraphCollectionViewController: UICollectionViewController {
 
         let header = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
-            withReuseIdentifier: "SectionHeaderView",
+            withReuseIdentifier: "SectionHeaderViewAp",
             for: indexPath
-        ) as! SectionHeaderView
+        ) as! SectionHeaderViewAp
 
         switch indexPath.section {
-        case 1:
-            header.configure(withTitle: "Appointments")
         case 2:
-            header.configure(withTitle: "Patients")
+            header.configure(withTitle: "Graph")
+        case 3:
+            header.configure(withTitle: "Engagement Insights")
         default:
             header.configure(withTitle: "")
         }
@@ -223,6 +201,16 @@ class GraphCollectionViewController: UICollectionViewController {
                 
                 return section
                 
+            case 3:
+                       let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(100))
+                       let item = NSCollectionLayoutItem(layoutSize: itemSize)
+                       let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(100))
+                       let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
+                       let section = NSCollectionLayoutSection(group: group)
+                       section.boundarySupplementaryItems = [header] // ✅ Engagement Insights header
+                       section.contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
+                       return section
+                
             default:
                 height = .absolute(100)
             }
@@ -243,7 +231,7 @@ class GraphCollectionViewController: UICollectionViewController {
             )
             
             let section = NSCollectionLayoutSection(group: group)
-         
+            
             section.contentInsets = NSDirectionalEdgeInsets(
                 top: sectionIndex == 0 ? 0 : 16,
                 leading: sectionIndex == 2 ? 0 : 16,
@@ -261,6 +249,9 @@ class GraphCollectionViewController: UICollectionViewController {
         cell.layer.cornerRadius = 16
         cell.layer.masksToBounds = true
     }
+ 
+
+
     // MARK: - Segment Toggle (FIXED INDEX)
     
     @IBAction func sectionChanged(_ sender: UISegmentedControl) {
