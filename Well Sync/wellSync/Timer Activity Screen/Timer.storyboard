@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jmk-n3-JcJ" customClass="TimerRingView" customModule="wellSync" customModuleProvider="target">
-                                <rect key="frame" x="72" y="238.33333333333337" width="250" height="250"/>
+                                <rect key="frame" x="72" y="216.33333333333337" width="250" height="250"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:25:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6Ra-Aw-0HN">
                                         <rect key="frame" x="55" y="104.66666666666666" width="140" height="41"/>
@@ -41,13 +41,13 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="countDownTimer" minuteInterval="1" style="wheels" useCurrentDate="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6z4-9Z-iiQ">
-                                <rect key="frame" x="32" y="512.33333333333337" width="329" height="110"/>
+                                <rect key="frame" x="32" y="490.33333333333326" width="329" height="110"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="110" id="o8G-GJ-TeZ"/>
                                 </constraints>
                             </datePicker>
                             <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Txr-5G-Elo">
-                                <rect key="frame" x="76.666666666666671" y="678.33333333333337" width="80.000000000000014" height="80"/>
+                                <rect key="frame" x="76.666666666666671" y="656.33333333333337" width="80.000000000000014" height="80"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="80" id="15B-Ii-3lQ"/>
                                     <constraint firstAttribute="width" constant="80" id="l40-x4-xAd"/>
@@ -65,7 +65,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sPe-vi-Tip">
-                                <rect key="frame" x="244.66666666666663" y="678.33333333333337" width="80" height="80"/>
+                                <rect key="frame" x="244.66666666666663" y="656.33333333333337" width="80" height="80"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="80" id="Vtp-3z-of4"/>
                                     <constraint firstAttribute="height" constant="80" id="utK-x6-OW2"/>
@@ -83,8 +83,8 @@
                                     <action selector="pause:" destination="3XG-k9-Tgc" eventType="touchUpInside" id="Mfw-An-NjK"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your Doctor Recommands to do the Activity for atleast 5 min" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZfM-LS-6i9">
-                                <rect key="frame" x="16" y="180" width="361" height="42.333333333333343"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Doctor Note" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZfM-LS-6i9">
+                                <rect key="frame" x="16" y="180" width="361" height="20.333333333333343"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -158,7 +158,7 @@
             <color red="1" green="0.79199999570846558" blue="0.15700000524520874" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="secondarySystemBackgroundColor">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

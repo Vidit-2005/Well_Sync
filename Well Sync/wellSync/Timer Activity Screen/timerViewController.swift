@@ -85,7 +85,7 @@ class timerViewController: UIViewController {
         playButton.isEnabled = false
 
         durationSelector.datePickerMode = .countDownTimer
-        doctorsRecommandation.text = "Recommended: 20 min"
+        doctorsRecommandation.text = activityItem?.assignment.doctorNote
 
         updateUI()
     }

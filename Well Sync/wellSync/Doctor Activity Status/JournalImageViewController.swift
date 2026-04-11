@@ -5,233 +5,282 @@
 //  Created by Rishika Mittal on 02/04/26.
 //
 
+//  JournalImageViewController.swift
+//  wellSync
 
 import UIKit
 
 class JournalImageViewController: UIViewController, UIScrollViewDelegate {
-    
-//    // MARK: - Properties
-//    var journalEntry: JournalEntry?
-//    var image: UIImage?
-    @IBOutlet weak var scrollView: UIScrollView!
-    
-    
-    // MARK: - UI
-//    private let scrollView: UIScrollView = {
-//        let sv = UIScrollView()
-//        sv.minimumZoomScale = 1.0
-//        sv.maximumZoomScale = 5.0
-//        sv.showsHorizontalScrollIndicator = false
-//        sv.showsVerticalScrollIndicator = false
-//        sv.translatesAutoresizingMaskIntoConstraints = false
-//        sv.backgroundColor = .black
-//        return sv
-//    }()
-    
-    @IBOutlet weak var imageView: UIImageView!
-//    private let imageView: UIImageView = {
-//        let iv = UIImageView()
-//        iv.contentMode = .scaleAspectFill  // changed — frame handles fit now
-//        return iv
-//    }()
-    
+
+    // MARK: - Outlets
+    @IBOutlet weak var scrollView: UIScrollView!          // horizontal pager
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
-//    private let loadingIndicator: UIActivityIndicatorView = {
-//        let ai = UIActivityIndicatorView(style: .large)
-//        ai.color = .white
-//        ai.translatesAutoresizingMaskIntoConstraints = false
-//        ai.hidesWhenStopped = true
-//        return ai
-//    }()
-    
     @IBOutlet weak var summaryButton: UIButton!
-//    private let summaryButton: UIButton = {
-//        var config = UIButton.Configuration.filled()
-//        config.title = "✦ Summary"
-//        config.baseForegroundColor = .white
-//        config.baseBackgroundColor = UIColor.systemOrange
-//        config.cornerStyle = .capsule
-//        config.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 28, bottom: 14, trailing: 28)
-//        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
-//            var outgoing = incoming
-//            outgoing.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
-//            return outgoing
-//        }
-//        let btn = UIButton(configuration: config)
-//        btn.translatesAutoresizingMaskIntoConstraints = false
-//        // Shadow
-//        btn.layer.shadowColor = UIColor.black.cgColor
-//        btn.layer.shadowOpacity = 0.3
-//        btn.layer.shadowRadius = 8
-//        btn.layer.shadowOffset = CGSize(width: 0, height: 4)
-//        return btn
-//    }()
-    
-    // MARK: - Lifecycle
+    @IBOutlet weak var pageControl: UIPageControl!        // NEW
+
+    // MARK: - Properties
     var journalEntry: JournalEntry?
-    var loadedImage: UIImage?
-        
-        // MARK: - Lifecycle
-        
-        override func viewDidLoad() {
-            super.viewDidLoad()
-            setupScrollView()
-            setupNavigationBar()
-            setupSummaryButton()
-            loadImage()
-            
-            let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
-            doubleTap.numberOfTapsRequired = 2
-            scrollView.addGestureRecognizer(doubleTap)
-        }
-        
-        override func viewDidLayoutSubviews() {
-            super.viewDidLayoutSubviews()
-            fitImageInScrollView()
-        }
-        
-        // MARK: - Setup
-        
-        private func setupScrollView() {
-            scrollView.delegate = self
-            scrollView.minimumZoomScale = 1.0
-            scrollView.maximumZoomScale = 5.0
-            scrollView.showsHorizontalScrollIndicator = false
-            scrollView.showsVerticalScrollIndicator = false
-            scrollView.backgroundColor = .black
-        }
-        
-        private func setupNavigationBar() {
-            title = journalEntry?.title ?? "Journal"
-            navigationController?.navigationBar.tintColor = .white
-            
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithTransparentBackground()
-            appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-            navigationController?.navigationBar.standardAppearance = appearance
-            navigationController?.navigationBar.scrollEdgeAppearance = appearance
-        }
-        
-        private func setupSummaryButton() {
-            summaryButton.isHidden = true
-            // Title set in storyboard, just ensure color
-            summaryButton.tintColor = .white
-            summaryButton.setTitleColor(.white, for: .normal)
-        }
-        
-        // MARK: - Image Fitting
-        
-        private func fitImageInScrollView() {
-            guard let image = imageView.image else { return }
-            
-            let insets = view.safeAreaInsets
-            let availableSize = CGSize(
-                width: scrollView.bounds.width,
-                height: scrollView.bounds.height - insets.top - insets.bottom
-            )
-            
-            let widthScale  = availableSize.width  / image.size.width
-            let heightScale = availableSize.height / image.size.height
-            let scale = min(widthScale, heightScale)
-            
-            let fittedWidth  = image.size.width  * scale
-            let fittedHeight = image.size.height * scale
-            
-            imageView.frame = CGRect(
-                x: (scrollView.bounds.width - fittedWidth) / 2,
-                y: insets.top + (availableSize.height - fittedHeight) / 2,
-                width: fittedWidth,
-                height: fittedHeight
-            )
-            
-            scrollView.contentSize = scrollView.bounds.size
-            scrollView.minimumZoomScale = 1.0
-            scrollView.maximumZoomScale = 5.0
-        }
-        
-        // MARK: - Image Loading
-        
-        private func loadImage() {
-            guard let path = journalEntry?.uploadPath else {
-                showPlaceholder(); return
+
+    /// One inner zoom-scroll-view per image page
+    private var pageScrollViews: [UIScrollView] = []
+    /// Loaded images, indexed by page
+    private var loadedImages: [Int: UIImage] = [:]
+    /// Track which pages have finished loading
+    private var loadedPageCount = 0
+
+    // MARK: - Computed helpers
+    private var paths: [String] { journalEntry?.uploadPaths ?? [] }
+    private var currentPage: Int { Int(round(scrollView.contentOffset.x / scrollView.bounds.width)) }
+
+    // MARK: - Lifecycle
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupOuterScrollView()
+        setupNavigationBar()
+        setupSummaryButton()
+        setupPageControl()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        layoutPages()          // recalculate frames when bounds are known
+    }
+
+    // MARK: - Setup
+
+    private func setupOuterScrollView() {
+        // Outer scroll view scrolls HORIZONTALLY between pages
+        scrollView.delegate = self
+        scrollView.isPagingEnabled = true
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.backgroundColor = .black
+        scrollView.bounces = false
+    }
+
+    private func setupNavigationBar() {
+        title = journalEntry?.title ?? "Journal"
+        navigationController?.navigationBar.tintColor = .white
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+    }
+
+    private func setupSummaryButton() {
+        summaryButton.isHidden = true
+        summaryButton.tintColor = .white
+        summaryButton.setTitleColor(.white, for: .normal)
+    }
+
+    private func setupPageControl() {
+        let count = paths.count
+        pageControl.numberOfPages = count
+        pageControl.currentPage = 0
+        pageControl.isHidden = count <= 1   // hide dots for single image
+    }
+
+    // MARK: - Page Layout
+    // Called after bounds are known (viewDidLayoutSubviews).
+    // Creates one inner UIScrollView + UIImageView per image path
+    // if they haven't been created yet, then loads images.
+
+    private func layoutPages() {
+        guard !paths.isEmpty else { showPlaceholder(); return }
+
+        let pageWidth  = scrollView.bounds.width
+        let pageHeight = scrollView.bounds.height
+
+        // Only build pages once
+        if pageScrollViews.isEmpty {
+            for i in 0..<paths.count {
+                // --- inner zoom scroll view ---
+                let inner = UIScrollView()
+                inner.minimumZoomScale = 1.0
+                inner.maximumZoomScale = 5.0
+                inner.showsHorizontalScrollIndicator = false
+                inner.showsVerticalScrollIndicator = false
+                inner.backgroundColor = .black
+                inner.delegate = self
+                inner.tag = i           // use tag to identify page
+
+                // --- image view inside inner scroll view ---
+                let iv = UIImageView()
+                iv.contentMode = .scaleAspectFit
+                iv.tag = 100 + i        // unique tag to retrieve later
+                inner.addSubview(iv)
+
+                // --- double-tap gesture on each page ---
+                let doubleTap = UITapGestureRecognizer(target: self,
+                                                       action: #selector(handleDoubleTap(_:)))
+                doubleTap.numberOfTapsRequired = 2
+                inner.addGestureRecognizer(doubleTap)
+
+                scrollView.addSubview(inner)
+                pageScrollViews.append(inner)
             }
-            
-            loadingIndicator.startAnimating()
-            summaryButton.isHidden = true
-            
+
+            // Start loading all images concurrently
+            loadAllImages()
+        }
+
+        // Update frames (also called on rotation)
+        scrollView.contentSize = CGSize(width: pageWidth * CGFloat(paths.count),
+                                        height: pageHeight)
+        for (i, inner) in pageScrollViews.enumerated() {
+            inner.frame = CGRect(x: pageWidth * CGFloat(i),
+                                 y: 0,
+                                 width: pageWidth,
+                                 height: pageHeight)
+            // Refit image inside this page
+            if let iv = inner.viewWithTag(100 + i) as? UIImageView, iv.image != nil {
+                fitImage(in: inner, imageView: iv)
+            }
+        }
+    }
+
+    // MARK: - Image Fitting (per page)
+
+    private func fitImage(in innerScroll: UIScrollView, imageView: UIImageView) {
+        guard let image = imageView.image else { return }
+
+        let available = innerScroll.bounds.size
+        let wScale = available.width  / image.size.width
+        let hScale = available.height / image.size.height
+        let scale  = min(wScale, hScale)
+
+        let fw = image.size.width  * scale
+        let fh = image.size.height * scale
+
+        imageView.frame = CGRect(
+            x: (available.width  - fw) / 2,
+            y: (available.height - fh) / 2,
+            width: fw,
+            height: fh
+        )
+        innerScroll.contentSize = available
+        innerScroll.minimumZoomScale = 1.0
+        innerScroll.maximumZoomScale = 5.0
+        innerScroll.zoomScale = 1.0
+    }
+
+    // MARK: - Image Loading
+
+    private func loadAllImages() {
+        guard !paths.isEmpty else { return }
+
+        loadingIndicator.startAnimating()
+        summaryButton.isHidden = true
+        loadedPageCount = 0
+
+        for (i, path) in paths.enumerated() {
             Task {
                 do {
                     let data  = try await AccessSupabase.shared.downloadFile(path: path)
                     let image = UIImage(data: data)
-                    DispatchQueue.main.async {
-                        self.loadingIndicator.stopAnimating()
-                        self.imageView.image = image
-                        self.loadedImage = image
-                        self.fitImageInScrollView()
-                        self.summaryButton.isHidden = false
+                    await MainActor.run {
+                        self.imageDidLoad(image, at: i)
                     }
                 } catch {
-                    DispatchQueue.main.async {
-                        self.loadingIndicator.stopAnimating()
-                        self.showPlaceholder()
+                    await MainActor.run {
+                        self.imageDidLoad(nil, at: i)   // show placeholder for failed page
                     }
                 }
             }
         }
-        
-        private func showPlaceholder() {
-            imageView.image = UIImage(systemName: "photo.fill")
-            imageView.tintColor = .systemGray
-            imageView.contentMode = .scaleAspectFit
-            summaryButton.isHidden = false
-        }
-        
-        // MARK: - Actions
-        
-        @IBAction func summaryTapped(_ sender: UIButton) {
-            guard let image = imageView.image else { return }
-            
-            let sb = UIStoryboard(name: "JournalImageView", bundle: nil)
-            print("🔴 Trying to load ImageSummarySheetViewController")
-            let summaryVC = sb.instantiateViewController(withIdentifier: "ImageSummarySheetViewController")
-                            as! ImageSummarySheetViewController
-            
-            summaryVC.image = image
-            summaryVC.entryTitle = journalEntry?.title ?? "Journal Entry"
-            
-            if let sheet = summaryVC.sheetPresentationController {
-                sheet.detents = [.medium(), .large()]
-                sheet.prefersGrabberVisible = true
-                sheet.preferredCornerRadius = 24
-            }
-            
-            present(summaryVC, animated: true)
-        }
-        
-        @objc private func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
-            if scrollView.zoomScale > 1.0 {
-                scrollView.setZoomScale(1.0, animated: true)
+    }
+
+    private func imageDidLoad(_ image: UIImage?, at index: Int) {
+        guard index < pageScrollViews.count else { return }
+
+        let inner = pageScrollViews[index]
+        if let iv = inner.viewWithTag(100 + index) as? UIImageView {
+            if let image {
+                iv.image = image
+                loadedImages[index] = image
             } else {
-                let point = gesture.location(in: imageView)
-                let rect  = CGRect(x: point.x - 50, y: point.y - 50, width: 100, height: 100)
-                scrollView.zoom(to: rect, animated: true)
+                iv.image = UIImage(systemName: "photo.fill")
+                iv.tintColor = .systemGray
             }
+            fitImage(in: inner, imageView: iv)
         }
-        
-        // MARK: - UIScrollViewDelegate
-        
-        func viewForZooming(in scrollView: UIScrollView) -> UIView? { imageView }
-        
-        func scrollViewDidZoom(_ scrollView: UIScrollView) {
-            let offsetX = max((scrollView.bounds.width  - scrollView.contentSize.width)  / 2, 0)
-            let offsetY = max((scrollView.bounds.height - scrollView.contentSize.height) / 2, 0)
-            imageView.center = CGPoint(
-                x: scrollView.contentSize.width  / 2 + offsetX,
-                y: scrollView.contentSize.height / 2 + offsetY
-            )
+
+        loadedPageCount += 1
+        if loadedPageCount == paths.count {
+            // All pages done — hide spinner, show button
+            loadingIndicator.stopAnimating()
+            summaryButton.isHidden = false
         }
     }
 
+    private func showPlaceholder() {
+        loadingIndicator.stopAnimating()
+        summaryButton.isHidden = false
+    }
+
+    // MARK: - UIScrollViewDelegate
+
+    /// Tells each inner scroll view which UIImageView to zoom
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        // scrollView.tag == page index (set above)
+        guard scrollView != self.scrollView else { return nil }
+        return scrollView.viewWithTag(100 + scrollView.tag)
+    }
+
+    /// Re-center image after zoom
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        guard scrollView != self.scrollView,
+              let iv = scrollView.viewWithTag(100 + scrollView.tag) else { return }
+        let offsetX = max((scrollView.bounds.width  - scrollView.contentSize.width)  / 2, 0)
+        let offsetY = max((scrollView.bounds.height - scrollView.contentSize.height) / 2, 0)
+        iv.center = CGPoint(
+            x: scrollView.contentSize.width  / 2 + offsetX,
+            y: scrollView.contentSize.height / 2 + offsetY
+        )
+    }
+
+    /// Update page control dots when the outer pager scrolls
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        guard scrollView == self.scrollView else { return }
+        pageControl.currentPage = currentPage
+    }
+
+    // MARK: - Double Tap Zoom
+
+    @objc private func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
+        guard let inner = gesture.view as? UIScrollView,
+              let iv = inner.viewWithTag(100 + inner.tag) else { return }
+        if inner.zoomScale > 1.0 {
+            inner.setZoomScale(1.0, animated: true)
+        } else {
+            let point = gesture.location(in: iv)
+            let rect  = CGRect(x: point.x - 50, y: point.y - 50, width: 100, height: 100)
+            inner.zoom(to: rect, animated: true)
+        }
+    }
+
+    // MARK: - Summary Action
+
+    @IBAction func summaryTapped(_ sender: UIButton) {
+        // Use the image from the currently visible page
+        let image = loadedImages[currentPage] ?? UIImage(systemName: "photo.fill")!
+
+        let sb = UIStoryboard(name: "JournalImageView", bundle: nil)
+        let summaryVC = sb.instantiateViewController(withIdentifier: "ImageSummarySheetViewController")
+                        as! ImageSummarySheetViewController
+        summaryVC.image = image
+        summaryVC.entryTitle = journalEntry?.title ?? "Journal Entry"
+
+        if let sheet = summaryVC.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 24
+        }
+        present(summaryVC, animated: true)
+    }
+}
     
 //    override func viewDidLoad() {
 //        super.viewDidLoad()

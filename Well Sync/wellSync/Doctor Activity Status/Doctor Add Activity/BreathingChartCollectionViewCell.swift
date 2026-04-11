@@ -4,21 +4,104 @@
 //
 //  Created by Pranjal on 01/04/26.
 //
-//
-
-//
-//  BreathingChartCollectionViewCell.swift
-//  wellSync
-//
 
 import Charts
 import UIKit
 import DGCharts
 
-class BreathingChartCollectionViewCell: UICollectionViewCell {
+class BarChartMarkerView: MarkerView {
+
+    private let label            = UILabel()
+    private let padding: CGFloat = 10
+
+    // Set this before assigning to chartView.marker
+    var xLabels: [String]        = []
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor          = UIColor.black.withAlphaComponent(0.85)
+        layer.cornerRadius       = 10
+        layer.masksToBounds      = true
+        label.font               = .systemFont(ofSize: 12, weight: .semibold)
+        label.textColor          = .white
+        label.textAlignment      = .center
+        addSubview(label)
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+
+    override func refreshContent(entry: ChartDataEntry, highlight: Highlight) {
+
+        // Step 1: Get day label from index
+        let index   = Int(entry.x)
+        let day     = index < xLabels.count ? xLabels[index] : "Day \(index + 1)"
+
+        // Step 2: Format the y value (minutes)
+        let minutes = entry.y
+        let valueStr: String
+        if minutes <= 0 {
+            valueStr = "No log"
+        } else if minutes < 1.0 {
+            let seconds = Int(minutes * 60)
+            valueStr = "\(seconds) sec"
+        } else {
+            valueStr = String(format: "%.1f min", minutes)
+        }
+
+        // Step 3: Build label text
+        label.text  = "\(day)   \(valueStr)"
+        label.sizeToFit()
+
+        // Step 4: Resize bubble to fit label + padding
+        frame.size  = CGSize(
+            width:  label.frame.width  + padding * 2,
+            height: label.frame.height + padding
+        )
+        label.center = CGPoint(x: frame.width / 2, y: frame.height / 2)
+
+        // Step 5: Smart positioning — avoid clipping at chart edges
+        guard let chart = chartView else {
+            self.offset = CGPoint(x: -frame.width / 2, y: -frame.height - 12)
+            return
+        }
+
+        let chartWidth   = chart.bounds.width
+        let bubbleW      = frame.width
+        let bubbleH      = frame.height
+        let gap: CGFloat = 12
+        let dotX         = highlight.xPx
+        let dotY         = highlight.yPx
+
+        // Default: centered above the bar
+        var offsetX      = -bubbleW / 2
+        var offsetY      = -bubbleH - gap
+
+        // If bubble goes off left edge → push right
+        if dotX + offsetX < 4 {
+            offsetX      = -dotX + 4
+        }
+        // If bubble goes off right edge → push left
+        else if dotX + offsetX + bubbleW > chartWidth - 4 {
+            offsetX      = chartWidth - dotX - bubbleW - 4
+        }
+
+        // If bubble goes above chart top → flip below the bar
+        if dotY + offsetY < 4 {
+            offsetY      = gap
+        }
+
+        self.offset      = CGPoint(x: offsetX, y: offsetY)
+    }
+}
+
+
+class BreathingChartCollectionViewCell: UICollectionViewCell, ChartViewDelegate {
 
     @IBOutlet weak var cardView: UIView!
-    @IBOutlet weak var chartView: LineChartView!
+    @IBOutlet weak var chartView: BarChartView!
+
+    // Stores the current x-axis labels so the marker can look them up by index
+    private var currentLabels: [String] = []
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -28,6 +111,9 @@ class BreathingChartCollectionViewCell: UICollectionViewCell {
         cardView.layer.shadowOpacity = 0.08
         cardView.layer.shadowOffset = CGSize(width: 0, height: 3)
         cardView.layer.shadowRadius = 6
+
+        // Set delegate so chartValueSelected fires
+        chartView.delegate = self
 
         styleChart()
     }
@@ -46,18 +132,32 @@ class BreathingChartCollectionViewCell: UICollectionViewCell {
         chartView.leftAxis.gridColor = UIColor.systemGray4
         chartView.leftAxis.gridLineWidth = 0.5
         chartView.leftAxis.axisMinimum = 0
+        chartView.leftAxis.spaceTop = 0.15
+        chartView.leftAxis.valueFormatter = MinutesAxisFormatter()  // ← ADD THIS
 
         chartView.drawBordersEnabled = false
+        chartView.highlightPerTapEnabled = true
+        chartView.highlightPerDragEnabled = false
+
         chartView.noDataText = "No activity logged"
         chartView.noDataTextColor = .secondaryLabel
     }
+    // Converts stored minutes → readable seconds or minutes for the y-axis
+    class MinutesAxisFormatter: AxisValueFormatter {
+        func stringForValue(_ value: Double, axis: AxisBase?) -> String {
+            if value <= 0 { return "0" }
+            if value < 1.0 {
+                // e.g. 0.30 minutes → "18s"
+                return "\(Int(value * 60))s"
+            } else {
+                // e.g. 2.5 minutes → "2.5m"
+                return String(format: "%.1fm", value)
+            }
+        }
+    }
 
-    // MARK: - Main configure entry point
+    // MARK: - Configure entry point
 
-    /// - Parameters:
-    ///   - logs: All logs for this activity (unfiltered — we filter internally by week/month)
-    ///   - mode: 0 = weekly, 1 = monthly
-    ///   - referenceDate: The date the user tapped on the calendar (or today by default)
     func configure(with logs: [ActivityLog], mode: Int, referenceDate: Date) {
         if mode == 0 {
             configureWeekly(logs: logs, referenceDate: referenceDate)
@@ -66,163 +166,131 @@ class BreathingChartCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    // MARK: - Weekly (Sun → Sat of the week containing referenceDate)
+    // MARK: - Weekly
 
     private func configureWeekly(logs: [ActivityLog], referenceDate: Date) {
         let calendar = Calendar.current
 
-        // --- Step 1: Find Sunday of the week containing referenceDate ---
-        // weekday: 1=Sun, 2=Mon ... 7=Sat
         let weekday = calendar.component(.weekday, from: referenceDate)
-        let daysFromSunday = weekday - 1   // 0 if already Sunday
+        let daysFromSunday = weekday - 1
         guard let weekStart = calendar.date(
             byAdding: .day,
             value: -daysFromSunday,
             to: calendar.startOfDay(for: referenceDate)
         ) else { return }
 
-        // --- Step 2: Build 7 day slots (Sun=0 … Sat=6) ---
         let dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
         var minutesPerSlot: [Double] = Array(repeating: 0.0, count: 7)
 
         for log in logs {
             let logDay = calendar.startOfDay(for: log.date)
             let diff = calendar.dateComponents([.day], from: weekStart, to: logDay).day ?? -1
-            // diff 0…6 means it falls within this week
-            if diff >= 0 && diff < 7 {
-                minutesPerSlot[diff] += Double(log.duration ?? 0) / 60.0
-            }
+            guard diff >= 0 && diff < 7 else { continue }
+            minutesPerSlot[diff] += Double(log.duration ?? 0) / 60.0
         }
 
-        applyToChart(entries: minutesPerSlot, labels: dayLabels)
+        let entries = minutesPerSlot.enumerated().map { i, value in
+            BarChartDataEntry(x: Double(i), y: value)
+        }
+
+        applyToChart(entries: entries, labels: dayLabels)
     }
 
-    // MARK: - Monthly (day 1 → last day of the month containing referenceDate)
+    // MARK: - Monthly
 
     private func configureMonthly(logs: [ActivityLog], referenceDate: Date) {
         let calendar = Calendar.current
 
-        // --- Step 1: Find the first day and number of days in the month ---
         let components = calendar.dateComponents([.year, .month], from: referenceDate)
         guard
             let firstOfMonth = calendar.date(from: components),
             let range = calendar.range(of: .day, in: .month, for: firstOfMonth)
         else { return }
 
-        let daysInMonth = range.count   // 28, 29, 30, or 31
-
-        // --- Step 2: Build N-slot array (index 0 = day 1) ---
+        let daysInMonth = range.count
         var minutesPerDay: [Double] = Array(repeating: 0.0, count: daysInMonth)
 
         for log in logs {
-            let logComponents = calendar.dateComponents([.year, .month, .day], from: log.date)
-            // Must be same year + month
+            let logComps = calendar.dateComponents([.year, .month, .day], from: log.date)
             guard
-                logComponents.year  == components.year,
-                logComponents.month == components.month,
-                let day = logComponents.day,
+                logComps.year  == components.year,
+                logComps.month == components.month,
+                let day = logComps.day,
                 day >= 1 && day <= daysInMonth
             else { continue }
-
             minutesPerDay[day - 1] += Double(log.duration ?? 0) / 60.0
         }
 
-        // --- Step 3: Build x-axis labels (show every 5th day to avoid crowding) ---
-        let labels: [String] = (1...daysInMonth).map { day in
+        let entries = minutesPerDay.enumerated().map { i, value in
+            BarChartDataEntry(x: Double(i), y: value)
+        }
+
+        // Full day-number labels for marker lookup, sparse display on x-axis
+        let allDayLabels: [String] = (1...daysInMonth).map { "\($0)" }
+        let displayLabels: [String] = (1...daysInMonth).map { day in
             day % 5 == 1 ? "\(day)" : ""
         }
 
-        applyToChart(entries: minutesPerDay, labels: labels)
+        // Store full labels for marker, pass display labels for x-axis
+        applyToChart(entries: entries, labels: displayLabels, markerLabels: allDayLabels)
     }
 
     // MARK: - Shared chart rendering
 
-    private func applyToChart(entries minutesArray: [Double], labels: [String]) {
-        // Build ChartDataEntry array
-        let chartEntries = minutesArray.enumerated().map { index, value in
-            ChartDataEntry(x: Double(index), y: value)
+    /// - Parameters:
+    ///   - entries: bar entries
+    ///   - labels: what appears on the x-axis (may have empty strings)
+    ///   - markerLabels: full labels used by the tap marker (defaults to labels if not provided)
+    private func applyToChart(
+        entries: [BarChartDataEntry],
+        labels: [String],
+        markerLabels: [String]? = nil
+    ) {
+        // Save labels for the marker to use
+        currentLabels = markerLabels ?? labels
+
+        guard !entries.isEmpty else {
+            chartView.data = nil
+            chartView.notifyDataSetChanged()
+            return
         }
 
-        // Dataset styling
-        let dataSet = LineChartDataSet(entries: chartEntries)
-        dataSet.mode = .cubicBezier
-        dataSet.lineWidth = 3
-        dataSet.setColor(.systemTeal)
-        dataSet.circleColors = [.systemTeal]
-        dataSet.circleRadius = 4
+        let dataSet = BarChartDataSet(entries: entries)
+        dataSet.setColor(UIColor.systemTeal.withAlphaComponent(0.8))
         dataSet.drawValuesEnabled = false
-        dataSet.drawFilledEnabled = true
-        dataSet.fillColor = UIColor.systemTeal.withAlphaComponent(0.15)
-        dataSet.fillAlpha = 1.0
+        dataSet.highlightColor = UIColor.systemIndigo.withAlphaComponent(0.4)
+        dataSet.highlightAlpha = 1.0
 
-        // Apply data
-        chartView.data = LineChartData(dataSet: dataSet)
+        let data = BarChartData(dataSet: dataSet)
+        data.barWidth = 0.6
 
-        // Apply labels
+        chartView.data = data
+
         chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: labels)
         chartView.xAxis.labelCount = labels.count
+        chartView.fitBars = true
+
+        // Create and assign the marker with current labels
+        let marker = BarChartMarkerView()
+        marker.xLabels = currentLabels
+        marker.chartView = chartView
+        chartView.marker = marker
 
         chartView.notifyDataSetChanged()
-        chartView.animate(xAxisDuration: 0.4)
+        chartView.animate(yAxisDuration: 0.4)
+    }
+
+    // MARK: - ChartViewDelegate — tap on a bar
+
+    func chartValueSelected(_ chartView: ChartViewBase,
+                            entry: ChartDataEntry,
+                            highlight: Highlight) {
+        // Marker appears automatically — nothing extra needed here.
+        // Add any additional action on tap below if needed.
+    }
+
+    func chartValueNothingSelected(_ chartView: ChartViewBase) {
+        // Tapping empty area hides the marker automatically
+        chartView.highlightValue(nil)
     }
 }
-//import Charts
-//import UIKit
-//import DGCharts
-//
-//
-//class BreathingChartCollectionViewCell: UICollectionViewCell {
-//   
-//    @IBOutlet weak var cardView: UIView!
-//    @IBOutlet weak var chartView: LineChartView!
-//    override func awakeFromNib() {
-//        super.awakeFromNib()
-//        
-//        cardView.layer.cornerRadius = 20
-//        cardView.layer.shadowColor = UIColor.black.cgColor
-//        cardView.layer.shadowOpacity = 0.08
-//        cardView.layer.shadowOffset = CGSize(width: 0, height: 3)
-//        cardView.layer.shadowRadius = 6
-//        setupChart()
-//    }
-//
-//    func setupChart() {
-//
-//        let entries = [
-//            ChartDataEntry(x:0,y:2),
-//            ChartDataEntry(x:1,y:6),
-//            ChartDataEntry(x:2,y:3),
-//            ChartDataEntry(x:3,y:7),
-//            ChartDataEntry(x:4,y:1),
-//            ChartDataEntry(x:5,y:5),
-//            ChartDataEntry(x:6,y:4)
-//        ]
-//
-//        let dataSet = LineChartDataSet(entries: entries)
-//
-//        dataSet.mode = .cubicBezier
-//        dataSet.lineWidth = 3
-//        dataSet.setColor(.systemTeal)
-//        dataSet.circleColors = [.systemTeal]
-//        dataSet.drawValuesEnabled = false
-//
-//        chartView.data = LineChartData(dataSet: dataSet)
-//
-//        chartView.rightAxis.enabled = false
-//        chartView.legend.enabled = false
-//        chartView.chartDescription.enabled = false
-//        chartView.xAxis.drawGridLinesEnabled = false
-//        
-//        chartView.leftAxis.gridColor = UIColor.systemGray4
-//        chartView.xAxis.gridColor = UIColor.systemGray4
-//        chartView.leftAxis.gridLineWidth = 0.5
-//        chartView.xAxis.gridLineWidth = 0.5
-//        chartView.drawBordersEnabled = false
-//
-//        chartView.noDataText = ""
-//
-//        let days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
-//        chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: days)
-//        chartView.xAxis.granularity = 1
-//    }
-//}
