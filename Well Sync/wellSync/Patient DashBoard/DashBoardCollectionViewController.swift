@@ -87,6 +87,8 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
             load()
         }
     }
+    
+    private let actionHandler = ActivityActionHandler()
 
     private func makeDashboardMenu() -> UIMenu {
         let profile = UIAction(title: "Profile", image: UIImage(systemName: "person")) { _ in
@@ -108,6 +110,21 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         let menu = makeDashboardMenu()
         let more = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), menu: menu)
         navigationItem.rightBarButtonItem = more
+
+        // Add this in viewDidLoad, after super
+        actionHandler.presentingViewController = self
+        actionHandler.onSuccess = { [weak self] in self?.load() }
+        actionHandler.onFailure = { [weak self] error in
+            let alert = UIAlertController(title: "Upload Failed",
+                                          message: "\(error)",
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            self?.present(alert, animated: true)
+        }
+        actionHandler.onTimerTapped = { [weak self] item in
+            // Dashboard doesn't have a timer segue yet — add identifier if needed
+            self?.performSegue(withIdentifier: "Timer", sender: item)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -115,6 +132,7 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         load()
         resetMoodViews()
     }
+    
 
     func load() {
         guard let patientID = patient?.patientID else { return }
@@ -186,34 +204,34 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
     override func collectionView(_ collectionView: UICollectionView,
                                  cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch indexPath.section {
-
+            
         case 0:
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: "streakCell", for: indexPath
             ) as! StreakCell
-
+            
             // ✅ ActivityLogs has ALL logs, toDoItems only has incomplete ones
             let cal = Calendar.current
             let thisWeekDates: [Date] = ActivityLogs
                 .map { $0.date }
                 .filter { cal.isDate($0, equalTo: Date(), toGranularity: .weekOfYear) }
-
+            
             cell.loggedDates = thisWeekDates
             cell.configure()
             cell.updateStreak(currentStreak)
             style(cell)
             return cell
-
+            
         case 1:
             if indexPath.row == 0 {
                 let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: "activityRing", for: indexPath
                 ) as! ActivityRingCell
                 let completed = totalTodayItems - toDoItems.count
-                    let progress  = totalTodayItems > 0
-                        ? CGFloat(completed) / CGFloat(totalTodayItems)
-                        : 0
-                    cell.configure(progress: progress)
+                let progress  = totalTodayItems > 0
+                ? CGFloat(completed) / CGFloat(totalTodayItems)
+                : 0
+                cell.configure(progress: progress)
                 if let label = cell.viewWithTag(1) as? UILabel { label.text = items[indexPath.row + 1] }
                 if let label1 = cell.viewWithTag(2) as? UILabel { label1.text = "\(completed)/\(totalTodayItems)" }
                 style(cell)
@@ -254,14 +272,33 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
                 )
                 return cell
             }
-
+            
         default:
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: "BasicCell", for: indexPath
-            )
+            ) as! BasicCollectionViewCell
+
             let item = toDoItems[indexPath.row]
-            if let label = cell.viewWithTag(1) as? UILabel  { label.text  = item.activity.name }
+
+            if let label = cell.viewWithTag(1) as? UILabel     { label.text  = item.activity.name }
             if let image = cell.viewWithTag(2) as? UIImageView { image.image = UIImage(systemName: item.activity.iconName) }
+
+            if item.isUploadType {
+                // Shows Camera / Photo Library popover attached to the button — same as table view
+                cell.setupPhotoMenu()
+                cell.onPhotoSourceSelected = { [weak self] sourceType in
+                    guard let self else { return }
+                    self.actionHandler.selectedItemPublic = item
+                    self.actionHandler.openPickerDirectly(sourceType: sourceType)
+                }
+            } else {
+                // Timer type — button triggers timer segue
+                cell.setupTimerButton()
+                cell.onTimerTapped = { [weak self] in
+                    self?.actionHandler.handle(item: item)  // routes to onTimerTapped → segue
+                }
+            }
+
             style(cell)
             return cell
         }

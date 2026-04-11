@@ -54,24 +54,6 @@ class TodayTableViewCell: UITableViewCell {
         addPhotoButton.showsMenuAsPrimaryAction = true
     }
     
-
-    func configure(with item: TodayActivityItem) {
-        titleLabel.text     = item.activity.name
-        dateLabel.text      = item.frequencyText
-        subtitleLabel.text  = item.assignment.doctorNote ?? "No additional notes."
-        subtitleLabel.isHidden = false
-        let symbolConfig    = UIImage.SymbolConfiguration(pointSize: 10, weight: .medium)
-        iconImageView.image = UIImage(systemName: item.activity.iconName, withConfiguration: symbolConfig)
-
-        let done                 = item.isCompletedToday
-//        checkmarkView.isHidden   = !done
-        cardView.backgroundColor = done
-        ? UIColor.systemGray4
-        : UIColor.secondarySystemBackground
-        contentView.alpha = done ? 0.7 : 1.0
-        setupPhotoMenu()
-    }
-
     func configureAsLog(activityName: String, iconName: String, logCount: Int) {
         titleLabel.text          = activityName
         dateLabel.text           = "Total: \(logCount)"
@@ -81,43 +63,50 @@ class TodayTableViewCell: UITableViewCell {
         subtitleBottomConstraint.constant = 8
         addPhotoButton.isHidden  = true
     }
-    func configureAsTimer(with item: TodayActivityItem) {
-        titleLabel.text     = item.activity.name
-        dateLabel.text      = item.frequencyText
-        subtitleLabel.text  = item.assignment.doctorNote ?? "No additional notes."
+    func configure(with item: TodayActivityItem) {
+        titleLabel.text        = item.activity.name
+        dateLabel.text         = item.frequencyText
+        subtitleLabel.text     = item.assignment.doctorNote ?? "No additional notes."
         subtitleLabel.isHidden = false
-        let symbolConfig    = UIImage.SymbolConfiguration(pointSize: 10, weight: .medium)
-        iconImageView.image = UIImage(systemName: item.activity.iconName, withConfiguration: symbolConfig)
+        let symbolConfig       = UIImage.SymbolConfiguration(pointSize: 10, weight: .medium)
+        iconImageView.image    = UIImage(systemName: item.activity.iconName, withConfiguration: symbolConfig)
 
         let done                 = item.isCompletedToday
-//        checkmarkView.isHidden   = !done
-        cardView.backgroundColor = done
-        ? UIColor.systemGray4
-        : UIColor.secondarySystemBackground
-        contentView.alpha = done ? 0.7 : 1.0
+        cardView.backgroundColor = done ? UIColor.systemGray5 : UIColor.secondarySystemBackground
+//        contentView.alpha        = done ? 0.8 : 1.0
+
+        addPhotoButton.isHidden = false
+        setupPhotoMenu()
+    }
+
+    func configureAsTimer(with item: TodayActivityItem) {
+        titleLabel.text        = item.activity.name
+        dateLabel.text         = item.frequencyText
+        subtitleLabel.text     = item.assignment.doctorNote ?? "No additional notes."
+        subtitleLabel.isHidden = false
+        let symbolConfig       = UIImage.SymbolConfiguration(pointSize: 10, weight: .medium)
+        iconImageView.image    = UIImage(systemName: item.activity.iconName, withConfiguration: symbolConfig)
+
+        let done                 = item.isCompletedToday
+        cardView.backgroundColor = done ? UIColor.systemGray5 : UIColor.secondarySystemBackground
+//        contentView.alpha        = done ? 0.8 : 1.0
+
+        // ← RESET hidden state before setting up (fixes reuse bug)
+        addPhotoButton.isHidden = false
         setupTimerButton()
     }
+
     func setupTimerButton() {
-        addPhotoButton.menu = nil
+        addPhotoButton.menu                    = nil
         addPhotoButton.showsMenuAsPrimaryAction = false
-        
+
+        // ← REMOVE old targets first (fixes multiple-fire bug on reuse)
+        addPhotoButton.removeTarget(nil, action: nil, for: .touchUpInside)
         addPhotoButton.addTarget(self, action: #selector(timerTapped), for: .touchUpInside)
     }
     @objc private func timerTapped() {
         onTimerTapped?()
     }
-    
-//    @IBAction func uploadTapped(_ sender: Any) {
-//        let alert = UIAlertController(title: "Add Photo", message: "choose an Option", preferredStyle: .actionSheet)
-//        
-//        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-//            alert.addAction(UIAlertAction(title: "Camera", style: .default) {_ in self.openImagePicker(sourceType: .camera)})
-//        }
-//        
-//        alert.addAction(UIAlertAction(title: "Photo Library", style: .default) {_ in
-//            self.openImagePicker(sourceType: .photoLibrary)})
-//        present(alert, animated: true)
-//    }
     
 }
 

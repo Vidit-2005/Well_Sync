@@ -158,13 +158,11 @@ class JournalTableViewController: UITableViewController {
 //    }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        print("🔴 Cell tapped at section: \(indexPath.section), row: \(indexPath.row)")  // ADD THIS
         
         let entry = indexPath.section == 0
             ? currentAssignmentLogs[indexPath.row]
             : allActivityLogs[indexPath.row]
         
-        print("🔴 Entry type: \(entry.type)")  // ADD THIS
         showLogDetail(for: entry)
     }
     func showLogDetail(for entry: JournalEntry) {
@@ -182,7 +180,7 @@ class JournalTableViewController: UITableViewController {
         if segue.identifier == "showImageDetail",
            let imageVC = segue.destination as? JournalImageViewController,
            let entry = sender as? JournalEntry {
-            imageVC.journalEntry = entry
+            imageVC.journalEntry = entry   
         }
     }
 

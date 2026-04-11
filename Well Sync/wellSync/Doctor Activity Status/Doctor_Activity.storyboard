@@ -160,7 +160,7 @@
         <!--Appointments-->
         <scene sceneID="wYw-7e-XtU">
             <objects>
-                <collectionViewController storyboardIdentifier="mood" useStoryboardIdentifierAsRestorationIdentifier="YES" id="gD2-i6-Efe" customClass="GraphCollectionViewController" customModule="wellSync" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController storyboardIdentifier="TimerGraph" useStoryboardIdentifierAsRestorationIdentifier="YES" id="gD2-i6-Efe" customClass="GraphCollectionViewController" customModule="wellSync" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="IDi-kR-E4a">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

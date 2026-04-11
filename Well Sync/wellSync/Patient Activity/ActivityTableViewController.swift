@@ -300,32 +300,44 @@
 import UIKit
 import PhotosUI
 
-class ActivityTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, PHPickerViewControllerDelegate {
+class ActivityTableViewController: UITableViewController {
 
     var todayItems:   [TodayActivityItem] = []
     var logSummaries: [LogSummaryItem]    = []
     var patient: Patient? {
         didSet {
             guard patient != nil else { return }
+            actionHandler.patient = patient
             loadData()
         }
     }
-    var uploads: [UIImage] = []
-    var selectedItem: TodayActivityItem?
 
-    let sectionTitles = ["Today", "Logs"]
+    // Single handler — owns all upload + timer routing logic
+    private let actionHandler = ActivityActionHandler()
+    private let spinner       = UIActivityIndicatorView(style: .large)
+    let sectionTitles         = ["Today", "Logs"]
 
-    private let spinner = UIActivityIndicatorView(style: .large)
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
+    required init?(coder: NSCoder) { super.init(coder: coder) }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.separatorStyle     = .none
         tableView.rowHeight          = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
+
+        // Wire handler
+        actionHandler.presentingViewController = self
+        actionHandler.onSuccess = { [weak self] in self?.loadData() }
+        actionHandler.onFailure = { [weak self] error in
+            let alert = UIAlertController(title: "Upload Failed",
+                                          message: "\(error)",
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            self?.present(alert, animated: true)
+        }
+        actionHandler.onTimerTapped = { [weak self] item in
+            self?.performSegue(withIdentifier: "Timer", sender: item)
+        }
 
         spinner.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(spinner)
@@ -335,101 +347,85 @@ class ActivityTableViewController: UITableViewController, UIImagePickerControlle
         ])
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
+    // MARK: - Data
 
     private func loadData() {
         guard let patientID = patient?.patientID else { return }
-
-        DispatchQueue.main.async {
-            self.spinner.startAnimating()
-        }
+        DispatchQueue.main.async { self.spinner.startAnimating() }
 
         Task {
             do {
-//                async let todayTask =
-//                async let logsTask  =
-
                 let today = try await buildTodayItems(for: patientID)
                 let logs  = try await buildLogSummaries(for: patientID)
-
                 await MainActor.run {
                     self.todayItems   = today
                     self.logSummaries = logs
                     self.tableView.reloadData()
                     self.spinner.stopAnimating()
                 }
-
             } catch {
                 print("loadData error:", error)
-                await MainActor.run {
-                    self.spinner.stopAnimating()
-                }
+                await MainActor.run { self.spinner.stopAnimating() }
             }
         }
     }
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return sectionTitles.count
-    }
+    // MARK: - TableView
+
+    override func numberOfSections(in tableView: UITableView) -> Int { sectionTitles.count }
 
     override func tableView(_ tableView: UITableView,
                             numberOfRowsInSection section: Int) -> Int {
-        switch section {
-        case 0:  return todayItems.count
-        case 1:  return logSummaries.count
-        default: return 0
-        }
+        section == 0 ? todayItems.count : logSummaries.count
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+    override func tableView(_ tableView: UITableView,
+                            cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(
-            withIdentifier: "activityCell",
-            for: indexPath
+            withIdentifier: "activityCell", for: indexPath
         ) as! TodayTableViewCell
 
         if indexPath.section == 0 {
-            if todayItems[indexPath.row].isUploadType{
-                cell.configure(with: todayItems[indexPath.row])
+            let item = todayItems[indexPath.row]
+
+            if item.isUploadType {
+                cell.configure(with: item)
+                // Upload button tap → hand off to handler
                 cell.onPhotoSourceSelected = { [weak self] sourceType in
-                    self?.selectedItem = self?.todayItems[indexPath.row]
-                    self?.uploads = []
-                    self?.openImagePicker(sourceType: sourceType)
+                    guard let self else { return }
+                    self.actionHandler.selectedItemPublic = item
+                    self.actionHandler.openPickerDirectly(sourceType: sourceType)
+                }
+            } else {
+                cell.configureAsTimer(with: item)
+                // Timer button tap → handler routes to onTimerTapped
+                cell.onTimerTapped = { [weak self] in
+                    self?.actionHandler.handle(item: item)
                 }
             }
-            else{
-                cell.configureAsTimer(with: todayItems[indexPath.row])
-                cell.onTimerTapped = { [weak self] in
-                        guard let self = self else { return }
-                        let item = self.todayItems[indexPath.row]
-                        self.performSegue(withIdentifier: "Timer", sender: item)
-                    }
-                
+            if item.isCompletedToday {
+                cell.addPhotoButton.isEnabled = false
+            } else {
+                cell.addPhotoButton.isEnabled = true
             }
+
         } else {
             let summary = logSummaries[indexPath.row]
-            cell.configureAsLog(
-                activityName: summary.activity.name,
-                iconName:     summary.activity.iconName,
-                logCount:     summary.totalLogs
-            )
+            cell.configureAsLog(activityName: summary.activity.name,
+                                iconName:     summary.activity.iconName,
+                                logCount:     summary.totalLogs)
         }
-
         return cell
     }
 
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-
-        let headerView = UIView()
-
-        let titleLabel       = UILabel()
-        titleLabel.font      = UIFont.preferredFont(forTextStyle: .title2)
+    override func tableView(_ tableView: UITableView,
+                            viewForHeaderInSection section: Int) -> UIView? {
+        let headerView    = UIView()
+        let titleLabel    = UILabel()
+        titleLabel.font   = UIFont.preferredFont(forTextStyle: .title2)
         titleLabel.textColor = .label
-
-        let subtitleLabel       = UILabel()
-        subtitleLabel.font      = UIFont.preferredFont(forTextStyle: .footnote)
+        let subtitleLabel    = UILabel()
+        subtitleLabel.font   = UIFont.preferredFont(forTextStyle: .footnote)
         subtitleLabel.textColor = .secondaryLabel
 
         if section == 0 {
@@ -442,173 +438,59 @@ class ActivityTableViewController: UITableViewController, UIImagePickerControlle
             subtitleLabel.text = "\(logSummaries.count) activities logged"
         }
 
-        titleLabel.translatesAutoresizingMaskIntoConstraints    = false
-        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
-
-        headerView.addSubview(titleLabel)
-        headerView.addSubview(subtitleLabel)
-
+        [titleLabel, subtitleLabel].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            headerView.addSubview($0)
+        }
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
             titleLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 8),
-
             subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 2),
             subtitleLabel.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 0)
         ])
-
         return headerView
     }
 
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 60
+    override func tableView(_ tableView: UITableView,
+                            heightForHeaderInSection section: Int) -> CGFloat { 60 }
+
+    override func tableView(_ tableView: UITableView,
+                            didSelectRowAt indexPath: IndexPath) {
+        guard indexPath.section == 1 else { return }
+        let identifier = logSummaries[indexPath.row].isUploadType ? "Journal" : "timerSegue"
+        performSegue(withIdentifier: identifier, sender: indexPath)
     }
 
-    func openImagePicker(sourceType: UIImagePickerController.SourceType) {
-        if sourceType == .camera {
-            let picker           = UIImagePickerController()
-            picker.delegate      = self
-            picker.sourceType    = .camera
-            picker.allowsEditing = true
-            present(picker, animated: true)
-        } else {
-            var config            = PHPickerConfiguration()
-            config.selectionLimit = 5
-            config.filter         = .images
+    // MARK: - Segues
 
-            let picker   = PHPickerViewController(configuration: config)
-            picker.delegate = self
-            present(picker, animated: true)
-        }
-    }
-
-    func imagePickerController(_ picker: UIImagePickerController,
-                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        if let editedImage = info[.editedImage] as? UIImage {
-            uploads.append(editedImage)
-        } else if let originalImage = info[.originalImage] as? UIImage {
-            uploads.append(originalImage)
-        }
-
-        dismiss(animated: true) {
-            self.saveActivityLog()
-        }
-    }
-
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        picker.dismiss(animated: true)
-        guard !results.isEmpty else { return }
-
-        let total  = results.count
-        var loaded = 0
-
-        for result in results {
-            result.itemProvider.loadObject(ofClass: UIImage.self) { object, error in
-                DispatchQueue.main.async {
-                    if let image = object as? UIImage {
-                        self.uploads.append(image)
-                    }
-                    loaded += 1
-                    if loaded == total {
-                        self.saveActivityLog()
-                    }
-                }
-            }
-        }
-    }
-
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        dismiss(animated: true)
-    }
-
-    private func saveActivityLog() {
-        guard let item    = selectedItem,
-              let patient = patient else {
-            print("saveActivityLog: missing item or patient")
-            return
-        }
-
-        guard !uploads.isEmpty else {
-            print("saveActivityLog: no images to upload")
-            return
-        }
-
-        Task {
-            do {
-                var uploadedPaths: [String] = []
-                for image in uploads {
-                    let path = try await AccessSupabase.shared.uploadActivityImage(image)
-                    uploadedPaths.append(path)
-                }
-
-                let formatter        = DateFormatter()
-                formatter.dateFormat = "HH:mm:ss"
-                let timeString       = formatter.string(from: Date())
-
-                let log = ActivityLog(
-                    logID:      UUID(),
-                    assignedID: item.assignment.assignedID,
-                    activityID: item.activity.activityID,
-                    patientID:  patient.patientID,
-                    date:       Date(),
-                    time:       timeString,
-                    duration:   nil,
-                    uploadPath: uploadedPaths.joined(separator: ",")
-                )
-
-                let saved = try await AccessSupabase.shared.saveActivityLog(log)
-                print("ActivityLog saved:", saved.logID)
-
-                DispatchQueue.main.async {
-                    self.uploads      = []
-                    self.selectedItem = nil
-                    self.loadData()
-                }
-
-            } catch {
-                print("saveActivityLog error:", error)
-                DispatchQueue.main.async {
-                    let alert = UIAlertController(
-                        title: "Upload Failed",
-                        message: "\(error)",
-                        preferredStyle: .alert
-                    )
-                    alert.addAction(UIAlertAction(title: "OK", style: .default))
-                    self.present(alert, animated: true)
-                }
-            }
-        }
-    }
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(indexPath,("////"))
-        if indexPath.section == 1 && logSummaries[indexPath.row].isUploadType == true{
-            performSegue(withIdentifier: "Journal", sender: indexPath)
-        }
-    }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Timer",
-           let VC = segue.destination as? UINavigationController ,
-           let timerVC = VC.viewControllers.first as? timerViewController,
-           let item = sender as? TodayActivityItem {
-            timerVC.onSave = {
-                self.loadData()
-            }
+           let nav    = segue.destination as? UINavigationController,
+           let timerVC = nav.viewControllers.first as? timerViewController,
+           let item   = sender as? TodayActivityItem {
+            timerVC.onSave       = { self.loadData() }
             timerVC.activityItem = item
             timerVC.patient      = patient
         }
+
+        guard let indexPath = sender as? IndexPath,
+              indexPath.section == 1 else { return }
+
         if segue.identifier == "Journal",
-           let journalVC = segue.destination as? JournalTableViewController,
-           let indexPath = sender as? IndexPath {
-            
-            if indexPath.section == 1 {
-                // Current activity
-                let item = logSummaries[indexPath.row]
-                print(item,self.patient!)
-                journalVC.selectedAssignment = item.assignment
-                journalVC.selectedActivity = item.activity
-                journalVC.patient = self.patient
-                
-            }
+           let journalVC = segue.destination as? JournalTableViewController {
+            let item = logSummaries[indexPath.row]
+            journalVC.selectedAssignment = item.assignment
+            journalVC.selectedActivity   = item.activity
+            journalVC.patient            = patient
+        }
+
+        if segue.identifier == "timerSegue",
+           let graphVC = segue.destination as? GraphCollectionViewController {
+            let item      = logSummaries[indexPath.row]
+            graphVC.activity = item.activity
+            graphVC.logs     = item.logs
+            graphVC.patient  = patient
         }
     }
 }
