@@ -269,6 +269,7 @@ extension HomeCollectionViewController {
 
             if indexPath.row == 0 {
                     cell.configure(title: "Active Patients", subtitle: "\(patient.count)")
+                    
             } else {
                 cell.configure(title: "Today's Session", subtitle: "\(upcoming.count+done.count+missed.count)")
             }
@@ -431,19 +432,25 @@ extension HomeCollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView,
                                  didSelectItemAt indexPath: IndexPath) {
-
-        guard indexPath.section == 2 else { return }
-
-        let patient = filteredPatients()[indexPath.row]
-        //print(patient.name)
-        selectedPatient = patient
-        performSegue(withIdentifier: "PatientDetail", sender: self)
+        if indexPath.section == 0 && indexPath.row == 0 {
+            performSegue(withIdentifier: "allPatientSegue", sender: self)
+            return
+        }
+        if indexPath.section == 2 {
+            let patient = filteredPatients()[indexPath.row]
+            selectedPatient = patient
+            performSegue(withIdentifier: "PatientDetail", sender: self)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PatientDetail" {
             let destinationVC = segue.destination as! PatientDetailCollectionViewController
             destinationVC.patient = selectedPatient
+        }
+        if segue.identifier == "allPatientSegue" {
+            let AllPatientVC = segue.destination as! AllPatientCollectionViewController
+            AllPatientVC.doctor = doctor
         }
         if segue.identifier == "AddPatientSegue" {
             

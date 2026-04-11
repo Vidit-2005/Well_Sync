@@ -79,6 +79,61 @@ class ActivityStatusRingView: UIView {
     }
 }
 
+struct ActivityStatsManager {
+
+    static func completionBetween(
+        startDate: Date,
+        endDate: Date,
+        assignments: [AssignedActivity],
+        logs: [ActivityLog]
+    ) -> CGFloat {
+
+        let calendar = Calendar.current
+        let rangeStart = calendar.startOfDay(for: startDate)
+        let rangeEnd = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: endDate) ?? endDate
+
+        var totalExpected = 0
+        var totalActual = 0
+
+        for assignment in assignments where assignment.status == .active {
+            let effectiveStart = max(calendar.startOfDay(for: assignment.startDate), rangeStart)
+            let effectiveEnd = min(calendar.startOfDay(for: assignment.endDate), calendar.startOfDay(for: endDate))
+
+            guard effectiveStart <= effectiveEnd else { continue }
+
+            let days = (calendar.dateComponents([.day], from: effectiveStart, to: effectiveEnd).day ?? 0) + 1
+            let expected = days * assignment.frequency
+
+            let actual = logs.filter {
+                $0.assignedID == assignment.assignedID &&
+                $0.date >= effectiveStart &&
+                $0.date <= rangeEnd
+            }.count
+
+            totalExpected += expected
+            totalActual += min(actual, expected)
+        }
+
+        guard totalExpected > 0 else { return 0 }
+        return CGFloat(totalActual) / CGFloat(totalExpected)
+    }
+
+    static func weekRanges(from date: Date = Date()) -> (
+        thisWeek: (start: Date, end: Date),
+        lastWeek: (start: Date, end: Date)
+    ) {
+        let calendar = Calendar.current
+        let thisWeek = calendar.dateInterval(of: .weekOfYear, for: date)!
+
+        let thisStart = thisWeek.start
+        let thisEnd = thisWeek.end.addingTimeInterval(-1)
+
+        let lastStart = calendar.date(byAdding: .day, value: -7, to: thisStart)!
+        let lastEnd = thisStart.addingTimeInterval(-1)
+
+        return ((thisStart, thisEnd), (lastStart, lastEnd))
+    }
+}
 
 class DoctorActivityStatusCollectionViewController: UICollectionViewController {
     
@@ -86,6 +141,9 @@ class DoctorActivityStatusCollectionViewController: UICollectionViewController {
 
     var activities: [TodayActivityItem] = []
     var previousActivity: [LogSummaryItem] = []
+    var currentWeekProgress: CGFloat = 0
+    var previousWeekProgress: CGFloat = 0
+    var delta: CGFloat = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,7 +164,27 @@ class DoctorActivityStatusCollectionViewController: UICollectionViewController {
             }catch{
                 print("Activity log error: \(error)")
             }
-            collectionView.reloadSections(IndexSet([1,2]))
+            let allAssignments = try await AccessSupabase.shared.fetchAssignments(for: patient!.patientID)
+            let allLogs = try await AccessSupabase.shared.fetchLogs(for: patient!.patientID)
+
+            let ranges = ActivityStatsManager.weekRanges()
+
+            currentWeekProgress = ActivityStatsManager.completionBetween(
+                startDate: ranges.thisWeek.start,
+                endDate: ranges.thisWeek.end,
+                assignments: allAssignments,
+                logs: allLogs
+            )
+
+            previousWeekProgress = ActivityStatsManager.completionBetween(
+                startDate: ranges.lastWeek.start,
+                endDate: ranges.lastWeek.end,
+                assignments: allAssignments,
+                logs: allLogs
+            )
+                        
+            delta = currentWeekProgress - previousWeekProgress
+            collectionView.reloadSections(IndexSet([0,1,2]))
         }
     }
 
@@ -127,59 +205,116 @@ class DoctorActivityStatusCollectionViewController: UICollectionViewController {
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.section == 0 {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "activityStateCell", for: indexPath) as! activitystatusringCollectionViewCell
-            cell.configure(progress: 3.0/7.0)
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: "activityStateCell",
+                for: indexPath
+            ) as! activitystatusringCollectionViewCell
+            
+            cell.configure(progress: currentWeekProgress)
+            
+            // Update labels (use proper outlets ideally)
+            if let percentLabel = cell.viewWithTag(101) as? UILabel {
+                percentLabel.text = "\(Int(currentWeekProgress * 100))%"
+            }
+            
+            if let deltaLabel = cell.viewWithTag(102) as? UILabel {
+                let sign = delta >= 0 ? "+" : ""
+                deltaLabel.text = "\(sign)\(Int(delta * 100))%"
+                deltaLabel.textColor = delta >= 0 ? .systemGreen : .systemRed
+            }
+            
             return cell
         }
         
         if indexPath.section == 1 {
-            // Current activities
             let item = activities[indexPath.row]
-            let cell: UICollectionViewCell
-            
-            // Cell type determined by ASSIGNMENT's tracking method
-            if item.isUploadType {  // Uses assignment.hasImage || assignment.hasRecording
-                cell = collectionView.dequeueReusableCell(withReuseIdentifier: "uploadCell", for: indexPath) as! UploadCollectionViewCell
+
+            if item.isUploadType {
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: "uploadCell",
+                    for: indexPath
+                ) as! UploadCollectionViewCell
+                
+                cell.configure(with: item.logs)
+                
+                // existing UI
+                if let label = cell.viewWithTag(2) as? UILabel {
+                    label.text = item.activity.name
+                }
+                if let logLabel = cell.viewWithTag(3) as? UILabel {
+                    logLabel.text = String(item.logs.count)
+                }
+                if let iconView = cell.viewWithTag(4) as? UIImageView {
+                    iconView.image = UIImage(systemName: item.activity.iconName)
+                }
+
+                return cell
+
             } else {
-                // Timer type
-                cell = collectionView.dequeueReusableCell(withReuseIdentifier: "graphCell", for: indexPath) as! GraphCollectionViewCell
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: "graphCell",
+                    for: indexPath
+                ) as! GraphCollectionViewCell
+                
+                cell.configure(with: item.logs)
+                
+                // existing UI
+                if let label = cell.viewWithTag(2) as? UILabel {
+                    label.text = item.activity.name
+                }
+                if let logLabel = cell.viewWithTag(3) as? UILabel {
+                    logLabel.text = String(item.logs.count)
+                }
+                if let iconView = cell.viewWithTag(4) as? UIImageView {
+                    iconView.image = UIImage(systemName: item.activity.iconName)
+                }
+
+                return cell
             }
-            
-            if let label = cell.viewWithTag(2) as? UILabel {
-                label.text = item.activity.name
-            }
-            if let logLabel = cell.viewWithTag(3) as? UILabel {
-                logLabel.text = String(item.logs.count)
-            }
-            if let iconView = cell.viewWithTag(4) as? UIImageView {
-                iconView.image = UIImage(systemName: item.activity.iconName)
-            }
-            
-            return cell
         }
         else {
-            // Previous activities
             let item = previousActivity[indexPath.row]
-            let cell: UICollectionViewCell
-            
-            // Cell type determined by ASSIGNMENT's tracking method
-            if item.isUploadType {  // Uses assignment.hasImage || assignment.hasRecording
-                cell = collectionView.dequeueReusableCell(withReuseIdentifier: "uploadCell", for: indexPath) as! UploadCollectionViewCell
+
+            if item.isUploadType {
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: "uploadCell",
+                    for: indexPath
+                ) as! UploadCollectionViewCell
+                
+                cell.configure(with: item.logs)
+                
+                if let label = cell.viewWithTag(2) as? UILabel {
+                    label.text = item.activity.name
+                }
+                if let logLabel = cell.viewWithTag(3) as? UILabel {
+                    logLabel.text = String(item.totalLogs)
+                }
+                if let iconView = cell.viewWithTag(4) as? UIImageView {
+                    iconView.image = UIImage(systemName: item.activity.iconName)
+                }
+
+                return cell
+
             } else {
-                // Timer type
-                cell = collectionView.dequeueReusableCell(withReuseIdentifier: "graphCell", for: indexPath) as! GraphCollectionViewCell
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: "graphCell",
+                    for: indexPath
+                ) as! GraphCollectionViewCell
+                
+                cell.configure(with: item.logs)
+                
+                if let label = cell.viewWithTag(2) as? UILabel {
+                    label.text = item.activity.name
+                }
+                if let logLabel = cell.viewWithTag(3) as? UILabel {
+                    logLabel.text = String(item.totalLogs)
+                }
+                if let iconView = cell.viewWithTag(4) as? UIImageView {
+                    iconView.image = UIImage(systemName: item.activity.iconName)
+                }
+
+                return cell
             }
-            
-            if let label = cell.viewWithTag(2) as? UILabel {
-                label.text = item.activity.name
-            }
-            if let logLabel = cell.viewWithTag(3) as? UILabel {
-                logLabel.text = String(item.totalLogs)
-            }
-            if let iconView = cell.viewWithTag(4) as? UIImageView {
-                iconView.image = UIImage(systemName: item.activity.iconName)
-            }
-            return cell
         }
     }
     

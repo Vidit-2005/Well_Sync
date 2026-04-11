@@ -351,7 +351,9 @@ class timerViewController: UIViewController {
                     date:       Date(),
                     time:       timeString,
                     duration:   duration,       // seconds elapsed, matches INTEGER column
-                    uploadPath: nil             // timer activities have no upload
+                    uploadPath: nil ,
+                    summary: nil
+                    // timer activities have no upload
                 )
 
                 let saved = try await AccessSupabase.shared.saveActivityLog(log)

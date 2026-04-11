@@ -48,7 +48,7 @@ struct JournalEntry {
 
         let typeText   = self.type == .audio ? "Voice Journal" : "Written Journal"
         self.subtitle  = "\(log.time) • \(typeText)"
-        self.summary   = "sample summary"
+        self.summary = log.summary ?? ""
     }
 
     // MARK: - Type Determination

@@ -8,6 +8,82 @@
 import UIKit
 import DGCharts
 
+final class VitalsBarMarkerView: MarkerView {
+
+    private let label = UILabel()
+    private let padding: CGFloat = 10
+
+    var xLabels: [String] = []
+    var metricUnit: String = ""
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        backgroundColor = UIColor.black.withAlphaComponent(0.85)
+        layer.cornerRadius = 10
+        layer.masksToBounds = true
+
+        label.font = .systemFont(ofSize: 12, weight: .semibold)
+        label.textColor = .white
+        label.textAlignment = .center
+        addSubview(label)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func refreshContent(entry: ChartDataEntry, highlight: Highlight) {
+        let index = Int(entry.x)
+        let day = index < xLabels.count ? xLabels[index] : "Day \(index + 1)"
+
+        let valueText: String
+        if entry.y <= 0 {
+            valueText = "No log"
+        } else if metricUnit == "hrs" {
+            valueText = String(format: "%.1f hrs", entry.y)
+        } else {
+            valueText = "\(Int(entry.y)) steps"
+        }
+
+        label.text = "\(day)  •  \(valueText)"
+        label.sizeToFit()
+
+        frame.size = CGSize(
+            width: label.frame.width + padding * 2,
+            height: label.frame.height + padding
+        )
+        label.center = CGPoint(x: frame.width / 2, y: frame.height / 2)
+
+        guard let chart = chartView else {
+            offset = CGPoint(x: -frame.width / 2, y: -frame.height - 12)
+            return
+        }
+
+        let chartWidth = chart.bounds.width
+        let bubbleW = frame.width
+        let bubbleH = frame.height
+        let gap: CGFloat = 12
+        let dotX = highlight.xPx
+        let dotY = highlight.yPx
+
+        var offsetX = -bubbleW / 2
+        var offsetY = -bubbleH - gap
+
+        if dotX + offsetX < 4 {
+            offsetX = -dotX + 4
+        } else if dotX + offsetX + bubbleW > chartWidth - 4 {
+            offsetX = chartWidth - dotX - bubbleW - 4
+        }
+
+        if dotY + offsetY < 4 {
+            offsetY = gap
+        }
+
+        offset = CGPoint(x: offsetX, y: offsetY)
+    }
+}
+
 protocol VitalsBarRangeNavigating: AnyObject {
     func didTapPrevBarRange(for index: Int)
     func didTapNextBarRange(for index: Int)
@@ -21,6 +97,7 @@ class VitalsBarCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var valueLabel: UILabel!
     @IBOutlet weak var unitLabel: UILabel!
 
+    private let marker = VitalsBarMarkerView(frame: CGRect(x: 0, y: 0, width: 120, height: 40))
     private var hasAnimated = false
 
     enum DisplayRange { case weekly, monthly }
@@ -287,7 +364,7 @@ class VitalsBarCollectionViewCell: UICollectionViewCell {
 
         let fgSet = BarChartDataSet(entries: fgEntries)
         fgSet.drawValuesEnabled = false
-        fgSet.highlightEnabled = false
+        fgSet.highlightEnabled = true
         fgSet.colors = values.map { $0 > 0 ? fgColor : .clear }
 
         let bgSet = BarChartDataSet(entries: bgEntries)
@@ -306,6 +383,9 @@ class VitalsBarCollectionViewCell: UICollectionViewCell {
         barChartView.setScaleEnabled(false)
         barChartView.leftAxis.enabled = false
         barChartView.rightAxis.enabled = false
+        barChartView.highlightPerTapEnabled = true
+        barChartView.highlightPerDragEnabled = false
+        barChartView.highlightFullBarEnabled = false
 
         let xAxis = barChartView.xAxis
         xAxis.labelPosition = .bottom
@@ -313,6 +393,11 @@ class VitalsBarCollectionViewCell: UICollectionViewCell {
         xAxis.drawAxisLineEnabled = false
         xAxis.granularity = 1
         xAxis.valueFormatter = IndexAxisValueFormatter(values: labels)
+        
+        marker.xLabels = labels
+        marker.metricUnit = (metric == .sleep) ? "hrs" : "steps"
+        marker.chartView = barChartView
+        barChartView.marker = marker
 
         barChartView.setExtraOffsets(left: 12, top: 12, right: 12, bottom: 6)
 

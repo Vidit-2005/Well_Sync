@@ -102,6 +102,7 @@ struct ActivityLog: Codable {
     let time: String
     let duration: Int?
     let uploadPath: String?
+    let summary: String?
     
     enum CodingKeys: String, CodingKey {
         case logID = "log_id"
@@ -110,6 +111,7 @@ struct ActivityLog: Codable {
         case patientID = "patient_id"
         case date, time, duration
         case uploadPath = "upload_path"
+        case summary = "summary"
     }
 }
 

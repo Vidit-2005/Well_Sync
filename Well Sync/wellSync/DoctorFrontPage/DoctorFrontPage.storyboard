@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="IDM-bP-TzD">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="IDM-bP-TzD">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -335,6 +335,16 @@
             </objects>
             <point key="canvasLocation" x="2085" y="860"/>
         </scene>
+        <!--AllPatientViewController-->
+        <scene sceneID="iKK-Le-VRC">
+            <objects>
+                <viewControllerPlaceholder storyboardIdentifier="AllPatientViewController" storyboardName="AllPatient" referencedIdentifier="AllPatientViewController" id="HKh-aw-Ce3" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="VE2-LW-rJr"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bpp-t0-Kbb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2102" y="969"/>
+        </scene>
         <!--Today-->
         <scene sceneID="aBH-An-kUQ">
             <objects>
@@ -377,6 +387,7 @@
                     <connections>
                         <outlet property="ellipsisButtonTapped" destination="X7o-e5-G7o" id="klm-0h-xXh"/>
                         <segue destination="Ktp-cf-v9k" kind="show" identifier="PatientDetail" id="zb7-bm-X89"/>
+                        <segue destination="HKh-aw-Ce3" kind="show" identifier="allPatientSegue" id="F1q-mN-Ma9"/>
                     </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wx2-iR-aaf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -626,7 +637,7 @@
             <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.21960784310000001" blue="0.23529411759999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tertiarySystemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

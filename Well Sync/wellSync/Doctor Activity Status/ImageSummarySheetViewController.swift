@@ -20,6 +20,7 @@ class ImageSummarySheetViewController: UIViewController {
     // MARK: - Properties
     var image: UIImage?
     var entryTitle: String = "Journal Entry"
+    var storedSummary: String?   
     
     // MARK: - Lifecycle
     
@@ -27,9 +28,18 @@ class ImageSummarySheetViewController: UIViewController {
         super.viewDidLoad()
         subtitleLabel.text = entryTitle
         summaryTextView.isHidden = true
-        spinner.startAnimating()
-        fetchSummary()
         
+        if let stored = storedSummary, !stored.isEmpty {
+            // ── Fast path: show pre-stored summary immediately ──
+            spinner.stopAnimating()
+            loadingLabel.isHidden = true
+            summaryTextView.text  = stored
+            summaryTextView.isHidden = false
+        } else {
+            // ── Fallback: generate on-the-fly for old logs ──
+            spinner.startAnimating()
+            fetchSummary()
+        }
     }
     
     // MARK: - API

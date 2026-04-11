@@ -22,6 +22,7 @@ class PatientBarVitalsCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var valueLabel: UILabel!
     @IBOutlet weak var unitLabel: UILabel!
 
+    private let marker = VitalsBarMarkerView(frame: CGRect(x: 0, y: 0, width: 120, height: 40))
     private var hasAnimated = false
 
     enum DisplayRange { case weekly, monthly }
@@ -196,7 +197,7 @@ class PatientBarVitalsCollectionViewCell: UICollectionViewCell {
         let fgSet = BarChartDataSet(entries: fgEntries)
         fgSet.colors = [fgColor]
         fgSet.drawValuesEnabled = false
-        fgSet.highlightEnabled  = false
+        fgSet.highlightEnabled  = true
 
         let bgSet = BarChartDataSet(entries: bgEntries)
         bgSet.colors = [bgColor]
@@ -214,6 +215,9 @@ class PatientBarVitalsCollectionViewCell: UICollectionViewCell {
         barChartView.setScaleEnabled(false)
         barChartView.leftAxis.enabled  = false
         barChartView.rightAxis.enabled = false
+        barChartView.highlightPerTapEnabled = true
+        barChartView.highlightPerDragEnabled = false
+        barChartView.highlightFullBarEnabled = false
 
         let xAxis = barChartView.xAxis
         xAxis.labelPosition         = .bottom
@@ -221,6 +225,11 @@ class PatientBarVitalsCollectionViewCell: UICollectionViewCell {
         xAxis.drawAxisLineEnabled   = false
         xAxis.granularity           = 1
         xAxis.valueFormatter        = IndexAxisValueFormatter(values: labels)
+        
+        marker.xLabels = labels
+        marker.metricUnit = (metric == .sleep) ? "hrs" : "steps"
+        marker.chartView = barChartView
+        barChartView.marker = marker
 
         barChartView.setExtraOffsets(left: 12, top: 12, right: 12, bottom: 6)
 

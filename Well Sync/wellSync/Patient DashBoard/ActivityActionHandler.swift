@@ -126,9 +126,6 @@ class ActivityActionHandler: NSObject,
             }
         }
     }
-
-    // MARK: - Save to Supabase
-
     private func saveLog() {
         guard let item    = selectedItem,
               let patient = patient else {
@@ -140,14 +137,43 @@ class ActivityActionHandler: NSObject,
             return
         }
 
+        let activityName = item.activity.name   // ← used for activity-aware prompt
+
         Task {
             do {
+                // Step 1 — Upload all images and collect paths
                 var uploadedPaths: [String] = []
                 for image in uploads {
                     let path = try await AccessSupabase.shared.uploadActivityImage(image)
                     uploadedPaths.append(path)
                 }
 
+                // Step 2 — Generate summaries for each image concurrently,
+                //           then join them (one paragraph per image if multiple)
+                var summaryParts: [String] = []
+                for image in uploads {
+                    do {
+                        let part = try await Summarise.summarise.extractAndSummarise(
+                            image: image,
+                            activityName: activityName
+                        )
+                        summaryParts.append(part)
+                    } catch {
+                        print("Summary failed:", error)
+                        summaryParts.append("Summary unavailable.")
+                    }
+                }
+                // If multiple images, number each summary; single image keeps it clean
+                let combinedSummary: String
+                if summaryParts.count == 1 {
+                    combinedSummary = summaryParts[0]
+                } else {
+                    combinedSummary = summaryParts.enumerated()
+                        .map { "Photo \($0.offset + 1):\n\($0.element)" }
+                        .joined(separator: "\n\n")
+                }
+
+                // Step 3 — Build and save the log with summary
                 let formatter        = DateFormatter()
                 formatter.dateFormat = "HH:mm:ss"
 
@@ -159,7 +185,8 @@ class ActivityActionHandler: NSObject,
                     date:       Date(),
                     time:       formatter.string(from: Date()),
                     duration:   nil,
-                    uploadPath: uploadedPaths.joined(separator: ",")
+                    uploadPath: uploadedPaths.joined(separator: ","),
+                    summary:    combinedSummary          // ← stored at upload time
                 )
 
                 let saved = try await AccessSupabase.shared.saveActivityLog(log)

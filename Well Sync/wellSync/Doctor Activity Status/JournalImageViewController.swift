@@ -264,21 +264,22 @@ class JournalImageViewController: UIViewController, UIScrollViewDelegate {
     // MARK: - Summary Action
 
     @IBAction func summaryTapped(_ sender: UIButton) {
-        // Use the image from the currently visible page
         let image = loadedImages[currentPage] ?? UIImage(systemName: "photo.fill")!
 
-        let sb = UIStoryboard(name: "JournalImageView", bundle: nil)
-        let summaryVC = sb.instantiateViewController(withIdentifier: "ImageSummarySheetViewController")
-                        as! ImageSummarySheetViewController
-        summaryVC.image = image
-        summaryVC.entryTitle = journalEntry?.title ?? "Journal Entry"
+            let sb = UIStoryboard(name: "JournalImageView", bundle: nil)
+            let summaryVC = sb.instantiateViewController(withIdentifier: "ImageSummarySheetViewController")
+                            as! ImageSummarySheetViewController
 
-        if let sheet = summaryVC.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
-            sheet.prefersGrabberVisible = true
-            sheet.preferredCornerRadius = 24
-        }
-        present(summaryVC, animated: true)
+            summaryVC.image         = image
+            summaryVC.entryTitle    = journalEntry?.title ?? "Journal Entry"
+            summaryVC.storedSummary = journalEntry?.summary   // ← ADD THIS
+
+            if let sheet = summaryVC.sheetPresentationController {
+                sheet.detents = [.medium(), .large()]
+                sheet.prefersGrabberVisible = true
+                sheet.preferredCornerRadius = 24
+            }
+            present(summaryVC, animated: true)
     }
 }
     

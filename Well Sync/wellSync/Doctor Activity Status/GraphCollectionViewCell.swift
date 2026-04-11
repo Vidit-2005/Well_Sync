@@ -60,4 +60,41 @@ class GraphCollectionViewCell: UICollectionViewCell {
         barChart.animate(yAxisDuration: 0.8)
     }
 
+    func configure(with logs: [ActivityLog]) {
+        let calendar = Calendar.current
+        let now = Date()
+        
+        guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: now) else { return }
+        
+        var dailyCounts = Array(repeating: 0, count: 7)
+        
+        for log in logs {
+            if log.date >= weekInterval.start && log.date <= weekInterval.end {
+                let weekday = calendar.component(.weekday, from: log.date)
+                let index = (weekday + 5) % 7   // convert to Mon=0...Sun=6
+                dailyCounts[index] += 1
+            }
+        }
+        
+        var entries: [BarChartDataEntry] = []
+        
+        for i in 0..<7 {
+            entries.append(BarChartDataEntry(x: Double(i), y: Double(dailyCounts[i])))
+        }
+        
+        let dataSet = BarChartDataSet(entries: entries)
+        
+        dataSet.colors = dailyCounts.enumerated().map {
+            ($0.offset == 0 || $0.offset == 6) ? .systemOrange : .systemGray4
+        }
+        
+        dataSet.drawValuesEnabled = false
+        dataSet.highlightEnabled = false
+        
+        let data = BarChartData(dataSet: dataSet)
+        data.barWidth = 0.6
+        
+        barChart.data = data
+        barChart.notifyDataSetChanged()
+    }
 }
