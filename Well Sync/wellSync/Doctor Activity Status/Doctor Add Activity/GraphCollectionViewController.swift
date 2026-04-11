@@ -120,9 +120,19 @@ class GraphCollectionViewController: UICollectionViewController {
 
         case 3:
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: "insightCellGr", for: indexPath
+                withReuseIdentifier: "insightCellGr",
+                for: indexPath
             ) as! insightCollectionViewCellGr
+
             style(cell)
+
+            // Pass all logs and the assignment frequency
+            // frequency comes from the assignment (how many times/day)
+            cell.configure(
+                with: logs,
+                frequency: 1        // replace with assignment.frequency if you pass it in
+            )
+
             return cell
 
         default:
