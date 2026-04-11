@@ -104,6 +104,7 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.largeTitleDisplayMode = .always
+        collectionView.register(UINib(nibName: "StreakCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "StreakCell")
         collectionView.collectionViewLayout  = generateLayout()
         collectionView.alwaysBounceVertical  = true
 
@@ -207,18 +208,31 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
             
         case 0:
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: "streakCell", for: indexPath
-            ) as! StreakCell
-            
-            // ✅ ActivityLogs has ALL logs, toDoItems only has incomplete ones
+                withReuseIdentifier: "StreakCell", for: indexPath
+            ) as! StreakCollectionViewCell
+
             let cal = Calendar.current
-            let thisWeekDates: [Date] = ActivityLogs
-                .map { $0.date }
-                .filter { cal.isDate($0, equalTo: Date(), toGranularity: .weekOfYear) }
-            
-            cell.loggedDates = thisWeekDates
-            cell.configure()
-            cell.updateStreak(currentStreak)
+
+            var weekComponents = cal.dateComponents(
+                [.yearForWeekOfYear, .weekOfYear], from: Date()
+            )
+            weekComponents.weekday = 1
+            let sunday = cal.date(from: weekComponents)!
+
+            let weekDates: [Date] = (0..<7).compactMap {
+                cal.date(byAdding: .day, value: $0, to: sunday)
+            }
+
+            let loggedDaysSet = Set(
+                ActivityLogs.map { cal.startOfDay(for: $0.date) }
+            )
+            let streakData: [(date: Date, isCompleted: Bool)] = weekDates.map { date in
+                let day = cal.startOfDay(for: date)
+                return (date: date, isCompleted: loggedDaysSet.contains(day))
+            }
+
+            cell.configure(with: streakData, currentStreak: currentStreak)
+
             style(cell)
             return cell
             
@@ -311,11 +325,11 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         let halfWidth = (fullWidth - 8) / 2
 
         switch indexPath.section {
-        case 0:  return CGSize(width: fullWidth, height: 150)
+        case 0:  return CGSize(width: fullWidth, height: 140)
         case 1:
             if indexPath.row == 0 || indexPath.row == 1 { return CGSize(width: halfWidth, height: 150) }
             else if indexPath.row == 2 { return CGSize(width: fullWidth, height: 122) }
-            else if indexPath.row == 3 { return CGSize(width: fullWidth, height: 215) }
+            else if indexPath.row == 3 { return CGSize(width: fullWidth, height: 172) }
             else                        { return CGSize(width: fullWidth, height: 30)  }
         default: return CGSize(width: fullWidth, height: 70)
         }
@@ -325,7 +339,7 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 8
         layout.minimumLineSpacing      = 16
-        layout.sectionInset = UIEdgeInsets(top: 16, left: 12, bottom: 16, right: 12)
+        layout.sectionInset = UIEdgeInsets(top: 16, left: 12, bottom: 8, right: 12)
         return layout
     }
 
@@ -394,8 +408,8 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
     }
 
     func style(_ cell: UICollectionViewCell) {
-        cell.layer.shadowColor             = UIColor.black.cgColor
-        cell.layer.shadowOpacity           = 0.08
+        cell.layer.shadowColor             = UIColor.white.cgColor
+        cell.layer.shadowOpacity           = 0.2
         cell.layer.shadowOffset            = CGSize(width: 0, height: 2)
         cell.layer.shadowRadius            = 5
         cell.layer.masksToBounds           = false

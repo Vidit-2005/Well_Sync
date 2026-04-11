@@ -98,7 +98,7 @@ class PatientNotesCollectionViewController: UICollectionViewController {
             ) as! PatientNotesCollectionReusableView
 
             if indexPath.section == 0 {
-                header.configure(with: "Quick note to remember for your next session")
+                header.configure(with: "Quick note for your next session")
             } else if indexPath.section == 1 {
                 header.configure(with: "Previous Notes")
             }
