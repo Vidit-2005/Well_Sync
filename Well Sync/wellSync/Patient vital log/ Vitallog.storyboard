@@ -7,7 +7,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Add Activity-->
+        <!--Log Sleep-->
         <scene sceneID="JCr-Ji-dPA">
             <objects>
                 <tableViewController useStoryboardIdentifierAsRestorationIdentifier="YES" id="9XL-DF-b6C" customClass="VitalLogTableViewController" customModule="wellSync" customModuleProvider="target" sceneMemberID="viewController">
@@ -146,7 +146,7 @@
                         </connections>
                     </tableView>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" title="Add Activity" id="26a-nJ-Npv">
+                    <navigationItem key="navigationItem" title="Log Sleep" id="26a-nJ-Npv">
                         <barButtonItem key="leftBarButtonItem" style="plain" systemItem="cancel" id="Lcl-MU-1LT">
                             <connections>
                                 <action selector="close:" destination="9XL-DF-b6C" id="sdM-qw-PUI"/>
