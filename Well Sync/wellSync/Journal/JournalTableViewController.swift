@@ -23,8 +23,9 @@ class JournalTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.isUserInteractionEnabled = true
+        tableView.rowHeight = 130 
+//        tableView.rowHeight = UITableView.automaticDimension
+//        tableView.isUserInteractionEnabled = true
         tableView.allowsSelection = true  // ADD THIS
         
         // Set navigation title
@@ -134,14 +135,37 @@ class JournalTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView,
-                            titleForHeaderInSection section: Int) -> String? {
-        if section == 0 && !currentAssignmentLogs.isEmpty {
-            return "Current Assignment"
-        }
-        if section == 1 && !allActivityLogs.isEmpty {
-            return "All Previous Logs"
-        }
-        return nil
+                            viewForHeaderInSection section: Int) -> UIView? {
+
+        // Only show header if that section has data
+        if section == 0 && currentAssignmentLogs.isEmpty { return nil }
+        if section == 1 && allActivityLogs.isEmpty { return nil }
+
+        let headerView = UIView()
+        headerView.backgroundColor = tableView.backgroundColor  // matches table background
+
+        let label = UILabel()
+        label.font = UIFont.preferredFont(forTextStyle: .body)
+        label.textColor = .secondaryLabel
+        label.text = section == 0 ? "Current Assignment" : "All Previous Logs"
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        headerView.addSubview(label)
+
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            label.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            label.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 12),    // ← space above text
+            label.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -8) // ← space below text
+        ])
+
+        return headerView
+    }
+    override func tableView(_ tableView: UITableView,
+                            heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 && currentAssignmentLogs.isEmpty { return 0 }
+        if section == 1 && allActivityLogs.isEmpty { return 0 }
+        return 50  // ← total header height, adjust as needed
     }
     
     // MARK: - Table View Delegate
