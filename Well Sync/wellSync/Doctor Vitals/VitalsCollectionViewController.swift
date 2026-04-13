@@ -12,7 +12,10 @@ class VitalsCollectionViewController: UICollectionViewController, VitalsBarRange
         ("Steps", .systemOrange)
     ]
     
-    private var displayedVitals: [(title: String, color: UIColor)] = []
+    private var displayedVitals: [(title: String, color: UIColor)] = [
+        ("Sleep", .systemIndigo),
+        ("Steps", .systemOrange)
+    ]
     
     private var displayRange: DisplayRange = .weekly {
         didSet {
@@ -58,7 +61,6 @@ class VitalsCollectionViewController: UICollectionViewController, VitalsBarRange
         self.collectionView!.register(UINib(nibName: "VitalsBarCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "vitalBarCell")
         collectionView.collectionViewLayout = generateLayout()
         
-        reloadAllCharts()
     }
     
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -202,11 +204,7 @@ class VitalsCollectionViewController: UICollectionViewController, VitalsBarRange
 
     func reloadAllCharts() {
         displayedVitals = allVitals
-        let items = [
-            IndexPath(item: 0, section: 1),
-            IndexPath(item: 1, section: 1)
-        ]
-        collectionView.reloadItems(at: items)
+        collectionView.reloadData()
     }
     
 }

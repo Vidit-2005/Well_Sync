@@ -141,7 +141,6 @@ class VitalsBarCollectionViewCell: UICollectionViewCell {
 
         let visual = metric == .sleep ? item[0] : item[1]
         unitLabel.text       = metric == .sleep ? "hrs" : "steps"
-        valueLabel.text      = "–"
         iconImageView.image  = UIImage(systemName: visual.icon)
         iconImageView.tintColor = visual.color
 

@@ -126,6 +126,11 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
             // Dashboard doesn't have a timer segue yet — add identifier if needed
             self?.performSegue(withIdentifier: "Timer", sender: item)
         }
+        AccessHealthKit.healthKit.syncSleepToSupabase(
+            patientID: patient!.patientID,
+            nightsBack: 30
+        )
+        AccessHealthKit.healthKit.syncStepsToSupabase(patientID: patient!.patientID, daysBack: 30)
     }
 
     override func viewWillAppear(_ animated: Bool) {
