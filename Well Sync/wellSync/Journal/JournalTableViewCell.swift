@@ -33,6 +33,9 @@ class JournalTableViewCell: UITableViewCell {
         titleLabel.text = data.title
         subtitleLabel.text = data.subtitle
         summaryLabel.text = data.summary
+        summaryLabel.numberOfLines = 2        // show max 3 lines
+        summaryLabel.lineBreakMode = .byTruncatingTail  // adds "..." at end
+        
         cardView.layer.shadowColor = UIColor.black.cgColor
         cardView.layer.shadowOpacity = 0.1
         cardView.layer.shadowRadius = 4
