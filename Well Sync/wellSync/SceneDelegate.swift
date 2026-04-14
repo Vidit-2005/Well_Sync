@@ -75,9 +75,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.makeKeyAndVisible()
         
         // Check if user is still authenticated with Supabase
-        Task {
-            await checkAndRestoreSession()
-        }
+        showOnboardingScreen()
     }
     
     // MARK: - Session Check on App Launch
@@ -116,6 +114,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             showLoginScreen()
         }
     }
+    
+    
+    private func showOnboardingScreen() {
+            let storyboard = UIStoryboard(name: "WellSyncOnboarding", bundle: nil)
+
+            guard let onboardingVC = storyboard.instantiateInitialViewController()
+                    as? WellSyncOnboardingViewController else {
+                Task { await checkAndRestoreSession() }
+                return
+            }
+
+            onboardingVC.onFinish = { [weak self] in
+                Task { @MainActor in
+                    await self?.checkAndRestoreSession()
+                }
+            }
+
+            window?.rootViewController = onboardingVC
+        }
+    
     
     // MARK: - Navigation Helpers
     private func showLoginScreen() {
