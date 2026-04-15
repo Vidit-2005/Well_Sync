@@ -40,21 +40,18 @@ class AddActivityTableViewController: UITableViewController {
     }
     @IBAction func imageSwitchChanged(_ sender: UISwitch) {
         if sender.isOn {
-            // Image ON → Timer must be OFF
             timerSwitch.isOn = false
         }
     }
         
     @IBAction func recordingSwitchChanged(_ sender: UISwitch) {
         if sender.isOn {
-            // Recording ON → Timer must be OFF
             timerSwitch.isOn = false
         }
     }
         
     @IBAction func timerSwitchChanged(_ sender: UISwitch) {
         if sender.isOn {
-            // Timer ON → Image and Recording must be OFF
             imageSwitch.isOn = false
             recordingSwitch.isOn = false
         }
@@ -155,8 +152,6 @@ class AddActivityTableViewController: UITableViewController {
                 case 0:
                     return activityCell
                 default:
-                    // For rows 1, 2, 3 (visible), we need to map to actual rows 2, 3, 4
-                    // We do this by adjusting the indexPath
                     let adjustedIndexPath = IndexPath(row: indexPath.row + 1, section: indexPath.section)
                     return super.tableView(tableView, cellForRowAt: adjustedIndexPath)
                 }
@@ -166,109 +161,7 @@ class AddActivityTableViewController: UITableViewController {
         return super.tableView(tableView, cellForRowAt: indexPath)
     }
 
-    
-    
-//    @IBAction func saveTapped(_ sender: UIBarButtonItem) {
-//        guard let patientID = /*patient?.patientID*/ UUID(uuidString: "d207cf78-d29e-4bf1-91d2-66a5c26fd895") else {
-//            showAlert("Patient info missing.")
-//            return
-//        }
-//
-//        let selectedName = activityListButton.title(for: .normal) ?? ""
-//        guard !selectedName.isEmpty, selectedName != "Select" else {
-//            showAlert("Please select an activity."); return
-//        }
-//
-//        var activity: Activity
-//
-//        if isCustomSelected {
-//            // Custom path — create new Activity and add to catalog
-//            let customName = customNameTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
-//            if !isCustomSelected {
-//                guard !selectedName.isEmpty, selectedName != "Select" else {
-//                    showAlert("Please select an activity."); return
-//                }
-//            }
-//            guard let type = resolveType() else {
-//                showAlert("Please select a type")
-//                return
-//            }
-//
-//            // Reuse if same name already exists, otherwise create new
-//            if let existing = activityCatalog.first(where: {
-//                $0.name.lowercased() == customName.lowercased()
-//            }) {
-//                activity = existing
-//            } else {
-//                let newActivity = Activity(
-//                    activityID:  UUID(),
-//                    doctorID:    patient!.docID,
-//                    name:        customName,
-//                    type:        type,
-//                    iconName:    "sparkles",
-//                    description: doctorNote.text ?? ""
-//                )
-////                activityCatalog.append(newActivity)
-//                Task{
-//                    do{
-//                        activity = try await AccessSupabase.shared.saveActivity(newActivity)
-//                    }
-//                    catch{
-//                        print(error)
-//                    }
-//                }
-//            }
-//
-//        } else {
-//            // Catalog path — existing logic unchanged
-//            guard let found = activityCatalog.first(where: {
-//                $0.name.lowercased() == selectedName.lowercased()
-//            }) else {
-//                showAlert("Activity not found in catalog."); return
-//            }
-//            activity = found
-//        }
-//            guard let frequency = resolveFrequency() else {
-//                showAlert("Please select a frequency."); return
-//            }
-//
-//            let start = startDatePicker.date
-//            let end   = endDatePicker.date
-//            guard end >= start else {
-//                showAlert("End date must be after start date."); return
-//            }
-//
-//            let newAssignment = AssignedActivity(
-//                assignedID: UUID(),
-//                activityID: activity.activityID,
-//                patientID:  patientID,
-//                doctorID:   patient!.docID,
-//                frequency:  frequency,
-//                startDate:  start,
-//                endDate:    end,
-//                doctorNote: doctorNote.text ?? "",
-//                status:     .active
-//            )
-//        
-//        print("total assignedActivities count: \(assignedActivities.count)")
-////            assignedActivities.append(newAssignment)
-//        Task{
-//            do{
-//                try await AccessSupabase.shared.assignActivity(newAssignment)
-//            }
-//            catch{
-//                print(error)
-//            }
-//        }
-//
-//        onSave?(newAssignment)
-//            
-//        // ADD temporarily before dismiss(animated: true)
-//        print("Saved: \(newAssignment.assignedID)")
-//        print("isActiveToday: \(newAssignment.isActiveToday)")
-//        print("total assignedActivities count: \(assignedActivities.count)")
-//            dismiss(animated: true)
-//        }
+
     @IBAction func saveTapped(_ sender: UIBarButtonItem) {
         guard let patientID = patient?.patientID else {
             showAlert("Patient info missing.")
@@ -283,11 +176,9 @@ class AddActivityTableViewController: UITableViewController {
 
         Task {
             do {
-                // STEP 1: Get or create the Activity (catalog item)
                 var savedActivity: Activity
                 
                 if isCustomSelected {
-                    // Custom activity - create new catalog entry
                     let customName = customNameTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
                     
                     guard !customName.isEmpty else {
@@ -295,11 +186,9 @@ class AddActivityTableViewController: UITableViewController {
                         return
                     }
                     
-                    // Check if this custom activity already exists
                     if let existing = try await AccessSupabase.shared.fetchActivity(byName: customName) {
                         savedActivity = existing
                     } else {
-                        // Create new activity in catalog
                         let newActivity = Activity(
                             activityID: UUID(),
                             doctorID: patient!.docID,
@@ -310,7 +199,6 @@ class AddActivityTableViewController: UITableViewController {
                     }
                 }
                 else {
-                    // Pre-defined activity - fetch from catalog
                     guard !selectedName.isEmpty, selectedName != "Select" else {
                         showAlert("Please select an activity.")
                         return
@@ -325,25 +213,20 @@ class AddActivityTableViewController: UITableViewController {
                     }
                 }
                 
-                // STEP 2: Validate tracking method switches
                 guard imageSwitch.isOn || recordingSwitch.isOn || timerSwitch.isOn else {
                     showAlert("Please enable at least one tracking method: Image, Recording, or Timer.")
                     return
                 }
                 
-                // Validate mutual exclusivity (should be enforced by UI, but double-check)
                 if timerSwitch.isOn && (imageSwitch.isOn || recordingSwitch.isOn) {
                     showAlert("Timer cannot be combined with Image or Recording.")
                     return
                 }
-                
-                // STEP 3: Validate frequency
                 guard let frequency = resolveFrequency() else {
                     showAlert("Please select a frequency.")
                     return
                 }
 
-                // STEP 4: Validate dates
                 let start = startDatePicker.date
                 let end = endDatePicker.date
 
@@ -352,7 +235,6 @@ class AddActivityTableViewController: UITableViewController {
                     return
                 }
                 
-                // STEP 5: Create assignment with tracking method
                 let newAssignment = AssignedActivity(
                     assignedID: UUID(),
                     activityID: savedActivity.activityID,
@@ -363,9 +245,9 @@ class AddActivityTableViewController: UITableViewController {
                     endDate: end,
                     doctorNote: doctorNote.text ?? "",
                     status: .active,
-                    hasImage: imageSwitch.isOn,        // Tracking method
-                    hasRecording: recordingSwitch.isOn, // Tracking method
-                    hasTimer: timerSwitch.isOn          // Tracking method
+                    hasImage: imageSwitch.isOn,
+                    hasRecording: recordingSwitch.isOn,
+                    hasTimer: timerSwitch.isOn
                 )
                 
                 try await AccessSupabase.shared.assignActivity(newAssignment)
@@ -382,90 +264,6 @@ class AddActivityTableViewController: UITableViewController {
         }
     }
 
-//        guard let patientID = patient?.patientID else {
-//            showAlert("Patient info missing.")
-//            return
-//        }
-//
-//        let selectedName = activityListButton.title(for: .normal) ?? ""
-//        if selectedName.isEmpty || selectedName == "Select" {
-//            showAlert("Please select an activity.")
-//            return
-//        }
-//
-//        Task {
-//            do {
-//                var savedActivity: Activity
-//                if isCustomSelected {
-//                    let customName = customNameTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
-//                    guard let type = resolveType() else {
-//                        showAlert("Please select a type")
-//                        return
-//                    }
-////                    if let existing = activityCatalog.first(where: {
-////                        $0.name.lowercased() == customName.lowercased()}) {
-////                        savedActivity = existing
-////                    }
-//                    let newActivity = Activity(
-//                        activityID: UUID(),
-//                        doctorID: patient!.docID,
-//                        name: customName,
-//                        type: type,
-//                        iconName: "sparkles"
-//                    )
-//                    savedActivity = try await AccessSupabase.shared.saveActivity(newActivity)
-////                        activityCatalog.append(savedActivity)
-//                }
-//                else {
-//                    guard !selectedName.isEmpty, selectedName != "Select" else {
-//                        showAlert("Please select an activity.")
-//                        return
-//                    }
-//                    if let existing = try await AccessSupabase.shared.fetchActivity(
-//                        byName: selectedName
-//                    ) {
-//                        savedActivity = existing
-//                    } else {
-//                        showAlert("Activity not found.")
-//                        return
-//                    }
-//                }
-//                guard let frequency = resolveFrequency() else {
-//                    showAlert("Please select a frequency.")
-//                    return
-//                }
-//
-//                let start = startDatePicker.date
-//                let end = endDatePicker.date
-//
-//                guard end >= start else {
-//                    showAlert("End date must be after start date.")
-//                    return
-//                }
-//                let newAssignment = AssignedActivity(
-//                    assignedID: UUID(),
-//                    activityID: savedActivity.activityID,
-//                    patientID: patientID,
-//                    doctorID: patient!.docID,
-//                    frequency: frequency,
-//                    startDate: start,
-//                    endDate: end,
-//                    doctorNote: doctorNote.text ?? "",
-//                    status: .active
-//                )
-//                try await AccessSupabase.shared.assignActivity(newAssignment)
-//
-////                print("Saved Assignment:", newAssignment.assignedID)
-//
-//                DispatchQueue.main.async {
-//                    self.dismiss(animated: true)
-//                }
-//
-//            } catch {
-//                print("Save error:", error)
-//            }
-//        }
-//    }
  
     @IBAction func cancelTapped(_ sender: UIBarButtonItem) {
         dismiss(animated: true)
