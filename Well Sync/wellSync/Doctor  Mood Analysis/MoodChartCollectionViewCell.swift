@@ -94,10 +94,6 @@ class MoodChartCollectionViewCell: UICollectionViewCell, ChartViewDelegate {
 
     @IBOutlet weak var moodChartView: LineChartView!
 
-    // ── Private backing stores ────────────────────────────────────────────────
-    // All state is written atomically through configure() so there are no
-    // double-redraw race conditions caused by didSet chains.
-
     private var _moodLogs:   [MoodLog] = []
     private var _isWeekly:   Bool      = true
     private var _rangeStart: Date      = Calendar.current.startOfDay(for: Date())
@@ -105,11 +101,6 @@ class MoodChartCollectionViewCell: UICollectionViewCell, ChartViewDelegate {
     private var detailedEntries: [ChartDataEntry] = []
     private let marker = MoodBubbleMarker()
 
-    // ── Legacy property setters (kept for any remaining call-sites) ───────────
-    // These forward into the new configure() so old code keeps working.
-
-    /// Legacy: setting moodLogs directly will use the currently stored
-    /// rangeStart and isWeekly values.  Prefer configure() instead.
     var moodLogs: [MoodLog] {
         get { _moodLogs }
         set { configure(moodLogs: newValue, rangeStart: _rangeStart, isWeekly: _isWeekly) }
@@ -129,14 +120,6 @@ class MoodChartCollectionViewCell: UICollectionViewCell, ChartViewDelegate {
     }
 
     // MARK: - Configure  ← preferred entry-point
-    //
-    // Called by the VC every time the calendar's visible range changes.
-    //
-    // moodLogs   : logs already filtered to the visible range
-    // rangeStart : midnight of the first visible day (Sunday of the week,
-    //              or the 1st of the month)
-    // isWeekly   : true → 7-column chart   false → month-length chart
-
     func configure(moodLogs: [MoodLog], rangeStart: Date, isWeekly: Bool) {
         _moodLogs   = moodLogs
         _rangeStart = rangeStart
@@ -173,58 +156,35 @@ class MoodChartCollectionViewCell: UICollectionViewCell, ChartViewDelegate {
     }
 
     // MARK: - Data
-    //
-    // KEY CHANGE vs the old implementation:
-    //   dayDates are built FORWARD from _rangeStart, not BACKWARD from today.
-    //
-    // This means:
-    //   • If the user is viewing the week of Mar 3–9, the x-axis shows
-    //     Mon Mar 3 … Sun Mar 9, and only logs from those days are plotted.
-    //   • If the user swipes to the week of Feb 24–Mar 2, the chart
-    //     instantly re-draws for that range.
-    //
-    // The number of columns is always 7 for weekly or the exact number of
-    // days in the visible month for monthly view.
-
     func setData() {
 
-        let cal        = Calendar.current
-
-        // ── Step 1: Determine day count ───────────────────────────────────────
+        let cal = Calendar.current
         let totalDays: Int
         if _isWeekly {
             totalDays = 7
         } else {
-            // Use the exact number of days in the visible month so
-            // the chart matches the calendar perfectly.
             totalDays = cal.range(of: .day, in: .month, for: _rangeStart)?.count ?? 30
         }
 
-        // ── Step 2: Build day dates forward from rangeStart ───────────────────
         let dayDates: [Date] = (0..<totalDays).compactMap { offset in
             cal.date(byAdding: .day, value: offset, to: _rangeStart)
         }
 
-        // ── Step 3: Generate x-axis labels ────────────────────────────────────
-        // Weekly → "Mon", "Tue" … ; Monthly → "1", "2", "3" …
         let dateFormatter           = DateFormatter()
         dateFormatter.dateFormat    = _isWeekly ? "EEE" : "d"
         let dayLabels               = dayDates.map { dateFormatter.string(from: $0) }
 
-        // ── Step 4: Update x-axis ─────────────────────────────────────────────
         let xAxis                   = moodChartView.xAxis
         xAxis.valueFormatter        = IndexAxisValueFormatter(values: dayLabels)
         xAxis.axisMinimum           = -0.5
         xAxis.axisMaximum           = Double(totalDays) - 0.5
 
-        // ── Step 5: Guard empty ───────────────────────────────────────────────
         guard !_moodLogs.isEmpty else {
             moodChartView.data = nil
             moodChartView.notifyDataSetChanged()
             return
         }
 
-        // ── Step 6: Group logs by day index ───────────────────────────────────
         var perDayValues: [Int: [(Double, MoodLog)]] = [:]
         for log in _moodLogs {
             let logDay = cal.startOfDay(for: log.date)
@@ -233,7 +193,6 @@ class MoodChartCollectionViewCell: UICollectionViewCell, ChartViewDelegate {
             }
         }
 
-        // ── Step 7: Build ChartDataEntry + x → MoodLog dictionary ────────────
         var entries: [(ChartDataEntry, MoodLog)] = []
 
         for (dayIndex, pairs) in perDayValues {
@@ -252,7 +211,6 @@ class MoodChartCollectionViewCell: UICollectionViewCell, ChartViewDelegate {
         for (entry, log) in entries { xToLog[entry.x] = log }
         marker.xToLog = xToLog
 
-        // ── Step 8: Build LineChartDataSet ────────────────────────────────────
         let dataSet                         = LineChartDataSet(entries: detailedEntries, label: "Mood logs")
         dataSet.mode                        = .linear
         dataSet.lineWidth                   = 1.5
@@ -268,14 +226,12 @@ class MoodChartCollectionViewCell: UICollectionViewCell, ChartViewDelegate {
         dataSet.highlightLineWidth          = 1.5
         dataSet.drawFilledEnabled           = false
 
-        // ── Step 9: Attach & animate ──────────────────────────────────────────
         moodChartView.data = LineChartData(dataSet: dataSet)
         moodChartView.notifyDataSetChanged()
         moodChartView.animate(xAxisDuration: 0.4, yAxisDuration: 0.6, easingOption: .easeOutQuart)
     }
 
     // MARK: - ChartViewDelegate
-
     func chartValueNothingSelected(_ chartView: ChartViewBase) {
         moodChartView.highlightValues(nil)
     }

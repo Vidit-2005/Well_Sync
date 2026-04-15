@@ -33,8 +33,6 @@ class CalendarCell1: UICollectionViewCell,
     weak var delegate: CalendarCell1Delegate?
 
     // MARK: - Chevron Buttons
-    // We create these in code so no XIB changes are needed.
-    // They sit in the calendar's header row (left edge = prev, right edge = next).
 
     private lazy var prevButton: UIButton = {
         let btn = UIButton(type: .system)
@@ -76,13 +74,10 @@ class CalendarCell1: UICollectionViewCell,
     override func awakeFromNib() {
         super.awakeFromNib()
         setupCalendar()
-        setupChevronButtons()  // Step 1: attach buttons to the cell's contentView
+        setupChevronButtons()
     }
 
     // MARK: - Layout
-    // Step 2: every time UIKit re-lays out the cell (rotation, scope change, etc.)
-    // we reposition the buttons so they always hug the header row.
-
     override func layoutSubviews() {
         super.layoutSubviews()
         positionChevronButtons()
@@ -142,18 +137,15 @@ class CalendarCell1: UICollectionViewCell,
         let btnSize: CGFloat      = 36
         let calFrame              = cal.frame
 
-        // Vertically centre the button in the header row.
         let btnY = calFrame.minY + (headerHeight - btnSize) / 2
 
-        // Left chevron: flush to the left edge of the calendar with a small inset
         prevButton.frame = CGRect(
             x: calFrame.minX + 8,
             y: btnY,
             width: btnSize,
             height: btnSize
         )
-
-        // Right chevron: flush to the right edge of the calendar with a small inset
+        
         nextButton.frame = CGRect(
             x: calFrame.maxX - btnSize - 8,
             y: btnY,
@@ -179,7 +171,6 @@ class CalendarCell1: UICollectionViewCell,
         calendar.setCurrentPage(target, animated: true)
     }
 
-    /// Step 4: Navigate to the NEXT week or month (mirror of goToPrev).
     @objc private func goToNext() {
         let cal      = Calendar.current
         let current  = calendar.currentPage
