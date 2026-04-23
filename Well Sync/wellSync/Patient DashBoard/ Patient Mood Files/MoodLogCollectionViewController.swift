@@ -108,7 +108,7 @@ class MoodLogCollectionViewController:
         switch indexPath.section {
             
         case 0:
-            return CGSize(width: cardWidth, height: 215)
+            return CGSize(width: cardWidth, height: 180)
             
         case 1:
             let feelingCount = {

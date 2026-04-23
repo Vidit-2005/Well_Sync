@@ -28,9 +28,10 @@ class PatientNotesCollectionViewController: UICollectionViewController {
     // ✅ ONBOARDING
     private var onboardingSequence: FeatureOnboardingSequence?
     
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         collectionView.register(
             UINib(nibName: "PatientNotesCollectionReusableView", bundle: nil),
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,

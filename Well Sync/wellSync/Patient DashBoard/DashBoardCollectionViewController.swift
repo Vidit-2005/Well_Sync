@@ -107,13 +107,13 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         return UIMenu(title: "", children: [profile, settings])
     }
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.largeTitleDisplayMode = .always
         collectionView.register(UINib(nibName: "StreakCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "StreakCell")
         collectionView.collectionViewLayout  = generateLayout()
         collectionView.alwaysBounceVertical  = true
-
         onboardingSequence = FeatureOnboardingSequence(
             viewController: self,
             storageKey: "patient_dashboard"
@@ -359,7 +359,7 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
             else if indexPath.row == 2 { return CGSize(width: fullWidth, height: 122) }
             else if indexPath.row == 3 { return CGSize(width: fullWidth, height: 172) }
             else                        { return CGSize(width: fullWidth, height: 40)  }
-        default: return CGSize(width: fullWidth, height: 70)
+        default: return CGSize(width: fullWidth, height: 60)
         }
     }
 

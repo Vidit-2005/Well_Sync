@@ -322,13 +322,13 @@ class ActivityTableViewController: UITableViewController {
 
     required init?(coder: NSCoder) { super.init(coder: coder) }
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.separatorStyle     = .none
         tableView.rowHeight          = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
-
         // MARK: - Existing handler wiring (UNCHANGED)
         actionHandler.presentingViewController = self
         actionHandler.onSuccess = { [weak self] in self?.loadData() }

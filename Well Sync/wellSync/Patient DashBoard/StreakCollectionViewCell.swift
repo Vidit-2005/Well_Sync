@@ -26,7 +26,7 @@ class StreakCollectionViewCell: UICollectionViewCell {
             let dayNumber = calendar.component(.day, from: data.date)
             
             dateLabels[i].text = "\(dayNumber)"
-            let brandBlue = UIColor(red: 59/255, green: 138/255, blue: 255/255, alpha: 1.0)
+            let brandBlue = UIColor(red: 0/255, green: 200/255, blue: 179/255, alpha: 0.1)
             
             if data.isCompleted {
                 dayCircles[i].backgroundColor = brandBlue.withAlphaComponent(0.85)
