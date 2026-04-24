@@ -17,9 +17,38 @@ class PateintSettingTableViewController: UITableViewController {
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
     ) {
-        if indexPath.section == 2 && indexPath.row == 4{
-            logout()
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        if indexPath.section == 2 {
+            if indexPath.row == 4 {
+                logout()
+                return
+            }
+
+            let storyboard = UIStoryboard(name: "DoctorDetailScreens", bundle: nil)
+            guard let detailVC = storyboard.instantiateViewController(
+                withIdentifier: "doctorSupportDetail"
+            ) as? DoctorSupportDetailViewController else {
+                return
+            }
+
+            switch indexPath.row {
+            case 0:
+                detailVC.screenType = .aboutUs
+            case 1:
+                detailVC.screenType = .reportProblem
+            case 2:
+                detailVC.screenType = .contactUs
+            case 3:
+                detailVC.screenType = .rateUs
+            default:
+                return
+            }
+
+            navigationController?.pushViewController(detailVC, animated: true)
+            return
         }
+
     }
     func logout() {
         Task {

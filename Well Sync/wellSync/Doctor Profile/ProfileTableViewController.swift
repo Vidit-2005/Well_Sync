@@ -30,4 +30,30 @@ class ProfileTableViewController: UITableViewController {
         doctorExperienceLabel.text = String(doctor!.experience)
         doctorMailLabel.text = doctor!.email
     }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        guard indexPath.section == 2 else { return }
+
+        let storyboard = UIStoryboard(name: "DoctorDetailScreens", bundle: nil)
+        guard let detailVC = storyboard.instantiateViewController(
+            withIdentifier: "doctorCredentialDetail"
+        ) as? DoctorCredentialDetailViewController else {
+            return
+        }
+
+        switch indexPath.row {
+        case 0:
+            detailVC.screenType = .education
+        case 1:
+            detailVC.screenType = .registration
+        case 2:
+            detailVC.screenType = .identity
+        default:
+            return
+        }
+
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
 }
