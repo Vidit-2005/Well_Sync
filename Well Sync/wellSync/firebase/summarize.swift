@@ -200,6 +200,102 @@ class Summarise: UIViewController {
     func extractAndSummarizeWithGemini(image: UIImage) async throws -> String {
         return try await extractAndSummarise(image: image, activityName: "journal")
     }
+    func summariseSessionNote(
+        noteText: String,
+        images: [UIImage] = []
+    ) async throws -> (title: String, summary: String) {
+
+        var fullText = noteText.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // ── Step 1: Extract text from each image if present ───────────────────
+        if !images.isEmpty {
+            var extractedParts: [String] = []
+
+            for (index, image) in images.enumerated() {
+                guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+                    print("⚠️ Could not process image \(index + 1), skipping.")
+                    continue
+                }
+
+                let imagePart = InlineDataPart(data: imageData, mimeType: "image/jpeg")
+
+                let extractPrompt = """
+                This image is part of a clinical session note submitted by a therapist.
+                If there is any handwritten or printed text visible, extract it exactly.
+                Correct obvious spelling errors or incomplete words where meaning is clear.
+                If there is no text but there is a diagram, drawing, or photo, describe it briefly and clinically.
+                Return only the extracted text or description. Nothing else.
+                """
+
+                do {
+                    let extractResponse = try await model.generateContent(extractPrompt, imagePart)
+                    let extracted = extractResponse.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                    if !extracted.isEmpty {
+                        extractedParts.append("Image \(index + 1): \(extracted)")
+                        print("✅ Extracted from image \(index + 1): \(extracted)")
+                    }
+                } catch {
+                    print("⚠️ Image \(index + 1) extraction failed: \(error)")
+                    // Continue with remaining images — don't fail the whole upload
+                }
+            }
+
+            // ── Step 2: Combine typed note + extracted image text ─────────────
+            if !extractedParts.isEmpty {
+                let imageText = extractedParts.joined(separator: "\n")
+                if fullText.isEmpty {
+                    fullText = imageText
+                } else {
+                    fullText = """
+                    Typed note:
+                    \(fullText)
+
+                    Extracted from images:
+                    \(imageText)
+                    """
+                }
+            }
+        }
+
+        // ── Step 3: Nothing to summarise ──────────────────────────────────────
+        guard !fullText.isEmpty else {
+            return (title: "Session", summary: "No session note present.")
+        }
+
+        // ── Step 4: Single Gemini call for title + summary ────────────────────
+        let prompt = """
+        You are a clinical assistant helping a doctor review session notes.
+        Below is the combined content of a therapy session note (may include typed text and text extracted from images).
+
+        Return ONLY a JSON object with exactly two keys, nothing else:
+        {
+          "title": "A short 3–6 word title capturing the core theme of this session",
+          "summary": "Write a concise clinical summary in 1–2 sentences describing key observations and patient progress. Use factual, neutral language, avoid interpretation or speculation, and ensure the statement is clear, self-contained, and medically meaningful."
+        }
+
+        Session content:
+        \(fullText)
+        """
+
+        let response = try await model.generateContent(prompt)
+        let raw = response.text ?? ""
+
+        let cleaned = raw
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "```json", with: "")
+            .replacingOccurrences(of: "```", with: "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard let data    = cleaned.data(using: .utf8),
+              let json    = try? JSONSerialization.jsonObject(with: data) as? [String: String],
+              let title   = json["title"],
+              let summary = json["summary"] else {
+            // Fallback if JSON parsing fails
+            return (title: "Session Note", summary: raw.isEmpty ? fullText : raw)
+        }
+        print(title)
+        return (title: title, summary: summary)
+    }
 }
 
 enum SummariseError: LocalizedError {

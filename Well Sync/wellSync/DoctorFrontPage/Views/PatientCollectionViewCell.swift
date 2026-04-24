@@ -29,12 +29,12 @@ class PatientCollectionViewCell: UICollectionViewCell {
         setupTag(conditionLabel)
         setupTag(sessionLabel)
         
-        setupButton(leftButton, bgColor: .systemBlue, textColor: .systemBlue)
-        setupButton(rightButton, bgColor: .systemBlue, textColor: .systemBlue)
+        setupButton(leftButton)
+        setupButton(rightButton)
     }
     
     private func setupTag(_ label: UILabel) {
-        label.layer.cornerRadius = 11
+        label.layer.cornerRadius = 10
         label.layer.masksToBounds = true
         label.textAlignment = .center
         contentView.layer.cornerRadius = 20
@@ -42,12 +42,9 @@ class PatientCollectionViewCell: UICollectionViewCell {
         contentView.layer.masksToBounds = true
     }
     
-    private func setupButton(_ button: UIButton, bgColor: UIColor, textColor: UIColor) {
+    private func setupButton(_ button: UIButton) {
         button.layer.cornerRadius = 18
         button.clipsToBounds = true
-        
-        button.backgroundColor = bgColor.withAlphaComponent(0.12)
-        button.setTitleColor(textColor, for: .normal)
     }
     
 //    private func configureButtons(_ patient: Patient){

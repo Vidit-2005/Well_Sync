@@ -14,19 +14,13 @@ class SessionNoteCollectionViewController: UICollectionViewController {
     var appointment: Appointment?
     var sessions: [SessionNote] = []
     var sizeOfNotes: Int?
-//    var sessionNotes: [SessionNote] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.collectionViewLayout = generateLayout()
     }
     override func viewWillAppear(_ animated: Bool) {
-        
-        if self.sessions.isEmpty{
             loadSessionNotes()
-        }else{
-            collectionView.reloadData()
-        }
     }
     func loadSessionNotes() {
         Task {
@@ -91,7 +85,7 @@ class SessionNoteCollectionViewController: UICollectionViewController {
            let vc = segue.destination as? DetailSessionCollectionViewController {
 
             vc.session = sessions[indexPath.row]
-            vc.title = "Session \(indexPath.row + 1)"
+            vc.title = "Session \(sessions.count - indexPath.row)"
         }
 
         if let navVC = segue.destination as? UINavigationController,

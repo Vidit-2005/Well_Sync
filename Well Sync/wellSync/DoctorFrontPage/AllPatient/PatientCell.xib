@@ -30,27 +30,35 @@
                         </userDefinedRuntimeAttributes>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="obD-dc-tVW">
-                        <rect key="frame" x="108" y="43" width="42" height="21"/>
+                        <rect key="frame" x="108" y="40" width="42" height="21"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aiY-zA-hL5" customClass="PaddingLabel" customModule="wellSync" customModuleProvider="target">
-                        <rect key="frame" x="108" y="72" width="160" height="14.333333333333329"/>
-                        <color key="backgroundColor" systemColor="systemGrayColor"/>
+                        <rect key="frame" x="108" y="69" width="100" height="20"/>
+                        <color key="backgroundColor" systemColor="systemGray2Color"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="100" id="Lbw-cG-WxR"/>
+                            <constraint firstAttribute="height" constant="20" id="npc-Pv-sot"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="11"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QhN-yW-Qjz" customClass="PaddingLabel" customModule="wellSync" customModuleProvider="target">
-                        <rect key="frame" x="276" y="72" width="94" height="14.333333333333329"/>
-                        <color key="backgroundColor" systemColor="systemGrayColor"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QhN-yW-Qjz" customClass="PaddingLabel" customModule="wellSync" customModuleProvider="target">
+                        <rect key="frame" x="216" y="69" width="100" height="20"/>
+                        <color key="backgroundColor" systemColor="systemGray2Color"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="eRE-JU-1Ha"/>
+                            <constraint firstAttribute="width" constant="100" id="qZ6-7N-weT"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="11"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qe1-1D-GTs">
-                        <rect key="frame" x="111" y="94.333333333333329" width="26.666666666666657" height="12"/>
+                        <rect key="frame" x="111" y="97" width="26.666666666666657" height="12"/>
                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
@@ -72,13 +80,11 @@
                 <constraint firstItem="obD-dc-tVW" firstAttribute="leading" secondItem="ple-6I-Jb2" secondAttribute="trailing" constant="16" id="OqN-b3-qyp"/>
                 <constraint firstItem="ple-6I-Jb2" firstAttribute="leading" secondItem="0gZ-dl-0AK" secondAttribute="leading" constant="12" id="WFa-Ax-Kcm"/>
                 <constraint firstItem="qe1-1D-GTs" firstAttribute="top" secondItem="aiY-zA-hL5" secondAttribute="bottom" constant="8" id="amt-hn-qgy"/>
-                <constraint firstItem="QhN-yW-Qjz" firstAttribute="trailing" secondItem="IV3-bA-7mM" secondAttribute="trailing" constant="-30" id="i1R-2J-cDv"/>
                 <constraint firstItem="aiY-zA-hL5" firstAttribute="centerY" secondItem="0gZ-dl-0AK" secondAttribute="centerY" id="kZB-mO-I00"/>
                 <constraint firstItem="QhN-yW-Qjz" firstAttribute="leading" secondItem="aiY-zA-hL5" secondAttribute="trailing" constant="8" id="obD-aW-RSL"/>
                 <constraint firstItem="aiY-zA-hL5" firstAttribute="top" secondItem="obD-dc-tVW" secondAttribute="bottom" constant="8" id="pjb-03-8DT"/>
                 <constraint firstItem="QhN-yW-Qjz" firstAttribute="centerY" secondItem="0gZ-dl-0AK" secondAttribute="centerY" id="qcx-yn-hug"/>
                 <constraint firstAttribute="trailing" secondItem="IV3-bA-7mM" secondAttribute="trailing" constant="16" id="riC-jH-No6"/>
-                <constraint firstItem="aiY-zA-hL5" firstAttribute="width" secondItem="QhN-yW-Qjz" secondAttribute="width" multiplier="1.7" id="uWg-OR-q3F"/>
             </constraints>
             <size key="customSize" width="416" height="272"/>
             <userDefinedRuntimeAttributes>
@@ -99,13 +105,16 @@
     <resources>
         <image name="chevron.right" catalog="system" width="97" height="128"/>
         <systemColor name="secondaryLabelColor">
-            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondarySystemBackgroundColor">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGray2Color">
+            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGrayColor">
-            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

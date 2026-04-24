@@ -25,7 +25,7 @@ class PatientCell: UICollectionViewCell {
     }
     
     private func setupTag(_ label: UILabel) {
-        label.layer.cornerRadius = 11
+        label.layer.cornerRadius = 10
         label.layer.masksToBounds = true
         label.textAlignment = .center
     }
@@ -45,7 +45,7 @@ class PatientCell: UICollectionViewCell {
         formatter.dateFormat = "dd MMM yy"
 
         if let date = patient.previousSessionDate {
-            lastDate.text = formatter.string(from: date)
+            lastDate.text = "Last session: \(formatter.string(from: date))"
         } else {
             lastDate.text = "-"
         }

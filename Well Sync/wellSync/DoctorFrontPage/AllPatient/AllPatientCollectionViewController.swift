@@ -169,7 +169,7 @@ class AllPatientCollectionViewController: UICollectionViewController {
 
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .estimated(80)
+            heightDimension: .estimated(60)
         )
 
         let group = NSCollectionLayoutGroup.vertical(
@@ -200,7 +200,7 @@ class AllPatientCollectionViewController: UICollectionViewController {
         )
 
         group.contentInsets = NSDirectionalEdgeInsets(
-            top: 10,
+            top: 20,
             leading: 16,
             bottom: 0,
             trailing: 16

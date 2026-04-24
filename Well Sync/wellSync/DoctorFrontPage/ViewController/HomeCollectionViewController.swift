@@ -17,11 +17,11 @@ class HomeCollectionViewController: UICollectionViewController {
     var selectedPatient: Patient?
     
     let spinner = UIActivityIndicatorView(style: .large)
-
-
     override func viewDidLoad() {
-        
         super.viewDidLoad()
+        
+        collectionView.backgroundColor = .clear
+        applyGradientBackground()
         spinner.center = view.center
         view.addSubview(spinner)
         viewModel = AccessSupabase.shared
@@ -35,6 +35,32 @@ class HomeCollectionViewController: UICollectionViewController {
         loadPatients()
         loadAppointments()
     }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // fixes gradient frame on all device sizes
+        view.layer.sublayers?
+            .compactMap { $0 as? CAGradientLayer }
+            .first?
+            .frame = view.bounds
+    }
+
+    
+    private func applyGradientBackground() {
+        let gradient = CAGradientLayer()
+
+        gradient.colors = [
+            UIColor(red: 0.55, green: 0.82, blue: 0.87, alpha: 1.0).cgColor,
+            UIColor(red: 0.92, green: 0.97, blue: 0.98, alpha: 1.0).cgColor
+        ]
+
+        gradient.startPoint = CGPoint(x: 0.5, y: 0.0) // TOP
+        gradient.endPoint   = CGPoint(x: 0.5, y: 1.0) // BOTTOM
+
+        gradient.frame = view.bounds
+
+        view.layer.insertSublayer(gradient, at: 0)
+    }
+    
     func loadAppointments() {
         guard let id = self.doctor?.docID else { return }
         spinner.startAnimating()
@@ -319,7 +345,9 @@ extension HomeCollectionViewController {
         cell.contentView.layer.masksToBounds = true
         cell.layer.cornerRadius = 20
         cell.layer.shadowColor = UIColor.black.cgColor
-        cell.layer.shadowRadius = 10
+        cell.layer.shadowOpacity = 0.25
+        cell.layer.shadowRadius  = 8
+        cell.layer.shadowOffset  = CGSize(width: 0, height: 4)
         cell.layer.masksToBounds = false
     }
 

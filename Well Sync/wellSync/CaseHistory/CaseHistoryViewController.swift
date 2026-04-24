@@ -31,34 +31,82 @@ class CaseHistoryViewController: UIViewController {
         CaseHistoryCollectionView.delegate = self
     }
 
+//    func loadData() {
+//        Task {
+//            do {
+//                // 1. Fetch case history (for reports)
+//                let full = try await AccessSupabase.shared
+//                    .fetchFullCaseHistory(for: patient.patientID)
+//
+//                self.caseHistory = full
+//                self.reports = full.report ?? []
+//
+//                // 2. Fetch appointments AND session notes in parallel
+//                async let appointmentsFetch = AccessSupabase.shared
+//                    .fetchAppointments(patientID: patient.patientID)
+//                let sessionsResult: [SessionNote]
+//                if self.sessions.isEmpty {
+//                    sessionsResult = try await AccessSupabase.shared.fetchSessionNotes(patientID: patient.patientID)
+//                    self.sessions = sessionsResult
+//                }else {
+//                    sessionsResult = self.sessions
+//                }
+//                let appointments = try await appointmentsFetch
+//
+//                // 3. Build timeline from appointments + sessions
+//                self.timeline = buildTimeline(appointments: appointments, sessions: sessionsResult, caseId: full.caseId)
+//
+//                await MainActor.run {
+//                    self.CaseHistoryCollectionView.reloadData()
+//                }
+//            } catch {
+//                print("Error:", error)
+//            }
+//        }
+//    }
+    
+    
     func loadData() {
         Task {
             do {
-                // 1. Fetch case history (for reports)
+                // 1. Fetch case history — timelines already have summaries stored
                 let full = try await AccessSupabase.shared
                     .fetchFullCaseHistory(for: patient.patientID)
 
                 self.caseHistory = full
-                self.reports = full.report ?? []
+                self.reports     = full.report ?? []
 
-                // 2. Fetch appointments AND session notes in parallel
-                async let appointmentsFetch = AccessSupabase.shared
+                // 2. Stored session timelines (summaries pre-generated at save time)
+                let storedTimelines = full.timeline ?? []
+
+                // 3. Missed appointments computed live (not stored in timeline table)
+                let appointments = try await AccessSupabase.shared
                     .fetchAppointments(patientID: patient.patientID)
-                let sessionsResult: [SessionNote]
-                if self.sessions.isEmpty {
-                    sessionsResult = try await AccessSupabase.shared.fetchSessionNotes(patientID: patient.patientID)
-                    self.sessions = sessionsResult
-                }else {
-                    sessionsResult = self.sessions
-                }
-                let appointments = try await appointmentsFetch
 
-                // 3. Build timeline from appointments + sessions
-                self.timeline = buildTimeline(appointments: appointments, sessions: sessionsResult, caseId: full.caseId)
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "dd MMM yyyy"
+
+                let missedEntries: [Timeline] = appointments.compactMap { appointment in
+                    guard appointment.status == .missed,
+                          let apptId = appointment.appointmentId else { return nil }
+                    let formattedDate = dateFormatter.string(from: appointment.scheduledAt)
+                    return Timeline(
+                        timelineId:  apptId,
+                        caseID:      full.caseId,
+                        title:       "Missed Appointment",
+                        date:        appointment.scheduledAt,
+                        description: "The appointment on \(formattedDate) was not attended."
+                    )
+                }
+
+                // 4. Merge and sort latest first
+                self.timeline = (storedTimelines + missedEntries)
+                    .sorted { $0.date > $1.date }
 
                 await MainActor.run {
                     self.CaseHistoryCollectionView.reloadData()
                 }
+
             } catch {
                 print("Error:", error)
             }

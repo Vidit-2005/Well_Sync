@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="8pY-JP-VNB">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="8pY-JP-VNB">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -186,7 +186,7 @@
         <!--Appointments-->
         <scene sceneID="hGG-dD-UsY">
             <objects>
-                <collectionViewController storyboardIdentifier="appointment" useStoryboardIdentifierAsRestorationIdentifier="YES" id="MpZ-2W-W8V" customClass="AppointmentCollectionViewController" customModule="sample" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController storyboardIdentifier="appointment" useStoryboardIdentifierAsRestorationIdentifier="YES" id="MpZ-2W-W8V" customClass="AppointmentCollectionViewController" customModule="wellSync" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="ZRN-Qo-kX2">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -224,7 +224,7 @@
                                 </collectionViewCellContentView>
                                 <size key="customSize" width="393" height="72"/>
                             </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="SGv-Qy-ogi" customClass="CalendarCell1" customModule="sample" customModuleProvider="target">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="SGv-Qy-ogi" customClass="CalendarCell1" customModule="wellSync" customModuleProvider="target">
                                 <rect key="frame" x="1" y="82" width="391" height="133"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="n7L-QQ-Lz4">
@@ -240,6 +240,9 @@
                         </connections>
                     </collectionView>
                     <navigationItem key="navigationItem" title="Appointments" id="lON-Ky-Vog"/>
+                    <connections>
+                        <segue destination="X76-eV-m10" kind="show" identifier="PatientDetail" id="Flf-ia-1KU"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tbE-y5-ShJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -262,6 +265,16 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wIt-wQ-Q9d" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1943" y="-846"/>
+        </scene>
+        <!--PatientDetail-->
+        <scene sceneID="5MU-WS-gCG">
+            <objects>
+                <viewControllerPlaceholder storyboardName="PatientDetail" referencedIdentifier="PatientDetail" id="X76-eV-m10" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="CeV-1f-58U"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MRT-1o-LqJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3405" y="-1251"/>
         </scene>
     </scenes>
     <resources>

@@ -343,7 +343,41 @@ class AddSessionCollectionViewController: UICollectionViewController,TextFieldCo
 
                 let savedNote = try await AccessSupabase.shared.saveSessionNote(note)
                 print("✅ SessionNote saved → ID: \(savedNote.sessionId?.uuidString ?? "unknown")")
+                
+                let caseHistory = try await AccessSupabase.shared.fetchFullCaseHistory(for: patientID)
+                let rawNote = noteText.trimmingCharacters(in: .whitespacesAndNewlines)
+                let summary: String
+                let timelineTitle: String
+                if rawNote.isEmpty && images.isEmpty {
+                    // Only audio recordings, no text or images
+                    let audioLabel = audioPaths.isEmpty ? "Session" : "Session with voice recordings"
+                    timelineTitle  = audioLabel
+                    summary        = audioPaths.isEmpty
+                                     ? "No session note present."
+                                     : "Session includes voice recordings."
+                } else {
+                    // Pass both typed text AND images — Gemini extracts + summarises together
+                    let result = try? await Summarise.summarise.summariseSessionNote(
+                        noteText: rawNote,
+                        images:   images        // ← the UIImage array already in scope
+                    )
+                    timelineTitle = result?.title   ?? noteTitle
+                    summary       = result?.summary ?? (rawNote.isEmpty ? "Session note with images." : rawNote)
+                }
 
+                print("✅ Timeline title: \(timelineTitle)")
+                print("✅ Summary: \(summary)")
+                let timelineEntry = Timeline(
+                            timelineId:  savedNote.sessionId ?? UUID(),
+                            caseID:      caseHistory.caseId,
+                            title:       timelineTitle,
+                            date:        savedNote.date,
+                            description: summary
+                        )
+
+                        let savedTimeline = try await AccessSupabase.shared.saveTimeline(timelineEntry)
+                        print("✅ Timeline saved → \(savedTimeline.timelineId)")
+                
                 await MainActor.run {
                     self.isUploading = false
                     self.navigationItem.rightBarButtonItem = self.uploadButton
