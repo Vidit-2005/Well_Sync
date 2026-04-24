@@ -72,8 +72,8 @@ class TodayTableViewCell: UITableViewCell {
         iconImageView.image    = UIImage(systemName: item.activity.iconName, withConfiguration: symbolConfig)
 
         let done                 = item.isCompletedToday
-//        cardView.backgroundColor = done ? UIColor.systemGray5 : UIColor.secondarySystemBackground
-//        contentView.alpha        = done ? 0.8 : 1.0
+        cardView.backgroundColor = done ? UIColor.systemGray5 : UIColor.tertiarySystemBackground
+        contentView.alpha        = done ? 0.8 : 1.0
 
         addPhotoButton.isHidden = false
         setupPhotoMenu()
@@ -88,8 +88,8 @@ class TodayTableViewCell: UITableViewCell {
         iconImageView.image    = UIImage(systemName: item.activity.iconName, withConfiguration: symbolConfig)
 
         let done                 = item.isCompletedToday
-//        cardView.backgroundColor = done ? UIColor.systemGray5 : UIColor.secondarySystemBackground
-//        contentView.alpha        = done ? 0.8 : 1.0
+        cardView.backgroundColor = done ? UIColor.systemGray5 : UIColor.tertiarySystemBackground
+        contentView.alpha        = done ? 0.8 : 1.0
 
         // ← RESET hidden state before setting up (fixes reuse bug)
         addPhotoButton.isHidden = false

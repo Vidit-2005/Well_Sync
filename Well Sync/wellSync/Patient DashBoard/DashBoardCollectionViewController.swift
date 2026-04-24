@@ -418,18 +418,6 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         }
     }
 
-    func style(_ cell: UICollectionViewCell) {
-        cell.layer.shadowColor             = UIColor.systemTeal.withAlphaComponent(0.5).cgColor
-        cell.layer.shadowOpacity           = 0.25
-        cell.layer.shadowOffset            = CGSize(width: 0, height: 1)
-        cell.layer.shadowRadius            = 4
-        cell.layer.masksToBounds           = false
-        cell.contentView.layer.cornerRadius  = 20
-        cell.contentView.layer.masksToBounds = true
-        cell.layer.cornerRadius            = 20
-        cell.layer.shadowPath              = UIBezierPath(roundedRect: cell.bounds, cornerRadius: 20).cgPath
-    }
-
     private func makeOnboardingSteps() -> [FeatureSpotlightStep] {
         collectionView.layoutIfNeeded()
 

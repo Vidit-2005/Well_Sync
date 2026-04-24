@@ -28,7 +28,7 @@ class FeelingChipCell: UICollectionViewCell {
         contentView.clipsToBounds = true
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.font = UIFont.systemFont(ofSize: 11, weight: .regular)
+        titleLabel.font = UIFont.preferredFont(forTextStyle: .caption1)
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 1
         titleLabel.textColor = .label

@@ -115,7 +115,7 @@ class PatientNotesCollectionViewController: UICollectionViewController {
                 button.superview?.bringSubviewToFront(button)
                 button.isUserInteractionEnabled = true
             }
-            
+            style(cell)
             return cell
         }
 
@@ -125,6 +125,7 @@ class PatientNotesCollectionViewController: UICollectionViewController {
         ) as! PatientNoteCollectionViewCell
         
         cell.configure(with: notes![indexPath.row], index: (notes?.count ?? 0) - indexPath.row)
+        style(cell)
         return cell
     }
     override func collectionView(_ collectionView: UICollectionView,contextMenuConfigurationForItemAt indexPath: IndexPath,point: CGPoint) ->UIContextMenuConfiguration? {

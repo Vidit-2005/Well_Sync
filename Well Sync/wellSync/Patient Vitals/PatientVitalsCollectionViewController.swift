@@ -131,7 +131,7 @@ class PatientVitalsCollectionViewController: UICollectionViewController, VitalsB
             range: barRanges[barIndex] == .weekly ? .weekly : .monthly,
             offset: barOffsets[barIndex]
         )
-
+        style(cell)
         return cell
     }
     
