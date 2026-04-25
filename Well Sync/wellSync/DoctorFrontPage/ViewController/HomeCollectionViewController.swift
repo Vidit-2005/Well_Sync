@@ -49,8 +49,8 @@ class HomeCollectionViewController: UICollectionViewController {
         let gradient = CAGradientLayer()
 
         gradient.colors = [
-            UIColor(red: 0.55, green: 0.82, blue: 0.87, alpha: 1.0).cgColor,
-            UIColor(red: 0.92, green: 0.97, blue: 0.98, alpha: 1.0).cgColor
+            UIColor(red: 0.72, green: 0.94, blue: 0.86, alpha: 1.0).cgColor,
+            UIColor(red: 0.90, green: 0.99, blue: 0.95, alpha: 1.0).cgColor
         ]
 
         gradient.startPoint = CGPoint(x: 0.5, y: 0.0) // TOP

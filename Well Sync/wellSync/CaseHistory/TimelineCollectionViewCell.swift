@@ -47,7 +47,7 @@ class TimelineCollectionViewCell: UICollectionViewCell {
            }
 
            // Pulse ring (behind dot)
-           pulseRing.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.25)
+           pulseRing.backgroundColor = UIColor.systemMint.withAlphaComponent(0.25)
            pulseRing.layer.cornerRadius = pulseDiameter / 2
            pulseRing.alpha = 0
            contentView.addSubview(pulseRing)
@@ -134,7 +134,7 @@ class TimelineCollectionViewCell: UICollectionViewCell {
             stopPulse()
 
             if isToday {
-                dotView.backgroundColor = .systemBlue
+                dotView.backgroundColor = .systemMint
                 pulseRing.alpha = 1
                 startPulse()
             } else {
