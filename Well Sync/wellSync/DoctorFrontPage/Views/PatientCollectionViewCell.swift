@@ -102,7 +102,7 @@ class PatientCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func configureCell(with: Patient, status: Appointment.status) {
+    func configureCell(with: Patient, status: Appointment.status, sessionCount: Int) {
         
         // Default image
         profileImage.image = UIImage(systemName: "person.circle")
@@ -146,7 +146,10 @@ class PatientCollectionViewCell: UICollectionViewCell {
         // UI DATA
         nameLabel.text = with.name
         conditionLabel.text = with.condition
-        sessionLabel.text = "7 Sessions"
+        if sessionCount > 1{
+            sessionLabel.text = "\(sessionCount) Sessions"}
+        else{
+            sessionLabel.text = "\(sessionCount) Session"}
         
         // Time
         if let sessionDate = with.nextSessionDate {
