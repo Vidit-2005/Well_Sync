@@ -2,6 +2,7 @@ import UIKit
 
 class HomeCollectionViewController: UICollectionViewController {
     var patients: [Patient] = []
+    var sessionCountByPatient: [UUID: Int] = [:]
     var appointments: [AppointmentWithPatient] = []
     var selectedAppointment: AppointmentWithPatient?
     var viewModel: AccessSupabase?
@@ -49,8 +50,8 @@ class HomeCollectionViewController: UICollectionViewController {
         let gradient = CAGradientLayer()
 
         gradient.colors = [
-            UIColor(red: 0.72, green: 0.94, blue: 0.86, alpha: 1.0).cgColor,
-            UIColor(red: 0.90, green: 0.99, blue: 0.95, alpha: 1.0).cgColor
+            UIColor(red: 0.91, green: 0.98, blue: 0.95, alpha: 1.0).cgColor,
+               UIColor(red: 0.97, green: 1.00, blue: 0.999, alpha: 1.0).cgColor
         ]
 
         gradient.startPoint = CGPoint(x: 0.5, y: 0.0) // TOP
@@ -69,8 +70,11 @@ class HomeCollectionViewController: UICollectionViewController {
             do {
                 try await viewModel?.markMissedAppointments(for: id)
                 let data = try await viewModel?.fetchTodayAppointmentsWithPatients(doctorID: id) ?? []
+               let patientIDs = self.patients.map { $0.patientID }
+                let counts = try await viewModel?.fetchCompletedSessionCounts(patientIDs: patientIDs) ?? [:]
                 await MainActor.run {
                     self.appointments = data
+                    self.sessionCountByPatient = counts
                     self.categorizeAppointments()
                     self.collectionView.reloadData()
                     self.spinner.stopAnimating()
@@ -303,8 +307,8 @@ extension HomeCollectionViewController {
 
         let item = filteredAppointments()[indexPath.row]
         let patient = item.patient
-
-        cell.configureCell(with: patient, status: item.status)
+        let count = sessionCountByPatient[patient.patientID] ?? 0
+        cell.configureCell(with: patient, status: item.status, sessionCount: count)
         cell.onAction = { [weak self] action, sourceView in
             guard let self = self else { return }
 
@@ -523,141 +527,6 @@ extension HomeCollectionViewController{
     func addSessionNote(for patient: Patient) {
         performSegue(withIdentifier: "DoctorActionToNotes", sender: patient)
     }
-
-    // ✅ RESCHEDULE — patient already has a scheduled appointment, delete + create new
-//    func reschedule(_ item: AppointmentWithPatient, sourceView: UIView) {
-//        
-//        var patient = item.patient
-//        
-//        let popoverVC = ScheduleViewController()
-//        popoverVC.patient = patient
-//        popoverVC.scheduleDate = item.scheduledAt  // pass current scheduled date
-//        popoverVC.modalPresentationStyle = .popover
-//        popoverVC.preferredContentSize = CGSize(width: 320, height: 500)
-//        
-//        if let popover = popoverVC.popoverPresentationController {
-//            popover.sourceView = sourceView
-//            popover.sourceRect = sourceView.bounds
-//            popover.permittedArrowDirections = .any
-//            popover.delegate = self
-//        }
-//        
-//       
-//        popoverVC.onScheduleCancelled = { [weak self] in
-//            guard let self = self else { return }
-//            Task {
-//                do {
-//                    let appointments = try await AccessSupabase.shared
-//                        .fetchAppointments(patientID: patient.patientID)
-//                    
-//                    if let apptToDelete = appointments.first(where: { $0.status == .scheduled }),
-//                       let id = apptToDelete.appointmentId {
-//                        try await AccessSupabase.shared.deleteAppointment(id: id)
-//                        print("Appointment cancelled")
-//                    }
-//                    try await AccessSupabase.shared.clearNextSessionDate(patientID: patient.patientID)
-//                    
-//                    await MainActor.run {
-//                        self.loadAppointments()
-//                    }
-//                } catch {
-//                    print(" Cancel error: \(error)")
-//                }
-//            }
-//        }
-//        
-//        // RESCHEDULE — delete old, create new
-//        popoverVC.onScheduleChange = { [weak self] newDate in
-//            guard let self = self else { return }
-//            Task {
-//                do {
-//                    // Delete old scheduled appointment
-//                    let appointments = try await AccessSupabase.shared
-//                        .fetchAppointments(patientID: patient.patientID)
-//                    
-//                    if let oldAppt = appointments.first(where: { $0.status == .scheduled }),
-//                       let oldID = oldAppt.appointmentId {
-//                        try await AccessSupabase.shared.deleteAppointment(id: oldID)
-//                        print("✅ Old appointment deleted")
-//                    }
-//                    
-//                    // Create new appointment
-//                    let newAppointment = Appointment(
-//                        appointmentId: UUID(),
-//                        patientId: patient.patientID,
-//                        doctorId: patient.docID,
-//                        scheduledAt: newDate,
-//                        status: .scheduled
-//                    )
-//                    try await AccessSupabase.shared.createAppointment(newAppointment)
-//                    print("✅ New appointment created: \(newDate)")
-//                    
-//                    // Update patient
-//                    patient.nextSessionDate = newDate
-//                    try await AccessSupabase.shared.updatePatient(patient)
-//                    
-//                    await MainActor.run {
-//                        self.loadAppointments()
-//                    }
-//                } catch {
-//                    print("❌ Reschedule error: \(error)")
-//                }
-//            }
-//        }
-//        
-//        present(popoverVC, animated: true)
-//    }
-
-
-    // ✅ NEXT SESSION — session is completed, schedule the next one fresh
-//    func setNextSessionDate(for patient: Patient, sourceView: UIView) {
-//        
-//        var mutablePatient = patient
-//        
-//        let popoverVC = ScheduleViewController()
-//        popoverVC.patient = mutablePatient
-//        popoverVC.scheduleDate = nil  // no current scheduled date → shows "Schedule" button
-//        popoverVC.modalPresentationStyle = .popover
-//        popoverVC.preferredContentSize = CGSize(width: 320, height: 500)
-//        
-//        if let popover = popoverVC.popoverPresentationController {
-//            popover.sourceView = sourceView
-//            popover.sourceRect = sourceView.bounds
-//            popover.permittedArrowDirections = .any
-//            popover.delegate = self
-//        }
-//        
-//        // ✅ SCHEDULE next session
-//        popoverVC.onScheduleConfirmed = { [weak self] selectedFullDate in
-//            guard let self = self else { return }
-//            Task {
-//                do {
-//                    // Create new appointment
-//                    let newAppointment = Appointment(
-//                        appointmentId: UUID(),
-//                        patientId: mutablePatient.patientID,
-//                        doctorId: mutablePatient.docID,
-//                        scheduledAt: selectedFullDate,
-//                        status: .scheduled
-//                    )
-//                    try await AccessSupabase.shared.createAppointment(newAppointment)
-//                    print("✅ Next session created: \(selectedFullDate)")
-//                    
-//                    // Update patient's next session date
-//                    mutablePatient.nextSessionDate = selectedFullDate
-//                    try await AccessSupabase.shared.updatePatient(mutablePatient)
-//                    
-//                    await MainActor.run {
-//                        self.loadAppointments()
-//                    }
-//                } catch {
-//                    print("❌ Next session error: \(error)")
-//                }
-//            }
-//        }
-//        
-//        present(popoverVC, animated: true)
-//    }
     
     func showMarkAsDoneAlert(for item: AppointmentWithPatient, at indexPath: IndexPath) {
         

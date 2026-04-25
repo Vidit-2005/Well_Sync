@@ -643,7 +643,34 @@ final class AccessSupabase {
 
         return data.first
     }
-    
+    func fetchCompletedSessionCounts(patientIDs: [UUID]) async throws -> [UUID: Int] {
+        guard !patientIDs.isEmpty else { return [:] }
+
+        // Build a comma-separated list for the `in` filter
+        let idList = patientIDs.map { $0.uuidString }.joined(separator: ",")
+
+        let response = try await supabase
+            .from("appointments")
+            .select("patient_id")
+            .eq("status", value: "completed")           // raw string, no enum
+            .in("patient_id", values: patientIDs.map { $0.uuidString })
+            .execute()
+
+        struct Row: Decodable {
+            let patient_id: UUID
+        }
+
+        let rows = try JSONDecoder().decode([Row].self, from: response.data)
+
+        // Debug: remove this print once counts are verified correct
+        print("✅ fetchCompletedSessionCounts — total rows returned: \(rows.count)")
+
+        var counts: [UUID: Int] = [:]
+        for row in rows {
+            counts[row.patient_id, default: 0] += 1
+        }
+        return counts
+    }
     func clearNextSessionDate(patientID: UUID) async throws{
         
         let updatedData: [String: String?] = ["next_session_date": nil]
