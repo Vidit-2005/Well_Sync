@@ -30,7 +30,7 @@ class PatientCell: UICollectionViewCell {
         label.textAlignment = .center
     }
     
-    func configureCell(with patient: Patient) {
+    func configureCell(with patient: Patient, sessionCount: Int) {
 
         nameLabel.text = patient.name
         conditionLabel.text = patient.condition
@@ -38,7 +38,13 @@ class PatientCell: UICollectionViewCell {
         profileImage.image = UIImage(systemName: "person.circle.fill")
 
         // session
-        sessionLabel.text = patient.sessionStatus != nil ? "7 Sessions" : "Unknown"
+        if sessionCount > 1 {
+            sessionLabel.text = "\(sessionCount) Sessions"
+        } else if sessionCount == 1 {
+            sessionLabel.text = "1 Session"
+        } else {
+            sessionLabel.text = "No Sessions"
+        }
 
         // date
         let formatter = DateFormatter()

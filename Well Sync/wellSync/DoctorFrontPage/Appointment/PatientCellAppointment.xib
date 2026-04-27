@@ -58,7 +58,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chevron.right" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="IV3-bA-7mM">
-                        <rect key="frame" x="365.33333333333331" y="43.333333333333329" width="9.6666666666666856" height="30"/>
+                        <rect key="frame" x="365.33333333333331" y="23.333333333333329" width="9.6666666666666856" height="13.666666666666671"/>
                         <color key="tintColor" systemColor="secondaryLabelColor"/>
                         <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="small"/>
                     </imageView>
@@ -94,26 +94,35 @@
                             <action selector="rescheduleTapped:" destination="0gZ-dl-0AK" eventType="touchUpInside" id="HgQ-B8-MKC"/>
                         </connections>
                     </button>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uUD-ct-cL3">
+                        <rect key="frame" x="324.33333333333331" y="20" width="33" height="20.333333333333329"/>
+                        <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
+                        <color key="textColor" systemColor="secondaryLabelColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="y7d-T7-7pO"/>
             <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
             <constraints>
+                <constraint firstItem="obD-dc-tVW" firstAttribute="centerY" secondItem="uUD-ct-cL3" secondAttribute="centerY" id="2dr-Fh-HWe"/>
                 <constraint firstAttribute="bottom" secondItem="oSL-Uv-P7A" secondAttribute="bottom" constant="12" id="31n-wN-qF1"/>
+                <constraint firstItem="uUD-ct-cL3" firstAttribute="centerY" secondItem="IV3-bA-7mM" secondAttribute="centerY" id="4V5-IR-nWk"/>
                 <constraint firstItem="aiY-zA-hL5" firstAttribute="top" secondItem="obD-dc-tVW" secondAttribute="bottom" constant="8" id="76W-Ln-uHm"/>
                 <constraint firstItem="oSL-Uv-P7A" firstAttribute="leading" secondItem="Qy4-5B-vJs" secondAttribute="trailing" constant="12" id="7o3-iJ-wsU"/>
                 <constraint firstItem="QhN-yW-Qjz" firstAttribute="leading" secondItem="aiY-zA-hL5" secondAttribute="trailing" constant="8" id="9gj-EW-kVQ"/>
+                <constraint firstItem="IV3-bA-7mM" firstAttribute="leading" secondItem="uUD-ct-cL3" secondAttribute="trailing" constant="8" id="GHX-bO-qA5"/>
                 <constraint firstAttribute="trailing" secondItem="oSL-Uv-P7A" secondAttribute="trailing" constant="12" id="HdG-x7-U2O"/>
-                <constraint firstItem="IV3-bA-7mM" firstAttribute="top" secondItem="0gZ-dl-0AK" secondAttribute="top" constant="40" id="LPl-up-duf"/>
+                <constraint firstItem="IV3-bA-7mM" firstAttribute="top" secondItem="0gZ-dl-0AK" secondAttribute="top" constant="20" id="LPl-up-duf"/>
                 <constraint firstItem="aiY-zA-hL5" firstAttribute="leading" secondItem="qe1-1D-GTs" secondAttribute="leading" id="QeR-ui-uBI"/>
                 <constraint firstItem="ple-6I-Jb2" firstAttribute="top" secondItem="0gZ-dl-0AK" secondAttribute="top" constant="16" id="RjT-GC-sYr"/>
                 <constraint firstItem="QhN-yW-Qjz" firstAttribute="centerY" secondItem="aiY-zA-hL5" secondAttribute="centerY" id="T3F-qO-8Ub"/>
                 <constraint firstItem="obD-dc-tVW" firstAttribute="leading" secondItem="ple-6I-Jb2" secondAttribute="trailing" constant="16" id="agQ-og-Sa5"/>
                 <constraint firstAttribute="bottom" secondItem="Qy4-5B-vJs" secondAttribute="bottom" constant="12" id="cdZ-eg-K96"/>
+                <constraint firstItem="uUD-ct-cL3" firstAttribute="top" secondItem="0gZ-dl-0AK" secondAttribute="top" constant="20" id="iuH-2k-xmk"/>
                 <constraint firstItem="aiY-zA-hL5" firstAttribute="leading" secondItem="ple-6I-Jb2" secondAttribute="trailing" constant="16" id="kZp-ul-kG0"/>
                 <constraint firstItem="qe1-1D-GTs" firstAttribute="top" secondItem="aiY-zA-hL5" secondAttribute="bottom" constant="8" id="lZ9-F3-Roh"/>
                 <constraint firstAttribute="trailing" secondItem="IV3-bA-7mM" secondAttribute="trailing" constant="16.000000000000057" id="n4C-Q2-WB5"/>
-                <constraint firstItem="IV3-bA-7mM" firstAttribute="centerY" secondItem="QhN-yW-Qjz" secondAttribute="centerY" id="p2B-8n-CrJ"/>
                 <constraint firstItem="Qy4-5B-vJs" firstAttribute="leading" secondItem="0gZ-dl-0AK" secondAttribute="leading" constant="12" id="pDR-xv-gdt"/>
                 <constraint firstItem="obD-dc-tVW" firstAttribute="top" secondItem="0gZ-dl-0AK" secondAttribute="top" constant="20" id="rCt-vZ-KOz"/>
                 <constraint firstItem="Qy4-5B-vJs" firstAttribute="width" secondItem="oSL-Uv-P7A" secondAttribute="width" id="wKK-eT-T7W"/>
@@ -133,6 +142,7 @@
                 <outlet property="profileImage" destination="ple-6I-Jb2" id="bDd-TJ-yz8"/>
                 <outlet property="rescheduleButton" destination="Qy4-5B-vJs" id="h6W-A3-Q2L"/>
                 <outlet property="sessionLabel" destination="QhN-yW-Qjz" id="gVj-3b-jS2"/>
+                <outlet property="time" destination="uUD-ct-cL3" id="o2M-pU-zoz"/>
             </connections>
             <point key="canvasLocation" x="-2040.4580152671756" y="-571.12676056338034"/>
         </collectionViewCell>

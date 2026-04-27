@@ -308,6 +308,7 @@ class AppointmentCollectionViewController: UICollectionViewController {
     // ✅ ADD THESE (IMPORTANT)
     var selectedPatient: Patient?
     var selectedAppointment: AppointmentWithPatient?
+    var sessionCountByPatient: [UUID: Int] = [:]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -340,6 +341,25 @@ class AppointmentCollectionViewController: UICollectionViewController {
 
     // MARK: - DATA LOAD
 
+//    func loadAppointments() {
+//        guard let doctorID else { return }
+//
+//        Task {
+//            do {
+//                let data = try await AccessSupabase.shared
+//                    .fetchAllAppointmentsWithPatients(doctorID: doctorID)
+//
+//                await MainActor.run {
+//                    self.appointments = data
+//                    self.collectionView.reloadSections(IndexSet(integer: 2))
+//                }
+//
+//            } catch {
+//                print("Error:", error)
+//            }
+//        }
+//    }
+    
     func loadAppointments() {
         guard let doctorID else { return }
 
@@ -348,8 +368,16 @@ class AppointmentCollectionViewController: UICollectionViewController {
                 let data = try await AccessSupabase.shared
                     .fetchAllAppointmentsWithPatients(doctorID: doctorID)
 
+                // ✅ Extract patient IDs
+                let patientIDs = data.map { $0.patient.patientID }
+
+                // ✅ Fetch counts
+                let counts = try await AccessSupabase.shared
+                    .fetchCompletedSessionCounts(patientIDs: patientIDs)
+
                 await MainActor.run {
                     self.appointments = data
+                    self.sessionCountByPatient = counts   // 🔥 important
                     self.collectionView.reloadSections(IndexSet(integer: 2))
                 }
 
@@ -427,7 +455,8 @@ class AppointmentCollectionViewController: UICollectionViewController {
                 ) as! PatientCell
                 
                 let patient = appointments[indexPath.item].patient
-                cell.configureCell(with: patient)
+                let count = sessionCountByPatient[patient.patientID] ?? 0
+                cell.configureCell(with: patient, sessionCount: count)
                 
                 style(cell)
                 return cell
@@ -441,15 +470,19 @@ class AppointmentCollectionViewController: UICollectionViewController {
                 let patient = appointment.patient
                 
                 // TIME
-                let formatter = DateFormatter()
-                formatter.dateFormat = "hh:mm a"
-                cell.sessionLabel.text = formatter.string(from: appointment.scheduledAt)
+//                let formatter = DateFormatter()
+//                formatter.dateFormat = "hh:mm a"
+//                cell.time.text = formatter.string(from: appointment.scheduledAt)
                 
+                let count = sessionCountByPatient[patient.patientID] ?? 0
                 // BASIC DATA
+                
                 cell.configure(
                     name: patient.name,
                     condition: patient.condition ?? "",
                     previousSessionDate: patient.previousSessionDate,
+                    nextSessionDate: appointment.scheduledAt,
+                    sessionCount: count,
                     imageName: nil
                 )
                 

@@ -21,6 +21,7 @@ class PatientCellAppointment: UICollectionViewCell {
     @IBOutlet weak var lastDate: UILabel!
     @IBOutlet weak var rescheduleButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
+    @IBOutlet weak var time: UILabel!
     
     var onAction: ((AppointmentCellAction, UIView) -> Void)?
     
@@ -51,11 +52,13 @@ class PatientCellAppointment: UICollectionViewCell {
     
     private func styleButton(_ button: UIButton, color: UIColor, title: String) {
         
+        button.layer.borderWidth = 0.5
+        button.layer.borderColor = color.cgColor
         var config = UIButton.Configuration.filled()
         
         config.title = title
         config.baseForegroundColor = color
-        config.baseBackgroundColor = color.withAlphaComponent(0.15)
+        config.baseBackgroundColor = color.withAlphaComponent(0.05)
         
         config.cornerStyle = .capsule
         
@@ -66,6 +69,7 @@ class PatientCellAppointment: UICollectionViewCell {
         }
         
         button.configuration = config
+        
     }
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -77,17 +81,56 @@ class PatientCellAppointment: UICollectionViewCell {
         lastDate.text = nil
     }
     
+//    func configure(name: String,
+//                   condition: String,
+//                   previousSessionDate: Date?,
+//                   imageName: String?) {
+//        
+//        nameLabel.text = name
+//        conditionLabel.text = condition
+//        
+//        let formatter = DateFormatter()
+//        formatter.dateFormat = "dd MMM yy"
+//        
+//        if let previousDate = previousSessionDate {
+//            lastDate.text = "Last session: \(formatter.string(from: previousDate))"
+//        } else {
+//            lastDate.text = "No previous session"
+//        }
+//    }
     func configure(name: String,
                    condition: String,
                    previousSessionDate: Date?,
+                   nextSessionDate: Date?,
+                   sessionCount: Int,
                    imageName: String?) {
-        
+
         nameLabel.text = name
         conditionLabel.text = condition
-        
+
+        // ✅ SESSION COUNT
+        if sessionCount > 1 {
+            sessionLabel.text = "\(sessionCount) Sessions"
+        } else if sessionCount == 1 {
+            sessionLabel.text = "1 Session"
+        } else {
+            sessionLabel.text = "No Sessions"
+        }
+
+        // ✅ TIME
+        if let sessionDate = nextSessionDate {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.dateFormat = "hh:mm a"
+            time.text = formatter.string(from: sessionDate)
+        } else {
+            time.text = "--"
+        }
+
+        // ✅ LAST SESSION
         let formatter = DateFormatter()
         formatter.dateFormat = "dd MMM yy"
-        
+
         if let previousDate = previousSessionDate {
             lastDate.text = "Last session: \(formatter.string(from: previousDate))"
         } else {

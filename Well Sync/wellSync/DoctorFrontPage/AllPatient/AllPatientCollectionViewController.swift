@@ -11,7 +11,7 @@ class AllPatientCollectionViewController: UICollectionViewController {
 
     var patients: [Patient] = []
     var filteredPatients: [Patient] = []
-
+    var sessionCountByPatient: [UUID: Int] = [:]
     var viewModel: AccessSupabase?
     var doctor:Doctor?
 
@@ -39,6 +39,12 @@ class AllPatientCollectionViewController: UICollectionViewController {
             // If you intend to use globalPatient instead, uncomment the next line and remove the previous assignment.
             // patients = globalPatient
             filteredPatients = patients
+            let patientIDs = patients.map { $0.patientID }
+
+            let counts = try await AccessSupabase.shared
+                .fetchCompletedSessionCounts(patientIDs: patientIDs)
+
+            sessionCountByPatient = counts
         } catch {
             // Handle error (log, show alert, etc.) and fall back to empty list
             print("Failed to fetch patients: \(error)")
@@ -98,7 +104,9 @@ class AllPatientCollectionViewController: UICollectionViewController {
         ) as! PatientCell
 
         let patient = filteredPatients[indexPath.row]
-        cell.configureCell(with: patient)
+        let count = sessionCountByPatient[patient.patientID] ?? 0
+
+        cell.configureCell(with: patient, sessionCount: count)
 
         return cell
     }
