@@ -26,9 +26,7 @@ final class SupabaseManager {
             let user = response.user
             return user.id
         }
-        
-        // MARK: - Sign In (for Login Screen)
-        // Returns the logged-in auth user's UUID
+    
         func signIn(email: String, password: String) async throws -> UUID {
             let session = try await client.auth.signIn(
                 email: email,
@@ -37,14 +35,10 @@ final class SupabaseManager {
             return session.user.id
         }
         
-        // MARK: - Sign Out
         func signOut() async throws {
             try await client.auth.signOut()
             SessionManager.shared.clearSession()
         }
-        
-        // MARK: - Get current Auth session (used on app launch)
-        // Returns the auth user's UUID if they are still logged in, nil otherwise
         func getCurrentAuthUserID() async -> UUID? {
             do {
                 let session = try await client.auth.session
@@ -54,10 +48,7 @@ final class SupabaseManager {
             }
         }
         
-        // MARK: - Determine Role from auth_id
-        // Checks doctors table first, then patients table
         func resolveRole(authID: UUID) async throws -> UserRole {
-            // Try doctors table
             let doctors: [Doctor] = try await client
                 .from("doctors")
                 .select()
@@ -70,7 +61,6 @@ final class SupabaseManager {
                 return .doctor
             }
             
-            // Try patients table
             let patients: [Patient] = try await client
                 .from("patients")
                 .select()
@@ -116,6 +106,45 @@ final class SupabaseManager {
             try await client.auth.signOut()
         } catch {
             print("Silent sign-out error (non-fatal): \(error)")
+        }
+    }
+
+    // MARK: - Change Password
+
+    /// Verifies the user's current password by re-authenticating, then updates to the new password.
+    /// - Parameters:
+    ///   - email: The signed-in user's email address.
+    ///   - currentPassword: The password the user claims to currently have.
+    ///   - newPassword: The desired new password.
+    /// - Throws: `PasswordChangeError.incorrectCurrentPassword` if re-authentication fails,
+    ///           or `PasswordChangeError.updateFailed` if the password update itself fails.
+    func changePassword(email: String, currentPassword: String, newPassword: String) async throws {
+        // Step 1: Re-authenticate with the current password to verify it.
+        do {
+            _ = try await client.auth.signIn(email: email, password: currentPassword)
+        } catch {
+            throw PasswordChangeError.incorrectCurrentPassword
+        }
+
+        // Step 2: Update to the new password.
+        do {
+            try await client.auth.update(user: UserAttributes(password: newPassword))
+        } catch {
+            throw PasswordChangeError.updateFailed(error.localizedDescription)
+        }
+    }
+
+    enum PasswordChangeError: LocalizedError {
+        case incorrectCurrentPassword
+        case updateFailed(String)
+
+        var errorDescription: String? {
+            switch self {
+            case .incorrectCurrentPassword:
+                return "The current password you entered is incorrect. Please try again."
+            case .updateFailed(let reason):
+                return "Failed to update password: \(reason)"
+            }
         }
     }
 }
