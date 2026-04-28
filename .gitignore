@@ -5,3 +5,4 @@ build/
 xcuserdata/
 *.xcworkspace/xcuserdata/
 key.swift
+.DS_Store
