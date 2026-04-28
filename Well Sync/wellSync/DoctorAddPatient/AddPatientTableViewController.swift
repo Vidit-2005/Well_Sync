@@ -11,16 +11,11 @@ import Foundation
 class AddPatientTableViewController: UITableViewController,
                                      UIImagePickerControllerDelegate,
                                      UINavigationControllerDelegate {
- 
-    // ─── Passed from HomeCollectionViewController ───
-    // This is set in HomeCollectionViewController's prepare(for:segue:)
-    // See the note at the bottom of this file for the one-line change needed there.
     var doctor: Doctor?
     
     var patient:   Patient?
     var onDismiss: (() -> Void)?
  
-    // ─── Outlets ───
     @IBOutlet weak var fullName:       UITextField!
     @IBOutlet var address:             UITextField!
     @IBOutlet var contact:             UITextField!
@@ -32,11 +27,7 @@ class AddPatientTableViewController: UITableViewController,
     @IBOutlet var addPhotoButton:      UIButton!
     @IBOutlet var dateOfBirth:         UIDatePicker!
     @IBOutlet var gender:              UIButton!
- 
-    // ─────────────────────────────────────────────────────────────
-    // MARK: - Lifecycle
-    // ─────────────────────────────────────────────────────────────
- 
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupPhotoMenu()
@@ -44,15 +35,8 @@ class AddPatientTableViewController: UITableViewController,
         dateOfBirth.maximumDate = Date()
         
         setupGenderMenu()
-        
-//        dateOfBirth.preferredDatePickerStyle = .compact
-//        dateOfBirth.datePickerMode = .date
     }
- 
-    // ─────────────────────────────────────────────────────────────
-    // MARK: - Photo picker  (unchanged from original)
-    // ─────────────────────────────────────────────────────────────
- 
+    
     func setupPhotoMenu() {
         let camera = UIAction(title: "Camera",
                               image: UIImage(systemName: "camera")) { _ in
@@ -114,37 +98,34 @@ class AddPatientTableViewController: UITableViewController,
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true)
     }
- 
-    // ─────────────────────────────────────────────────────────────
-    // MARK: - Password generator  (unchanged from original)
-    // ─────────────────────────────────────────────────────────────
- 
+
     func generateSecurePassword() -> String {
-        let upper   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        let lower   = "abcdefghijklmnopqrstuvwxyz"
-        let numbers = "0123456789"
-        let symbols = "!@#$%^&*-_?"
-        let all     = upper + lower + numbers + symbols
- 
-        var password = ""
-        password.append(upper.randomElement()!)
-        password.append(lower.randomElement()!)
-        password.append(numbers.randomElement()!)
-        password.append(symbols.randomElement()!)
-        while password.count < 8 { password.append(all.randomElement()!) }
-        return String(password.shuffled())
+        // 1. Name (first 3 characters)
+            let namePart = (fullName.text ?? "")
+                .replacingOccurrences(of: " ", with: "")
+                .prefix(3)
+                .lowercased()
+
+            // 2. Case (first 3 characters)
+            let casePart = (patientCase.text ?? "")
+                .replacingOccurrences(of: " ", with: "")
+                .prefix(3)
+                .lowercased()
+
+            // 3. DOB (ddMMyyyy)
+            let formatter = DateFormatter()
+            formatter.dateFormat = "ddMMyyyy"
+            let dobPart = formatter.string(from: dateOfBirth.date)
+
+            return "\(namePart)\(casePart)\(dobPart)"
     }
- 
-    // ─────────────────────────────────────────────────────────────
-    // MARK: - Save  ← KEY CHANGES HERE
-    // ─────────────────────────────────────────────────────────────
+
     @IBAction func cancel(_ sender: Any) {
         dismiss(animated: true)
     }
     
     @IBAction func saveTapped(_ sender: UIBarButtonItem) {
- 
-        // ── 1. Validate required fields ──
+
         guard let name        = fullName.text,  !name.isEmpty,
               let emailText   = email.text,     !emailText.isEmpty,
               let contactText = contact.text,   !contactText.isEmpty,
@@ -153,19 +134,14 @@ class AddPatientTableViewController: UITableViewController,
                       message: "Please fill in Name, Email, Contact, and Address.")
             return
         }
- 
-        // ── 2. Resolve which doctor is adding this patient ──
-        //       Priority: passed-in `doctor` property → SessionManager fallback
+
         let resolvedDoctor = doctor ?? SessionManager.shared.currentDoctor
         guard let docID = resolvedDoctor?.docID else {
             showAlert(title: "Error",
                       message: "Could not identify the logged-in doctor. Please log out and log in again.")
             return
         }
- 
-        // ── 3. Parse date of birth ──
-//        let formatter        = DateFormatter()
-//        formatter.dateFormat = "dd/MM/yyyy"
+
         let dobDate = dateOfBirth.date
         let selectedGender : String?
         if gender.currentTitle == "Select" || gender.currentTitle == nil {
@@ -173,91 +149,145 @@ class AddPatientTableViewController: UITableViewController,
         }else{
             selectedGender = gender.currentTitle
         }
- 
-        // ── 4. Generate a secure temporary password for the patient ──
+        sender.isEnabled = false
         let generatedPassword = generateSecurePassword()
  
-        // ── 5. Show loading ──
         let loadingAlert = makeLoadingAlert(message: "Creating patient account…")
         present(loadingAlert, animated: true)
  
+//        Task {
+//            do {
+//                var imagePath: String? = nil
+//                if let image = patientImageView.image {
+//                    imagePath = try await AccessSupabase.shared.uploadProfileImage(image)
+//                }
+//
+//                var authID: UUID? = nil
+//                do {
+//                    authID = try await SupabaseManager.shared.signUp(
+//                        email: emailText,
+//                        password: generatedPassword
+//                    )
+//                } catch let error as NSError where error.domain == "AuthEmailConfirmation" {
+//                    print("WellSync — email confirmation pending for patient: \(emailText)")
+//                }
+// 
+//                let newPatient = Patient(
+//                    patientID: UUID(),
+//                    docID:     docID,
+//                    authID:    authID,
+//                    name:      name,
+//                    email:     emailText,
+//                    contact:              contactText,
+//                    dob:                  dobDate,
+//                    address:              addressText,
+//                    condition:            patientCase.text,
+//                    sessionStatus:        false,
+//                    nextSessionDate:      Calendar.current.date(byAdding: .day, value: 0, to: Date())!,
+//                    imageURL:             imagePath,
+//                    previousSessionDate:  Calendar.current.date(byAdding: .day, value: -6, to: Date())!,
+//                    gender :              selectedGender
+//                )
+// 
+//                try await AccessSupabase.shared.savePatient(newPatient)
+//                _ = try await AccessSupabase.shared.saveCaseHistory(newPatient.patientID)
+//                self.patient = newPatient
+// 
+//                // ── 9. Show the doctor the generated credentials to share with patient ──
+//                await MainActor.run {
+//                    loadingAlert.dismiss(animated: true) {
+//                        self.showCredentials(email: emailText, password: generatedPassword)
+//                        sender.isEnabled = true
+//                    }
+//                }
+// 
+//            } catch {
+//                await MainActor.run {
+//                    loadingAlert.dismiss(animated: true) {
+//                        self.showAlert(title: "Error saving patient",
+//                                       message: error.localizedDescription)
+//                        print(error)
+//                    }
+//                }
+//            }
+//        }
         Task {
             do {
-                // ── 6. Upload profile image if one was selected ──
+                // ── STEP A: Snapshot the doctor's Supabase session BEFORE patient signup ──
+                let doctorSnapshot = await SupabaseManager.shared.getCurrentSessionTokens()
+
+                // ── STEP B: Upload profile image (if any) ──
                 var imagePath: String? = nil
                 if let image = patientImageView.image {
                     imagePath = try await AccessSupabase.shared.uploadProfileImage(image)
                 }
- 
-                // ── 7. Create Supabase Auth account for the patient ──
-                //       This gives us the auth UUID to store in the patients table.
-                //       If email confirmation is ON in Supabase, signUp() throws
-                //       "AuthEmailConfirmation" — we catch that below and still save
-                //       the patient row (the account exists, just not confirmed yet).
+
+                // ── STEP C: Create Supabase Auth account for the patient ──
+                // This will swap the device's auth session to the patient — that's OK,
+                // we will restore the doctor's session immediately after.
                 var authID: UUID? = nil
                 do {
                     authID = try await SupabaseManager.shared.signUp(
-                        email: emailText,
+                        email:    emailText,
                         password: generatedPassword
                     )
                 } catch let error as NSError where error.domain == "AuthEmailConfirmation" {
-                    // Email confirmation is enabled — account was created, auth_id returned
-                    // We still get the user from the error's userInfo if needed,
-                    // but signUp() throws before returning the UUID in this case.
-                    // Solution: disable email confirmation in Supabase Dashboard → Auth → Settings
-                    // OR handle it by fetching the user separately. For now we proceed without authID.
                     print("WellSync — email confirmation pending for patient: \(emailText)")
                 }
- 
-                // ── 8. Build and save the Patient row ──
+
+                // ── STEP D: Immediately restore the doctor's session ──────────────────
+                // This is the key fix: undo the session swap caused by signUp above.
+                if let snapshot = doctorSnapshot {
+                    await SupabaseManager.shared.restoreSession(
+                        accessToken:  snapshot.accessToken,
+                        refreshToken: snapshot.refreshToken
+                    )
+                }
+                // ─────────────────────────────────────────────────────────────────────
+
+                // ── STEP E: Save patient record to database ──
                 let newPatient = Patient(
-                    patientID: UUID(),
-                    docID:     docID,              // ✅ real doctor ID from SessionManager
-                    authID:    authID,             // ✅ links patient row to Supabase Auth
-                    name:      name,
-                    email:     emailText,
-                    // NO password field — Supabase Auth owns it now
-                    contact:              contactText,
-                    dob:                  dobDate,
-                    address:              addressText,
-                    condition:            patientCase.text,
-                    sessionStatus:        false,
-                    nextSessionDate:      Calendar.current.date(byAdding: .day, value: 0, to: Date())!,
-                    imageURL:             imagePath,
-                    previousSessionDate:  Calendar.current.date(byAdding: .day, value: -6, to: Date())!,
-                    gender :              selectedGender
+                    patientID:           UUID(),
+                    docID:               docID,
+                    authID:              authID,
+                    name:                name,
+                    email:               emailText,
+                    contact:             contactText,
+                    dob:                 dobDate,
+                    address:             addressText,
+                    condition:           patientCase.text,
+                    sessionStatus:       false,
+                    nextSessionDate:     Calendar.current.date(byAdding: .day, value: 0, to: Date())!,
+                    imageURL:            imagePath,
+                    previousSessionDate: Calendar.current.date(byAdding: .day, value: -6, to: Date())!,
+                    gender:              selectedGender
                 )
- 
+
                 try await AccessSupabase.shared.savePatient(newPatient)
-                try await AccessSupabase.shared.saveCaseHistory(newPatient.patientID)
- 
+                _ = try await AccessSupabase.shared.saveCaseHistory(newPatient.patientID)
                 self.patient = newPatient
- 
-                // ── 9. Show the doctor the generated credentials to share with patient ──
+
+                // ── STEP F: Show credentials ──
                 await MainActor.run {
                     loadingAlert.dismiss(animated: true) {
                         self.showCredentials(email: emailText, password: generatedPassword)
+                        sender.isEnabled = true
                     }
                 }
- 
+
             } catch {
                 await MainActor.run {
                     loadingAlert.dismiss(animated: true) {
                         self.showAlert(title: "Error saving patient",
                                        message: error.localizedDescription)
                         print(error)
+                        sender.isEnabled = true
                     }
                 }
             }
         }
     }
- 
-    // ─────────────────────────────────────────────────────────────
-    // MARK: - Show credentials to doctor
-    // ─────────────────────────────────────────────────────────────
- 
-    // After saving, show the doctor the login credentials so they can
-    // share them with the patient (e.g., write them down or screenshot).
+
     private func showCredentials(email: String, password: String) {
         let alert = UIAlertController(
             title: "Patient Account Created ✅",

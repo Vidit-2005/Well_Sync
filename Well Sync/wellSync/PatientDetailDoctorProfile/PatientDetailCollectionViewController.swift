@@ -435,27 +435,19 @@ extension PatientDetailCollectionViewController: ProfileCellDelegate {
             
             Task {
                 do {
-                    // Step 1: Fetch all appointments for this patient
                     let appointments = try await AccessSupabase.shared
                         .fetchAppointments(patientID: patient.patientID)
                     
-                    // Step 2: Find the one that is currently "scheduled" (upcoming)
-//                    if let apptToDelete = appointments.first(where: { $0.status == .scheduled }),
-//                       let id = apptToDelete.appointmentId {
                     if let apptToDelete = appointments.first(where: {
                         $0.status == .scheduled &&
                         !Calendar.current.isDateInToday($0.scheduledAt)
                     }), let id = apptToDelete.appointmentId {
-                        // Step 3: Delete it from Supabase
                         try await AccessSupabase.shared.deleteAppointment(id: id)
                         print("✅ Appointment deleted")
                     }
                     
-                    // Step 4: Clear the patient's next session date
                     try await AccessSupabase.shared.clearNextSessionDate(patientID: patient.patientID)
                     print("✅ Next session date cleared")
-                    
-                    // Step 5: Update UI on main thread
                     await MainActor.run {
                         self.patient?.nextSessionDate = nil
                         self.loadPatientAppointments()

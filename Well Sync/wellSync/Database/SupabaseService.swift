@@ -15,9 +15,9 @@ final class SupabaseManager {
     let client: SupabaseClient
 
     private init() {
-        client = SupabaseClient()
+        client = SupabaseClient(supabaseURL: sURL, supabaseKey: sKey)
     }
-    
+
     func signUp(email: String, password: String) async throws -> UUID {
             let response = try await client.auth.signUp(
                 email: email,
@@ -86,6 +86,38 @@ final class SupabaseManager {
             throw NSError(domain: "AuthError", code: 404,
                          userInfo: [NSLocalizedDescriptionKey: "No profile found for this user"])
         }
+
+    func getCurrentSessionTokens() async -> (accessToken: String, refreshToken: String)? {
+        do {
+            let session = try await client.auth.session
+            return (session.accessToken, session.refreshToken)
+        } catch {
+            print("Could not snapshot current session: \(error)")
+            return nil
+        }
+    }
+
+    /// Restores a previously snapshotted session.
+    /// Call this AFTER patient signup to put the doctor's session back.
+    func restoreSession(accessToken: String, refreshToken: String) async {
+        do {
+            try await client.auth.setSession(accessToken: accessToken,
+                                               refreshToken: refreshToken)
+            print("✅ Doctor session restored after patient creation.")
+        } catch {
+            print("⚠️ Could not restore doctor session: \(error)")
+        }
+    }
+
+    /// Signs out from Supabase without touching SessionManager.
+    /// Used to evict a rogue (patient) session detected on app launch.
+    func signOutSilently() async {
+        do {
+            try await client.auth.signOut()
+        } catch {
+            print("Silent sign-out error (non-fatal): \(error)")
+        }
+    }
 }
 
 extension SupabaseManager {

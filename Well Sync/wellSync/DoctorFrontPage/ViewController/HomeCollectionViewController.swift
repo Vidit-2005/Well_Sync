@@ -363,8 +363,6 @@ extension HomeCollectionViewController {
 
     func sectionLayout(for section: Int) -> NSCollectionLayoutSection {
 
-//        let header = headerItem()
-
         switch section {
         case 0:
             return topSectionLayout()
@@ -501,10 +499,10 @@ extension HomeCollectionViewController {
                                    appointmentId: nil,
                                    patientId: newPatient.patientID,
                                    doctorId: doctorID,
-                                   scheduledAt: Date(),
+                                   scheduledAt: Calendar.current.date(byAdding: .minute, value: 30, to: Date())!,
                                    status: .scheduled
                                )
-                               try await self.viewModel?.createAppointment(appointment)
+                               _ = try await self.viewModel?.createAppointment(appointment)
                                await MainActor.run {
                                    self.loadPatients()
                                    self.loadAppointments()
@@ -623,8 +621,3 @@ extension HomeCollectionViewController{
         }
     }
 }
-//extension HomeCollectionViewController: UIPopoverPresentationControllerDelegate {
-//    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
-//        return .none  // keeps it as a popover on iPhone too
-//    }
-//}

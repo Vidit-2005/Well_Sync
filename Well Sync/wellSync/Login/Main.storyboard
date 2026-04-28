@@ -28,13 +28,13 @@
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="yXN-gF-Dxf">
                                                     <rect key="frame" x="24" y="39.999999999999986" width="329" height="244.66666666666663"/>
                                                     <subviews>
-                                                        <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="T8z-0D-uBY">
+                                                        <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username" textAlignment="natural" minimumFontSize="16" translatesAutoresizingMaskIntoConstraints="NO" id="T8z-0D-uBY">
                                                             <rect key="frame" x="0.0" y="0.0" width="329" height="48"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="48" id="cqU-ox-5Fb"/>
                                                             </constraints>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                            <textInputTraits key="textInputTraits"/>
+                                                            <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                            <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES"/>
                                                             <userDefinedRuntimeAttributes>
                                                                 <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                                     <integer key="value" value="16"/>
@@ -50,8 +50,8 @@
                                                         </textField>
                                                         <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="hAV-QF-Jl0">
                                                             <rect key="frame" x="0.0" y="64" width="329" height="48"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                            <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
+                                                            <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                            <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES" secureTextEntry="YES" textContentType="password"/>
                                                             <userDefinedRuntimeAttributes>
                                                                 <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                                     <integer key="value" value="16"/>
@@ -79,9 +79,10 @@
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tSu-W2-AKP">
                                                             <rect key="frame" x="0.0" y="210.33333333333337" width="329" height="34.333333333333343"/>
+                                                            <color key="backgroundColor" red="0.44313725490196076" green="0.78823529411764703" blue="0.80784313725490198" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <buttonConfiguration key="configuration" style="plain" title="Register as a Doctor"/>
                                                             <connections>
-                                                                <segue destination="IYT-Tj-vR0" kind="show" id="zR5-zc-Eyb"/>
+                                                                <action selector="registerDoctor:" destination="xfG-Od-1w6" eventType="touchUpInside" id="Zzl-tn-rgH"/>
                                                             </connections>
                                                         </button>
                                                     </subviews>
@@ -150,6 +151,7 @@
                         <outlet property="userName" destination="T8z-0D-uBY" id="mQ7-Zf-fgE"/>
                         <segue destination="gPl-jy-1Sz" kind="show" identifier="doctorScreen" id="Gld-lb-B7H"/>
                         <segue destination="hzT-Xb-lwj" kind="show" identifier="PatientScreen" id="7NE-ee-cBr"/>
+                        <segue destination="IYT-Tj-vR0" kind="show" identifier="register" id="T8O-nT-MEO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Mz6-ex-vxa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
