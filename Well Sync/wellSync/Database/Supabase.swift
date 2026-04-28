@@ -707,12 +707,10 @@ final class AccessSupabase {
     }
     
     func saveCaseHistory(_ patientId: UUID) async throws -> CaseHistory {
-        let payload = CaseHistory(
-            caseId: UUID(),
-            patientId: patientId,
-            timeline: nil,
-            report: nil
-        )
+        
+        let payload = [
+            "patient_id": patientId.uuidString
+        ]
         
         let saved: CaseHistory = try await supabase
             .from("case_histories")
@@ -788,16 +786,16 @@ final class AccessSupabase {
                 .execute()
         }
     }
+    
     func fetchCaseHistory(for patientId: UUID) async throws -> CaseHistory? {
-        let caseHistory: CaseHistory = try await supabase
+        let caseHistories: [CaseHistory] = try await supabase
             .from("case_histories")
             .select("*")
             .eq("patient_id", value: patientId.uuidString)
-            .single()
             .execute()
             .value
         
-        return caseHistory
+        return caseHistories.first
     }
     
     func fetchTimelines(for caseId: UUID) async throws -> [Timeline] {
@@ -821,19 +819,20 @@ final class AccessSupabase {
             .value
         return reports
     }
-    
+
     func fetchFullCaseHistory(for patientId: UUID) async throws -> CaseHistory {
-        let caseHistory = try await fetchCaseHistory(for: patientId)
-        guard let caseHistory else {
-            return CaseHistory(caseId: UUID(), patientId: patientId, timeline: [], report: [])
+        var caseHistory = try await fetchCaseHistory(for: patientId)
+
+        if caseHistory == nil {
+            caseHistory = try await saveCaseHistory(patientId)
         }
-        
-        let timelines = try await fetchTimelines(for: caseHistory.caseId)
-        let reports = try await fetchReports(for: caseHistory.caseId)
-        
+
+        let timelines = try await fetchTimelines(for: caseHistory!.caseId)
+        let reports = try await fetchReports(for: caseHistory!.caseId)
+
         return CaseHistory(
-            caseId: caseHistory.caseId,
-            patientId: caseHistory.patientId,
+            caseId: caseHistory!.caseId,
+            patientId: caseHistory!.patientId,
             timeline: timelines,
             report: reports
         )
