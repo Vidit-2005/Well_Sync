@@ -56,7 +56,7 @@
                     </label>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="A0C-of-WwV" customClass="BarChartView" customModule="DGCharts">
                         <rect key="frame" x="244" y="44.666666666666657" width="90" height="40.333333333333343"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="90" id="nVj-yu-bMO"/>
                         </constraints>
@@ -70,7 +70,7 @@
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="pYY-2S-vyW"/>
-            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+            <color key="backgroundColor" systemColor="tertiarySystemBackgroundColor"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="A0C-of-WwV" secondAttribute="bottom" constant="12" id="7qn-k6-2cN"/>
                 <constraint firstItem="NUm-68-csv" firstAttribute="leading" secondItem="Vt3-hi-ad9" secondAttribute="trailing" constant="4" id="Eq4-Cx-k3W"/>
@@ -109,11 +109,11 @@
         <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
         <systemColor name="systemOrangeColor">
             <color red="1" green="0.55294117649999996" blue="0.15686274510000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="tertiarySystemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
     </resources>
 </document>

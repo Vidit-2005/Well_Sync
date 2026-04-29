@@ -19,7 +19,7 @@ class RoundedBackgroundCollectionReusableView: UICollectionReusableView {
         }
 
         private func setup() {
-            backgroundColor = .secondarySystemBackground
+            backgroundColor = .tertiarySystemBackground
             layer.cornerRadius = 20
             layer.masksToBounds = true
             layer.cornerRadius = 20

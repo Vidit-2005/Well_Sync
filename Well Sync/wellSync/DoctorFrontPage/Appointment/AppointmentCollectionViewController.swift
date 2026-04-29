@@ -719,10 +719,6 @@ class AppointmentCollectionViewController: UICollectionViewController {
         }
     }
 
-    func style(_ cell: UICollectionViewCell) {
-        cell.layer.cornerRadius = 16
-        cell.layer.masksToBounds = true
-    }
     @IBAction func sectionChanged(_ sender: UISegmentedControl) {
         selectedSegmentIndex = sender.selectedSegmentIndex
 

@@ -76,7 +76,7 @@ class insightCollectionViewCellGr: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        backgroundColor = .secondarySystemBackground
+        backgroundColor = .tertiarySystemBackground
         setupUI()
     }
 

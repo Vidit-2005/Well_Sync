@@ -39,7 +39,7 @@ class SummmaryMoodTableViewCell: UITableViewCell, ChartViewDelegate {
 
     private func setupUI() {
         backgroundColor = .clear
-        contentView.backgroundColor = .secondarySystemBackground
+        contentView.backgroundColor = .tertiarySystemBackground
 
         contentView.layer.cornerRadius = 16
         contentView.layer.masksToBounds = true

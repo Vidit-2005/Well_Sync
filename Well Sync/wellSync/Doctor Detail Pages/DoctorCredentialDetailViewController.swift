@@ -77,7 +77,7 @@ final class DoctorCredentialDetailViewController: UITableViewController {
         cell.contentConfiguration = content
         cell.accessoryType = row.accessory == .disclosure ? .disclosureIndicator : .none
         cell.selectionStyle = row.action == nil ? .none : .default
-        cell.backgroundColor = .secondarySystemGroupedBackground
+        cell.backgroundColor = .tertiarySystemBackground
         return cell
     }
 

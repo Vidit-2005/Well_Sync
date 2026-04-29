@@ -330,7 +330,7 @@ class PatientBarVitalsCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         layer.cornerRadius       = 16
-        backgroundColor          = .secondarySystemBackground
+        backgroundColor          = .tertiarySystemBackground
         barChartView.backgroundColor = .clear
     }
 
