@@ -23,7 +23,7 @@ class ReportCollectionViewCell: UICollectionViewCell {
         
         containerView.layer.cornerRadius = 20
         containerView.layer.masksToBounds = true
-        containerView.backgroundColor = UIColor.secondarySystemBackground
+        containerView.backgroundColor = UIColor.tertiarySystemBackground
     }
     func configureCell(report: Report){
         imageView.image = UIImage(systemName: "folder.fill")

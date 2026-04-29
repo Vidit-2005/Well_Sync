@@ -276,7 +276,7 @@ extension HomeCollectionViewController {
                 cell.configure(title: "Today's Session", subtitle: "\(upcoming.count+done.count+missed.count)")
             }
 
-            applyShadow(cell: cell)
+            style(cell)
             return cell
         }
         
@@ -339,7 +339,7 @@ extension HomeCollectionViewController {
                     self.notifyPatient(patient)
                 }
             }
-            applyShadow(cell: cell)
+            style(cell)
             return cell
     }
 }
@@ -350,7 +350,7 @@ extension HomeCollectionViewController {
         cell.layer.cornerRadius = 20
         cell.layer.shadowColor = UIColor.black.cgColor
         cell.layer.shadowOpacity = 0.25
-        cell.layer.shadowRadius  = 8
+        cell.layer.shadowRadius  = 4
         cell.layer.shadowOffset  = CGSize(width: 0, height: 4)
         cell.layer.masksToBounds = false
     }

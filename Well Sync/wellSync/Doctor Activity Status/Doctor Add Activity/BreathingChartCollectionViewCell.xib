@@ -22,11 +22,11 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1YG-zt-HPY" customClass="BarChartView" customModule="DGCharts">
                                 <rect key="frame" x="8" y="8" width="388" height="214"/>
-                                <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                                <color key="backgroundColor" systemColor="tertiarySystemBackgroundColor"/>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="a9R-aS-yVc"/>
-                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="tertiarySystemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="1YG-zt-HPY" firstAttribute="top" secondItem="PyS-rw-MXH" secondAttribute="top" constant="8" id="S6I-C9-E7M"/>
                             <constraint firstAttribute="trailing" secondItem="1YG-zt-HPY" secondAttribute="trailing" constant="8" id="fVf-1n-hHd"/>
@@ -52,8 +52,8 @@
         </collectionViewCell>
     </objects>
     <resources>
-        <systemColor name="secondarySystemBackgroundColor">
-            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <systemColor name="tertiarySystemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
     </resources>
 </document>

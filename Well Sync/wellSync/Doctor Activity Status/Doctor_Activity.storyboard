@@ -15,7 +15,7 @@
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="hXC-Jb-FXw">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="tertiarySystemBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                         <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="tKv-j3-rl3">
                             <size key="itemSize" width="393" height="140"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -32,7 +32,7 @@
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AlK-hW-jQQ" customClass="ActivityStatusRingView" customModule="wellSync" customModuleProvider="target">
                                             <rect key="frame" x="28" y="60" width="80" height="80"/>
-                                            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                                            <color key="backgroundColor" systemColor="tertiarySystemBackgroundColor"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="80" id="3sC-Jx-wGI"/>
                                                 <constraint firstAttribute="height" constant="80" id="QJE-LB-G7a"/>
@@ -71,7 +71,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
-                                    <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                                    <color key="backgroundColor" systemColor="tertiarySystemBackgroundColor"/>
                                     <constraints>
                                         <constraint firstItem="b4l-kc-9gL" firstAttribute="leading" secondItem="bmd-e1-pTX" secondAttribute="leading" constant="16" id="5cv-77-3cY"/>
                                         <constraint firstAttribute="trailing" secondItem="3id-yF-iL5" secondAttribute="trailing" constant="12" id="DFl-eA-oZG"/>
@@ -158,14 +158,14 @@
             </objects>
             <point key="canvasLocation" x="4308" y="-202"/>
         </scene>
-        <!--Appointments-->
+        <!--Timer View-->
         <scene sceneID="wYw-7e-XtU">
             <objects>
                 <collectionViewController storyboardIdentifier="TimerGraph" useStoryboardIdentifierAsRestorationIdentifier="YES" id="gD2-i6-Efe" customClass="GraphCollectionViewController" customModule="wellSync" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="IDi-kR-E4a">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="tertiarySystemBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                         <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="lhq-Vq-MWQ">
                             <size key="itemSize" width="128" height="128"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -214,7 +214,7 @@
                             <outlet property="delegate" destination="gD2-i6-Efe" id="1Jd-Iz-EX9"/>
                         </connections>
                     </collectionView>
-                    <navigationItem key="navigationItem" title="Appointments" id="SPW-cp-yEd"/>
+                    <navigationItem key="navigationItem" title="Timer View" id="SPW-cp-yEd"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TWg-Um-5gn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

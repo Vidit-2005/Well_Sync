@@ -7,14 +7,14 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Doctor Credential Detail View Controller-->
+        <!--Details-->
         <scene sceneID="f1A-m1-X1M">
             <objects>
                 <tableViewController storyboardIdentifier="doctorCredentialDetail" useStoryboardIdentifierAsRestorationIdentifier="YES" id="d11-CR-001" customClass="DoctorCredentialDetailViewController" customModule="wellSync" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="insetGrouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="76" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="28" sectionFooterHeight="-1" estimatedSectionFooterHeight="44" id="d11-TV-001">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                         <connections>
                             <outlet property="dataSource" destination="d11-CR-001" id="d11-DS-001"/>
                             <outlet property="delegate" destination="d11-CR-001" id="d11-DG-001"/>
@@ -26,14 +26,14 @@
             </objects>
             <point key="canvasLocation" x="-234" y="-102"/>
         </scene>
-        <!--Doctor Support Detail View Controller-->
+        <!--Support-->
         <scene sceneID="f1A-m2-X2M">
             <objects>
                 <tableViewController storyboardIdentifier="doctorSupportDetail" useStoryboardIdentifierAsRestorationIdentifier="YES" id="d22-SP-001" customClass="DoctorSupportDetailViewController" customModule="wellSync" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="insetGrouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="76" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="28" sectionFooterHeight="-1" estimatedSectionFooterHeight="44" id="d22-TV-001">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                         <connections>
                             <outlet property="dataSource" destination="d22-SP-001" id="d22-DS-001"/>
                             <outlet property="delegate" destination="d22-SP-001" id="d22-DG-001"/>
@@ -47,7 +47,7 @@
         </scene>
     </scenes>
     <resources>
-        <systemColor name="systemGroupedBackgroundColor">
+        <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>

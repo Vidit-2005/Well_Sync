@@ -19,7 +19,6 @@ class deatilCollectionViewCell: UICollectionViewCell,AVAudioPlayerDelegate {
     override func awakeFromNib() {
         super.awakeFromNib()
         audioPlayer?.delegate = self
-//        setupAudioPlayer()
     }
     func setupAudioPlayer() {
         guard let soundURL = Bundle.main.url(forResource: "test", withExtension: "mp3") else {

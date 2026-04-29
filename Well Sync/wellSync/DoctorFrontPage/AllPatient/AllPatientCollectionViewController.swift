@@ -94,7 +94,6 @@ class AllPatientCollectionViewController: UICollectionViewController {
             cell.onSearchTextChanged = { [weak self] text in
                 self?.filterPatients(searchText: text)
             }
-
             return cell
         }
 
@@ -107,7 +106,7 @@ class AllPatientCollectionViewController: UICollectionViewController {
         let count = sessionCountByPatient[patient.patientID] ?? 0
 
         cell.configureCell(with: patient, sessionCount: count)
-
+        style(cell)
         return cell
     }
         
