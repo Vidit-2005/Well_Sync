@@ -267,10 +267,30 @@ class AddPatientTableViewController: UITableViewController,
                 _ = try await AccessSupabase.shared.saveCaseHistory(newPatient.patientID)
                 self.patient = newPatient
 
-                // ── STEP F: Show credentials ──
+                // ── STEP F: Send welcome e-mail with credentials ──────────────
+                // Non-fatal: if the email fails we still show the doctor the
+                // credentials on-screen so the patient is never left without access.
+                let doctorName = resolvedDoctor?.name ?? "Your Doctor"
+                var emailSent  = false
+                do {
+                    try await EmailService.shared.sendPatientWelcomeEmail(
+                        patientEmail: emailText,
+                        patientName:  name,
+                        password:     generatedPassword,
+                        doctorName:   doctorName
+                    )
+                    emailSent = true
+                    print("✅ Welcome email sent to \(emailText)")
+                } catch {
+                    print("⚠️ Welcome email failed (non-fatal): \(error.localizedDescription)")
+                }
+
+                // ── STEP G: Show credentials to doctor ────────────────────────
                 await MainActor.run {
                     loadingAlert.dismiss(animated: true) {
-                        self.showCredentials(email: emailText, password: generatedPassword)
+                        self.showCredentials(email: emailText,
+                                            password: generatedPassword,
+                                            emailSent: emailSent)
                         sender.isEnabled = true
                     }
                 }
@@ -288,16 +308,17 @@ class AddPatientTableViewController: UITableViewController,
         }
     }
 
-    private func showCredentials(email: String, password: String) {
+    private func showCredentials(email: String, password: String, emailSent: Bool) {
+        let emailNote = emailSent
+            ? "📨 A welcome email with the credentials has been sent to the patient."
+            : "⚠️ Email delivery failed — please share the credentials below manually."
+
         let alert = UIAlertController(
             title: "Patient Account Created ✅",
             message: """
-            Share these login credentials with the patient:
+            \(emailNote)
             
-            📧 Email:    \(email)
-            🔑 Password: \(password)
-            
-            The patient can log in with these details and change their password later.
+            The patient can log in and change their password from Settings.
             """,
             preferredStyle: .alert
         )

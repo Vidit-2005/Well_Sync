@@ -6,3 +6,7 @@ xcuserdata/
 *.xcworkspace/xcuserdata/
 key.swift
 .DS_Store
+
+# Supabase
+supabase/.temp/
+.env
