@@ -14,7 +14,7 @@ import nodemailer from "npm:nodemailer@6.9.7";
 
 // ── CORS headers ────────────────────────────────────────────────────────
 const corsHeaders = {
-  "Access-Control-Allow-Origin":  "*",
+  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
@@ -31,9 +31,9 @@ Deno.serve(async (req: Request) => {
     const { patientEmail, patientName, password, doctorName } =
       await req.json() as {
         patientEmail: string;
-        patientName:  string;
-        password:     string;
-        doctorName:   string;
+        patientName: string;
+        password: string;
+        doctorName: string;
       };
 
     if (!patientEmail || !patientName || !password || !doctorName) {
@@ -65,29 +65,29 @@ Deno.serve(async (req: Request) => {
   <title>Welcome to WellSync</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-           background: #f5f5f7; margin: 0; padding: 0; }
+           background: #E3FDFD; margin: 0; padding: 0; }
     .container { max-width: 560px; margin: 40px auto; background: #ffffff;
                  border-radius: 16px; overflow: hidden;
-                 box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
-    .header { background: linear-gradient(135deg, #4F8EF7 0%, #6B5BFC 100%);
+                 box-shadow: 0 4px 24px rgba(113,201,206,0.2); }
+    .header { background: linear-gradient(135deg, #71C9CE 0%, #A6E3E9 100%);
               padding: 36px 32px; text-align: center; }
     .header h1 { color: #fff; font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.5px; }
-    .header p  { color: rgba(255,255,255,0.85); font-size: 15px; margin: 8px 0 0; }
+    .header p  { color: rgba(255,255,255,0.9); font-size: 15px; margin: 8px 0 0; }
     .body { padding: 32px; }
     .greeting { font-size: 17px; color: #1c1c1e; margin-bottom: 20px; }
-    .credentials { background: #f2f2f7; border-radius: 12px; padding: 20px 24px; margin: 24px 0; }
-    .credentials h2 { font-size: 13px; font-weight: 600; color: #6e6e73;
+    .credentials { background: #CBF1F5; border-radius: 12px; padding: 20px 24px; margin: 24px 0; }
+    .credentials h2 { font-size: 13px; font-weight: 600; color: #4B9195;
                       text-transform: uppercase; letter-spacing: 0.8px; margin: 0 0 14px; }
     .cred-row { display: flex; align-items: center; margin-bottom: 10px; }
     .cred-row:last-child { margin-bottom: 0; }
-    .cred-label { font-size: 14px; color: #6e6e73; width: 90px; flex-shrink: 0; }
+    .cred-label { font-size: 14px; color: #4B9195; width: 90px; flex-shrink: 0; }
     .cred-value { font-size: 16px; font-weight: 600; color: #1c1c1e;
                   font-family: 'SF Mono', 'Menlo', monospace; }
-    .notice { background: #fff3cd; border-left: 4px solid #f0ad4e;
-              border-radius: 8px; padding: 14px 16px; font-size: 14px; color: #856404;
+    .notice { background: #E3FDFD; border-left: 4px solid #71C9CE;
+              border-radius: 8px; padding: 14px 16px; font-size: 14px; color: #3A7C80;
               margin-bottom: 24px; line-height: 1.5; }
-    .footer { border-top: 1px solid #e5e5ea; padding: 20px 32px;
-              font-size: 13px; color: #8e8e93; text-align: center; line-height: 1.6; }
+    .footer { border-top: 1px solid #CBF1F5; padding: 20px 32px;
+              font-size: 13px; color: #71C9CE; text-align: center; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -149,8 +149,8 @@ If you did not expect this email, please contact your doctor's clinic.
 
     // ── 4. Create Gmail SMTP transporter via nodemailer ───────────────
     const transporter = nodemailer.createTransport({
-      host:   "smtp.gmail.com",
-      port:   465,
+      host: "smtp.gmail.com",
+      port: 465,
       secure: true,           // SSL on port 465
       auth: {
         user: gmailUser,
@@ -160,11 +160,11 @@ If you did not expect this email, please contact your doctor's clinic.
 
     // ── 5. Send the email ─────────────────────────────────────────────
     await transporter.sendMail({
-      from:    `"WellSync" <${gmailUser}>`,
-      to:      patientEmail,
+      from: `"WellSync" <${gmailUser}>`,
+      to: patientEmail,
       subject: "Welcome to WellSync — Your Login Details",
-      text:    textBody,
-      html:    htmlBody,
+      text: textBody,
+      html: htmlBody,
     });
 
     console.log(`✅ Welcome email sent to ${patientEmail}`);

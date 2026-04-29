@@ -100,7 +100,7 @@ class PatientDetailCollectionViewController: UICollectionViewController{
         if section == 0{
             return 1
         }
-        return 6
+        return 5
      }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -121,12 +121,6 @@ class PatientDetailCollectionViewController: UICollectionViewController{
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-
-        if segue.identifier == "Summarised" {
-            let destination = segue.destination as! SummarisedReportTableViewController
-            destination.patient = patient
-            destination.moodLogs = self.moodLogs
-        }
 
         if segue.identifier == "mood",
            let vc = segue.destination as? MoodAnalysisCollectionViewController {
@@ -202,7 +196,7 @@ extension PatientDetailCollectionViewController{
         
         let section = NSCollectionLayoutSection(group: group)
         
-        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 32, trailing: 0)
         return section
     }
     
@@ -210,14 +204,14 @@ extension PatientDetailCollectionViewController{
         
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(70)
+            heightDimension: .absolute(80)
         )
         
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(70)
+            heightDimension: .absolute(80)
         )
         
         let group = NSCollectionLayoutGroup.vertical(
@@ -259,14 +253,12 @@ extension PatientDetailCollectionViewController{
             case 0:
                 performSegue(withIdentifier: "sessionNotes", sender: nil)
             case 1:
-                performSegue(withIdentifier: "Summarised", sender: nil)
-            case 2:
                 performSegue(withIdentifier: "mood", sender: nil)
-            case 3:
+            case 2:
                 performSegue(withIdentifier: "activity", sender: nil)
-            case 4:
+            case 3:
                 performSegue(withIdentifier: "vitals", sender: nil)
-            case 5:
+            case 4:
                 performSegue(withIdentifier: "case", sender: nil)
             default:
                 break

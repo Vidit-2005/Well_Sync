@@ -34,23 +34,21 @@ class DetailCollectionViewCell: UICollectionViewCell {
     
     let icons: [UIImage?] = [
         UIImage(systemName: "long.text.page.and.pencil"),
-        UIImage(systemName: "doc.text.magnifyingglass"),
         UIImage(systemName: "chart.xyaxis.line"),
         UIImage(systemName: "target"),
         UIImage(systemName: "waveform.path.ecg"),
         UIImage(systemName: "heart.text.square")
     ]
-    let iconsColor: [UIColor] = [.systemIndigo , .systemPink, .systemCyan, .systemOrange, .systemMint, .systemPurple]
+    let iconsColor: [UIColor] = [.systemIndigo , .systemCyan, .systemOrange, .systemMint, .systemPurple]
     let titles: [String] = [
         "Session Notes",
-        "Summarised Report",
         "Mood Analysis",
         "Activity Status",
         "Health Stats",
         "Patient History",
     ]
     func configure(index: Int){
-        separator.isHidden = (index == 5)
+        separator.isHidden = (index == 4)
         
         icon.image = icons[index]
         icon.tintColor = iconsColor[index]

@@ -226,9 +226,9 @@ class ProfileCollectionViewCell: UICollectionViewCell {
             // ✅ FIX: If the upcoming appointment is TODAY → show "Schedule" in blue
             if Calendar.current.isDateInToday(upcoming.scheduledAt) {
                 calendarButton.setTitle("  Schedule", for: .normal)
-                calendarButton.backgroundColor = .systemBlue.withAlphaComponent(0.12)
-                calendarButton.setTitleColor(.systemBlue, for: .normal)
-                calendarButton.tintColor = .systemBlue
+//                calendarButton.backgroundColor = .systemBlue.withAlphaComponent(0.12)
+//                calendarButton.setTitleColor(.systemBlue, for: .normal)
+//                calendarButton.tintColor = .systemBlue
                 
             } else {
                 // Future date (not today) → show the date in gray
@@ -239,15 +239,15 @@ class ProfileCollectionViewCell: UICollectionViewCell {
                 calendarButton.setTitle("   \(dateString)", for: .normal)
                 calendarButton.backgroundColor = .systemGray5
                 calendarButton.setTitleColor(.secondaryLabel, for: .normal)
-                calendarButton.tintColor = .secondaryLabel
+//                calendarButton.tintColor = .secondaryLabel
             }
             
         } else {
             // No future appointment at all → show Schedule in blue
             calendarButton.setTitle("  Schedule", for: .normal)
-            calendarButton.backgroundColor = .systemBlue.withAlphaComponent(0.12)
-            calendarButton.setTitleColor(.systemBlue, for: .normal)
-            calendarButton.tintColor = .systemBlue
+//            calendarButton.backgroundColor = .systemBlue.withAlphaComponent(0.12)
+//            calendarButton.setTitleColor(.systemBlue, for: .normal)
+//            calendarButton.tintColor = .systemBlue
         }
     }
     

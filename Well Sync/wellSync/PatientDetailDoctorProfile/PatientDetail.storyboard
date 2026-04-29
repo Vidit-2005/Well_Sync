@@ -95,7 +95,6 @@
                         <outlet property="PatientProfileCollectionView" destination="DaN-wM-5C6" id="DV5-BO-Eyx"/>
                         <outlet property="doneButton" destination="3w3-if-kb0" id="bVG-M6-H3q"/>
                         <segue destination="Wkl-9U-kis" kind="show" identifier="vitals" id="Hrr-wD-Gmn"/>
-                        <segue destination="8lG-Zk-JZv" kind="show" identifier="Summarised" id="xy2-Kp-axs"/>
                         <segue destination="m2C-vu-s9U" kind="show" identifier="activity" id="ouO-jZ-GCq"/>
                         <segue destination="3LQ-hf-pyg" kind="show" identifier="mood" id="A5U-yi-3xG"/>
                         <segue destination="TIj-9T-WrR" kind="show" identifier="sessionNotes" id="7fz-jQ-a10"/>
@@ -105,16 +104,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eGB-rC-TCV" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2749" y="1554"/>
-        </scene>
-        <!--Summarised-->
-        <scene sceneID="UNm-X5-gZI">
-            <objects>
-                <viewControllerPlaceholder storyboardName="Summarised Report" referencedIdentifier="Summarised" id="8lG-Zk-JZv" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="OdL-Ix-FvL"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="vQQ-ev-heV" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3674" y="1432"/>
         </scene>
         <!--vitals-->
         <scene sceneID="rHM-Ak-N11">
