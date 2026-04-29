@@ -85,7 +85,7 @@ class LoginViewController: UIViewController {
                 case .doctor:
                     let doctor = try await AccessSupabase.shared.fetchDoctorByAuthID(authID)
                     SessionManager.shared.currentDoctor = doctor
-                    SessionManager.shared.saveSession(role: .doctor, doctorID: doctor.docID)
+                    SessionManager.shared.saveSession(role: .doctor, authID: authID, doctorID: doctor.docID)
 
                     await MainActor.run {
                         self.setLoading(false)
@@ -96,6 +96,7 @@ class LoginViewController: UIViewController {
                     let patient = try await AccessSupabase.shared.fetchPatientByAuthID(authID)
                     SessionManager.shared.currentPatient = patient
                     SessionManager.shared.saveSession(role: .patient,
+                                                      authID: authID,
                                                       patientID: patient.patientID)
 
                     await MainActor.run {

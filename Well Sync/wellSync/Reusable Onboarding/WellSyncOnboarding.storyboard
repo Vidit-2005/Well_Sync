@@ -3,8 +3,8 @@
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -18,14 +18,14 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vR8-pc-zRt">
                                 <rect key="frame" x="-20" y="116" width="160" height="160"/>
-                                <color key="backgroundColor" red="0.0" green="0.75294117650000003" blue="0.90980392160000001" alpha="0.18000000000000002" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" red="0.56862745099999989" green="0.85882352939999995" blue="0.90196078429999993" alpha="0.28000000000000003" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="vR8-pc-zRt" secondAttribute="height" multiplier="1:1" id="Y7N-qm-njy"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L79-bu-9iF">
-                                <rect key="frame" x="156" y="632" width="190" height="190"/>
-                                <color key="backgroundColor" red="0.23137254900000001" green="0.54117647059999996" blue="1" alpha="0.10000000000000001" colorSpace="custom" customColorSpace="sRGB"/>
+                                <rect key="frame" x="163" y="642" width="190" height="190"/>
+                                <color key="backgroundColor" red="0.8442382812" green="0.9565429688" blue="0.9658203125" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="L79-bu-9iF" secondAttribute="height" multiplier="1:1" id="7V8-FR-Ix1"/>
                                 </constraints>
@@ -45,10 +45,10 @@
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="heart.text.square.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="YUa-Tt-S3B">
                                                 <rect key="frame" x="34.333333333333343" y="35.666666666666686" width="19.333333333333329" height="17.333333333333336"/>
-                                                <color key="tintColor" red="0.0" green="0.75294117650000003" blue="0.90980392160000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <color key="tintColor" red="0.34901960780000002" green="0.64313725490000007" blue="0.81568627449999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </imageView>
                                         </subviews>
-                                        <color key="backgroundColor" red="0.0" green="0.75294117650000003" blue="0.90980392160000001" alpha="0.14000000000000001" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="backgroundColor" red="0.56862745099999989" green="0.85882352939999995" blue="0.90196078429999993" alpha="0.34000000000000002" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstItem="YUa-Tt-S3B" firstAttribute="centerX" secondItem="SMT-GV-1Ir" secondAttribute="centerX" id="6rg-Ph-KdA"/>
                                             <constraint firstItem="YUa-Tt-S3B" firstAttribute="centerY" secondItem="SMT-GV-1Ir" secondAttribute="centerY" id="Acu-R0-7mJ"/>
@@ -96,15 +96,15 @@
                             </view>
                             <pageControl opaque="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="f4c-vX-J6d">
                                 <rect key="frame" x="196.66666666666666" y="695" width="0.0" height="0.0"/>
-                                <color key="pageIndicatorTintColor" red="0.0" green="0.75294117650000003" blue="0.90980392160000001" alpha="0.22" colorSpace="custom" customColorSpace="sRGB"/>
-                                <color key="currentPageIndicatorTintColor" red="0.23137254900000001" green="0.54117647059999996" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="pageIndicatorTintColor" red="0.56862745099999989" green="0.85882352939999995" blue="0.90196078429999993" alpha="0.32000000000000001" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="currentPageIndicatorTintColor" red="0.34901960780000002" green="0.64313725490000007" blue="0.81568627449999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
                                     <action selector="pageChanged:" destination="P7r-hA-7fb" eventType="valueChanged" id="R4J-fU-g2T"/>
                                 </connections>
                             </pageControl>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VxQ-rb-PZP">
                                 <rect key="frame" x="24" y="714" width="345" height="58"/>
-                                <color key="backgroundColor" red="0.0" green="0.75294117650000003" blue="0.90980392160000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" red="0.56862745099999989" green="0.85882352939999995" blue="0.90196078429999993" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="58" id="hYh-2d-GV2"/>
                                 </constraints>
@@ -118,14 +118,14 @@
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="8k1-QO-MiU"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="LaunchBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="8k1-QO-MiU" firstAttribute="bottom" secondItem="VxQ-rb-PZP" secondAttribute="bottom" constant="12" id="1UO-Iy-1Az"/>
                             <constraint firstItem="VxQ-rb-PZP" firstAttribute="leading" secondItem="8k1-QO-MiU" secondAttribute="leading" constant="24" id="80r-xM-MQQ"/>
                             <constraint firstItem="8k1-QO-MiU" firstAttribute="trailing" secondItem="VxQ-rb-PZP" secondAttribute="trailing" constant="24" id="B3s-hz-vbU"/>
                             <constraint firstItem="D8a-8Q-S5R" firstAttribute="leading" secondItem="8k1-QO-MiU" secondAttribute="leading" constant="24" id="CCj-pk-T3l"/>
                             <constraint firstItem="L79-bu-9iF" firstAttribute="height" constant="190" id="CqH-Ea-rBr"/>
-                            <constraint firstItem="L79-bu-9iF" firstAttribute="trailing" secondItem="8lm-7z-Va4" secondAttribute="trailing" constant="-47" id="FXG-CF-VcD"/>
+                            <constraint firstItem="L79-bu-9iF" firstAttribute="trailing" secondItem="8lm-7z-Va4" secondAttribute="trailing" constant="-40" id="FXG-CF-VcD"/>
                             <constraint firstItem="xLw-KQ-Rmd" firstAttribute="top" secondItem="8k1-QO-MiU" secondAttribute="top" constant="6.6666666666666856" id="Frv-nL-rmK"/>
                             <constraint firstItem="f4c-vX-J6d" firstAttribute="top" secondItem="D8a-8Q-S5R" secondAttribute="bottom" constant="20" id="HTf-l9-oFW"/>
                             <constraint firstItem="vR8-pc-zRt" firstAttribute="top" secondItem="8k1-QO-MiU" secondAttribute="top" constant="-2" id="MVr-dW-x2G"/>
@@ -136,7 +136,7 @@
                             <constraint firstItem="vR8-pc-zRt" firstAttribute="height" constant="160" id="c7n-4p-BL7"/>
                             <constraint firstItem="vR8-pc-zRt" firstAttribute="leading" secondItem="8lm-7z-Va4" secondAttribute="leading" constant="-20" id="g5S-vn-TXY"/>
                             <constraint firstItem="D8a-8Q-S5R" firstAttribute="top" secondItem="xLw-KQ-Rmd" secondAttribute="bottom" constant="30.666666666666572" id="gln-1m-gIh"/>
-                            <constraint firstItem="L79-bu-9iF" firstAttribute="bottom" secondItem="8lm-7z-Va4" secondAttribute="bottom" constant="-30" id="hdp-q5-d2o"/>
+                            <constraint firstItem="L79-bu-9iF" firstAttribute="bottom" secondItem="8lm-7z-Va4" secondAttribute="bottom" constant="-20" id="hdp-q5-d2o"/>
                         </constraints>
                     </view>
                     <connections>
@@ -161,8 +161,8 @@
     </scenes>
     <resources>
         <image name="heart.text.square.fill" catalog="system" width="128" height="114"/>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
+        <namedColor name="LaunchBackgroundColor">
+            <color red="0.9100000262260437" green="1" blue="0.99599999189376831" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
     </resources>
 </document>

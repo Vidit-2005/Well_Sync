@@ -21,7 +21,7 @@
                         <rect key="frame" x="48" y="40" width="272" height="72"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JjB-a5-qfs">
-                                <rect key="frame" x="4" y="8" width="268" height="16"/>
+                                <rect key="frame" x="8" y="8" width="256" height="16"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="16" id="aJb-Jr-Kny"/>
                                 </constraints>
@@ -30,7 +30,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="252" text="Description" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7dG-BA-X6G">
-                                <rect key="frame" x="4" y="28" width="268" height="36"/>
+                                <rect key="frame" x="8" y="28" width="256" height="36"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                 <color key="textColor" systemColor="secondaryLabelColor"/>
                                 <nil key="highlightedColor"/>
@@ -39,11 +39,11 @@
                         <color key="backgroundColor" systemColor="tertiarySystemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="7dG-BA-X6G" secondAttribute="bottom" constant="8" id="0si-PS-M1F" userLabel="Description Label.bottom = Container View.bottom"/>
-                            <constraint firstAttribute="trailing" secondItem="JjB-a5-qfs" secondAttribute="trailing" id="2vT-K8-rvf"/>
-                            <constraint firstItem="7dG-BA-X6G" firstAttribute="leading" secondItem="ABv-gb-g55" secondAttribute="leading" constant="4" id="3to-7x-7in"/>
-                            <constraint firstItem="JjB-a5-qfs" firstAttribute="leading" secondItem="ABv-gb-g55" secondAttribute="leading" constant="4" id="KKh-VL-csy"/>
+                            <constraint firstAttribute="trailing" secondItem="JjB-a5-qfs" secondAttribute="trailing" constant="8" id="2vT-K8-rvf"/>
+                            <constraint firstItem="7dG-BA-X6G" firstAttribute="leading" secondItem="ABv-gb-g55" secondAttribute="leading" constant="8" id="3to-7x-7in"/>
+                            <constraint firstItem="JjB-a5-qfs" firstAttribute="leading" secondItem="ABv-gb-g55" secondAttribute="leading" constant="8" id="KKh-VL-csy"/>
                             <constraint firstItem="JjB-a5-qfs" firstAttribute="top" secondItem="ABv-gb-g55" secondAttribute="top" constant="8" id="TuN-je-SUK"/>
-                            <constraint firstAttribute="trailing" secondItem="7dG-BA-X6G" secondAttribute="trailing" id="tn9-Vy-npO" userLabel="Description Label.trailing = trailing"/>
+                            <constraint firstAttribute="trailing" secondItem="7dG-BA-X6G" secondAttribute="trailing" constant="8" id="tn9-Vy-npO" userLabel="Description Label.trailing = trailing"/>
                             <constraint firstItem="7dG-BA-X6G" firstAttribute="top" secondItem="JjB-a5-qfs" secondAttribute="bottom" constant="4" id="zTI-eu-u8i"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
@@ -52,8 +52,8 @@
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </view>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" textAlignment="natural" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qrL-mL-8JC">
-                        <rect key="frame" x="52" y="16" width="268" height="16"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qrL-mL-8JC">
+                        <rect key="frame" x="56" y="16" width="264" height="16"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="16" id="fNe-bM-o3J"/>
                         </constraints>
@@ -66,7 +66,7 @@
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="qrL-mL-8JC" secondAttribute="trailing" id="4LP-zn-GdQ"/>
-                <constraint firstItem="qrL-mL-8JC" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="52" id="Cwp-fI-iGZ"/>
+                <constraint firstItem="qrL-mL-8JC" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="56" id="Cwp-fI-iGZ"/>
                 <constraint firstItem="ABv-gb-g55" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="48" id="Wld-Ek-ozP"/>
                 <constraint firstItem="qrL-mL-8JC" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="16" id="t78-wB-WYM"/>
                 <constraint firstAttribute="bottom" secondItem="ABv-gb-g55" secondAttribute="bottom" id="uGm-b8-hZr" userLabel="Container View.bottom = bottom"/>

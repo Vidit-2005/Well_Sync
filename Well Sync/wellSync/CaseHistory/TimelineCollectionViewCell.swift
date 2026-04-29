@@ -33,10 +33,6 @@ class TimelineCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         setupTimelineViews()
         styleContainerView()
-//        containerView.layer.shadowColor = UIColor.black.cgColor
-//        containerView.layer.shadowOpacity = 0.05
-//        containerView.layer.shadowOffset = CGSize(width: 0, height: 2)
-//        containerView.layer.shadowRadius = 4
     }
     
     private func setupTimelineViews() {
@@ -65,7 +61,7 @@ class TimelineCollectionViewCell: UICollectionViewCell {
            containerView.layer.shadowOpacity = 0.05
            containerView.layer.shadowRadius  = 4
            containerView.layer.shadowOffset  = CGSize(width: 0, height: 2)
-           containerView.backgroundColor = UIColor.systemGray6
+           containerView.backgroundColor = UIColor.tertiarySystemBackground
        }
     
     override func layoutSubviews() {

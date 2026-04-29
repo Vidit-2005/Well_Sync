@@ -267,6 +267,7 @@ class EducationDetailsTableViewController: UITableViewController, UIImagePickerC
                 await MainActor.run {
                     alert.dismiss(animated: true) {
                         SessionManager.shared.currentDoctor = doctor
+                        SessionManager.shared.saveSession(role: .doctor, authID: authID, doctorID: doctor.docID)
 
                         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                            let window = scene.windows.first {
