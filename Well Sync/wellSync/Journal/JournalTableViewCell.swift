@@ -14,6 +14,7 @@ class JournalTableViewCell: UITableViewCell {
     @IBOutlet weak var summaryLabel: UILabel!
     
     @IBOutlet weak var cardView: UIView!
+    var tint: UIColor?
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -22,12 +23,12 @@ class JournalTableViewCell: UITableViewCell {
     }
 
     func configure(with data: JournalEntry, sender: Any?) {
-        let tint: UIColor
-        if sender is DoctorActivityStatusCollectionViewController {
-            tint = .systemOrange
-        } else {
-            tint = .systemBlue   // default: patient side (ActivityTableViewController)
-        }
+        
+//        if sender is DoctorActivityStatusCollectionViewController {
+//            tint = .systemOrange
+//        } else {
+//            tint = .systemBlue   // default: patient side (ActivityTableViewController)
+//        }
         iconImage.tintColor  = tint
 
         titleLabel.text = data.title

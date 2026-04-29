@@ -303,7 +303,6 @@
                                         <constraint firstItem="43H-KG-fgf" firstAttribute="top" secondItem="jBx-3y-97I" secondAttribute="top" constant="16" id="r2h-GG-5Qc"/>
                                     </constraints>
                                 </collectionViewCellContentView>
-                                <color key="backgroundColor" systemColor="tertiarySystemBackgroundColor"/>
                                 <size key="customSize" width="393" height="216"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">

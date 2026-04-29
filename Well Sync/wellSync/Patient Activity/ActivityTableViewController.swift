@@ -234,6 +234,7 @@ class ActivityTableViewController: UITableViewController {
             }
 
             journalVC.patient = patient
+            journalVC.tint = .accent
         }
 
         if segue.identifier == "timerSegue",

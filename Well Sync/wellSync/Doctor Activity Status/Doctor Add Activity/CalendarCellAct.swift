@@ -59,7 +59,7 @@ class CalendarCellAct: UICollectionViewCell,
         calendar.appearance.titleSelectionColor   = UIColor.label
 
         calendar.appearance.todayColor            = .clear
-        calendar.appearance.titleTodayColor       = UIColor.systemIndigo
+        calendar.appearance.titleTodayColor       = .accent
 
         calendar.appearance.borderRadius = 1.0
         calendar.appearance.eventOffset  = .zero

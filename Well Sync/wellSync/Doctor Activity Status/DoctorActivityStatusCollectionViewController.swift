@@ -454,6 +454,7 @@ class DoctorActivityStatusCollectionViewController: UICollectionViewController {
                 journalVC.selectedActivity   = item.activity
                 journalVC.patient            = self.patient
             }
+            journalVC.tint = .systemOrange
         }
 
         // MARK: Graph (timer-type) ← NEW BLOCK

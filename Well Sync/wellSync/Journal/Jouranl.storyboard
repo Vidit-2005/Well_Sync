@@ -14,7 +14,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="insetGrouped" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="Jqb-wY-ixw">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="tertiarySystemBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="JournalTableCell" rowHeight="94" id="Pwj-CI-ZUB" customClass="JournalTableViewCell" customModule="wellSync" customModuleProvider="target">
                                 <rect key="frame" x="20" y="38" width="353" height="94"/>
@@ -91,7 +91,7 @@
                                         <constraint firstItem="QOB-ZA-P4L" firstAttribute="leading" secondItem="1Ip-ah-KCQ" secondAttribute="leading" constant="16" id="cON-YY-Sw3"/>
                                     </constraints>
                                 </tableViewCellContentView>
-                                <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                                <color key="backgroundColor" systemColor="tertiarySystemBackgroundColor"/>
                                 <connections>
                                     <outlet property="cardView" destination="QOB-ZA-P4L" id="JUR-AM-lLQ"/>
                                     <outlet property="iconImage" destination="2mW-8B-WeD" id="rQ6-qR-nLR"/>

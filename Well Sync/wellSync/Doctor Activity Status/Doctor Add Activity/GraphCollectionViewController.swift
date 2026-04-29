@@ -21,8 +21,6 @@ class GraphCollectionViewController: UICollectionViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        collectionView.backgroundColor = .systemBackground
         title = activity?.name
 
         collectionView.register(

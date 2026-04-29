@@ -55,7 +55,7 @@ class TimelineCollectionViewCell: UICollectionViewCell {
        }
 
        private func styleContainerView() {
-           containerView.layer.cornerRadius = 8
+           containerView.layer.cornerRadius = 16
 //           containerView.layer.masksToBounds = false
            containerView.layer.shadowColor  = UIColor.systemGray.cgColor
            containerView.layer.shadowOpacity = 0.05

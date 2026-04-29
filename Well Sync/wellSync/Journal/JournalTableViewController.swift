@@ -12,7 +12,7 @@ class JournalTableViewController: UITableViewController {
     // MARK: - Properties
     var currentAssignmentLogs: [JournalEntry] = []  // Logs for THIS assignment only
     var allActivityLogs: [JournalEntry] = []        // ALL logs for this activity
-    
+    var tint: UIColor?
     // Passed from previous screen
     var selectedAssignment: AssignedActivity?
     var selectedActivity: Activity?
@@ -130,6 +130,7 @@ class JournalTableViewController: UITableViewController {
             ? currentAssignmentLogs[indexPath.row]
             : allActivityLogs[indexPath.row]
         
+        cell.tint = tint
         cell.configure(with: entry, sender: Any?.self)
         return cell
     }

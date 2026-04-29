@@ -232,7 +232,7 @@ class BreathingChartCollectionViewCell: UICollectionViewCell, ChartViewDelegate 
         }
 
         let dataSet = BarChartDataSet(entries: entries)
-        dataSet.setColor(UIColor.systemTeal.withAlphaComponent(0.8))
+        dataSet.setColor(.accent)
         dataSet.drawValuesEnabled = false
         dataSet.highlightColor = UIColor.systemIndigo.withAlphaComponent(0.4)
         dataSet.highlightAlpha = 1.0
