@@ -2,6 +2,7 @@ import UIKit
 
 final class WellSyncOnboardingViewController: UIViewController {
 
+    private var backgroundGradientLayer: CAGradientLayer?
     @IBOutlet private weak var topAccentView: UIView!
     @IBOutlet private weak var bottomAccentView: UIView!
     @IBOutlet private weak var skipButton: UIButton!
@@ -73,26 +74,21 @@ final class WellSyncOnboardingViewController: UIViewController {
         applySlide(animated: true)
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        backgroundGradientLayer?.frame = view.bounds
+    }
+
     override var preferredStatusBarStyle: UIStatusBarStyle {
         .darkContent
     }
 
     private func configureStaticUI() {
-        let gradient = CAGradientLayer()
-        gradient.frame = view.bounds
-        gradient.colors = [
-            UIColor.systemCyan.withAlphaComponent(0.1).cgColor,
-            UIColor.white.cgColor
-        ]
-        gradient.startPoint = CGPoint(x: 0, y: 0)
-        gradient.endPoint = CGPoint(x: 1, y: 1)
-
-        view.layer.insertSublayer(gradient, at: 0)
-
+        configureBackgroundGradient()
 
         skipButton.setTitleColor(Palette.mutedBlue, for: .normal)
 
-        let blurEffect = UIBlurEffect(style: .systemUltraThinMaterialLight)
+        let blurEffect = UIBlurEffect(style: .systemThinMaterialLight)
         let blurView = UIVisualEffectView(effect: blurEffect)
         blurView.frame = cardView.bounds
         blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -100,27 +96,37 @@ final class WellSyncOnboardingViewController: UIViewController {
         blurView.clipsToBounds = true
         
         let tintView = UIView(frame: cardView.bounds)
-        tintView.backgroundColor = UIColor.white.withAlphaComponent(0.05)
+        tintView.backgroundColor = UIColor.white.withAlphaComponent(0.12)
         tintView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
-        cardView.insertSubview(tintView, aboveSubview: blurView)
+        let borderView = UIView(frame: cardView.bounds)
+        borderView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        borderView.backgroundColor = .clear
+        borderView.layer.cornerRadius = 28
+        borderView.layer.cornerCurve = .continuous
+        borderView.layer.borderWidth = 1
+        borderView.layer.borderColor = UIColor.white.withAlphaComponent(0.42).cgColor
+        borderView.isUserInteractionEnabled = false
 
         cardView.insertSubview(blurView, at: 0)
+        cardView.insertSubview(tintView, aboveSubview: blurView)
+        cardView.addSubview(borderView)
         cardView.backgroundColor = .clear
         cardView.layer.cornerRadius = 28
         cardView.layer.cornerCurve = .continuous
+        cardView.clipsToBounds = true
         cardView.layer.shadowColor = UIColor.black.cgColor
-        cardView.layer.shadowOpacity = 0.12
-        cardView.layer.shadowRadius = 20
-        cardView.layer.shadowOffset = CGSize(width: 0, height: 10)
-        cardView.layer.borderWidth = 1.2
-        cardView.layer.borderColor = UIColor.white.withAlphaComponent(0.6).cgColor
+        cardView.layer.shadowOpacity = 0.08
+        cardView.layer.shadowRadius = 22
+        cardView.layer.shadowOffset = CGSize(width: 0, height: 14)
         cardView.layer.isDoubleSided = false
 
 
         iconContainerView.layer.cornerCurve = .continuous
-        iconContainerView.backgroundColor = UIColor.white.withAlphaComponent(0.18)
+        iconContainerView.backgroundColor = Palette.softBlue.withAlphaComponent(0.18)
         iconContainerView.layer.cornerRadius = 44
+        iconContainerView.layer.borderWidth = 1
+        iconContainerView.layer.borderColor = UIColor.white.withAlphaComponent(0.35).cgColor
         
 
         nextButton.layer.cornerRadius = 22
@@ -130,12 +136,12 @@ final class WellSyncOnboardingViewController: UIViewController {
         topAccentView.layer.cornerRadius = 80
         bottomAccentView.layer.cornerRadius = 95
 
-        topAccentView.backgroundColor = Palette.primaryCyan.withAlphaComponent(0.35)
-        bottomAccentView.backgroundColor = Palette.actionBlue.withAlphaComponent(0.25)
+        styleAccentCircle(topAccentView, tint: Palette.circleMint, fillAlpha: 0.08, borderAlpha: 0.28)
+        styleAccentCircle(bottomAccentView, tint: Palette.circleBlue, fillAlpha: 0.10, borderAlpha: 0.18)
 
         pageControl.numberOfPages = slides.count
         pageControl.currentPageIndicatorTintColor = Palette.actionBlue
-        pageControl.pageIndicatorTintColor = Palette.primaryCyan.withAlphaComponent(0.22)
+        pageControl.pageIndicatorTintColor = Palette.softBlue.withAlphaComponent(0.32)
         
         titleLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
         titleLabel.numberOfLines = 0
@@ -145,6 +151,31 @@ final class WellSyncOnboardingViewController: UIViewController {
             label?.numberOfLines = 0
             label?.textAlignment = .left
         }
+    }
+
+    private func configureBackgroundGradient() {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = [
+            Palette.backgroundTop.cgColor,
+            Palette.backgroundMid.cgColor,
+            Palette.backgroundBottom.cgColor
+        ]
+        gradientLayer.locations = [0, 0.58, 1]
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+        gradientLayer.frame = view.bounds
+        view.layer.insertSublayer(gradientLayer, at: 0)
+        backgroundGradientLayer = gradientLayer
+    }
+
+    private func styleAccentCircle(_ orbView: UIView, tint: UIColor, fillAlpha: CGFloat, borderAlpha: CGFloat) {
+        orbView.subviews.forEach { $0.removeFromSuperview() }
+        orbView.layer.sublayers?.removeAll()
+        orbView.backgroundColor = tint.withAlphaComponent(fillAlpha)
+        orbView.layer.cornerCurve = .continuous
+        orbView.layer.masksToBounds = true
+        orbView.layer.borderWidth = 1
+        orbView.layer.borderColor = UIColor.white.withAlphaComponent(borderAlpha).cgColor
     }
 
     private enum SlideDirection {
@@ -209,7 +240,7 @@ final class WellSyncOnboardingViewController: UIViewController {
 
         let isLast = currentIndex == slides.count - 1
         nextButton.setTitle(isLast ? "Get Started" : "Continue", for: .normal)
-        nextButton.backgroundColor = isLast ? Palette.actionBlue : Palette.primaryCyan
+        nextButton.backgroundColor = isLast ? Palette.actionBlue : Palette.softBlue
     }
 
     private func resetSlideContentAppearance() {
@@ -378,9 +409,15 @@ private struct OnboardingSlide {
 }
 
 private enum Palette {
-    static let primaryCyan = UIColor(red255: 0, green255: 192, blue255: 232)
-    static let actionBlue = UIColor(red255: 59, green255: 138, blue255: 255)
-    static let mutedBlue = UIColor(red255: 80, green255: 134, blue255: 198)
+    static let primaryCyan = UIColor(red255: 117, green255: 208, blue255: 223)
+    static let softBlue = UIColor(red255: 145, green255: 219, blue255: 230)
+    static let actionBlue = UIColor(red255: 89, green255: 164, blue255: 208)
+    static let mutedBlue = UIColor(red255: 119, green255: 159, blue255: 196)
+    static let circleMint = UIColor(red255: 198, green255: 240, blue255: 237)
+    static let circleBlue = UIColor(red255: 173, green255: 203, blue255: 224)
+    static let backgroundTop = UIColor(red255: 143, green255: 210, blue255: 214)
+    static let backgroundMid = UIColor(red255: 192, green255: 231, blue255: 233)
+    static let backgroundBottom = UIColor(red255: 236, green255: 247, blue255: 246)
 }
 
 private extension UIColor {
