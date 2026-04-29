@@ -240,7 +240,7 @@ class DoctorActivityStatusCollectionViewController: UICollectionViewController {
                     label.text = item.activity.name
                 }
                 if let logLabel = cell.viewWithTag(3) as? UILabel {
-                    logLabel.text = String(item.logs.count)
+                    logLabel.attributedText = self.getAttributedCountString(completed: item.logs.count, expected: item.assignment.totalExpectedLogs, defaultFont: logLabel.font)
                 }
                 if let iconView = cell.viewWithTag(4) as? UIImageView {
                     iconView.image = UIImage(systemName: item.activity.iconName)
@@ -265,7 +265,7 @@ class DoctorActivityStatusCollectionViewController: UICollectionViewController {
                     label.text = item.activity.name
                 }
                 if let logLabel = cell.viewWithTag(3) as? UILabel {
-                    logLabel.text = String(item.logs.count)
+                    logLabel.attributedText = self.getAttributedCountString(completed: item.logs.count, expected: item.assignment.totalExpectedLogs, defaultFont: logLabel.font)
                 }
                 if let iconView = cell.viewWithTag(4) as? UIImageView {
                     iconView.image = UIImage(systemName: item.activity.iconName)
@@ -289,7 +289,7 @@ class DoctorActivityStatusCollectionViewController: UICollectionViewController {
                     label.text = item.activity.name
                 }
                 if let logLabel = cell.viewWithTag(3) as? UILabel {
-                    logLabel.text = String(item.totalLogs)
+                    logLabel.attributedText = self.getAttributedCountString(completed: item.totalLogs, expected: item.assignment.totalExpectedLogs, defaultFont: logLabel.font)
                 }
                 if let iconView = cell.viewWithTag(4) as? UIImageView {
                     iconView.image = UIImage(systemName: item.activity.iconName)
@@ -309,7 +309,7 @@ class DoctorActivityStatusCollectionViewController: UICollectionViewController {
                     label.text = item.activity.name
                 }
                 if let logLabel = cell.viewWithTag(3) as? UILabel {
-                    logLabel.text = String(item.totalLogs)
+                    logLabel.attributedText = self.getAttributedCountString(completed: item.totalLogs, expected: item.assignment.totalExpectedLogs, defaultFont: logLabel.font)
                 }
                 if let iconView = cell.viewWithTag(4) as? UIImageView {
                     iconView.image = UIImage(systemName: item.activity.iconName)
@@ -479,5 +479,25 @@ class DoctorActivityStatusCollectionViewController: UICollectionViewController {
         }
     }
 
-    
+    private func getAttributedCountString(completed: Int, expected: Int, defaultFont: UIFont) -> NSAttributedString {
+        let attrString = NSMutableAttributedString(string: "\(completed)")
+        attrString
+            .addAttributes(
+                [
+                    .font: UIFont.preferredFont(forTextStyle: .title2),
+                    .foregroundColor: UIColor.label
+                ],
+                range: NSRange(location: 0, length: attrString.length)
+            )
+        
+        let subStr = NSAttributedString(
+            string: "/\(expected)",
+            attributes: [
+                .font: UIFont.preferredFont(forTextStyle: .callout),
+                .foregroundColor: UIColor.secondaryLabel
+            ]
+        )
+        attrString.append(subStr)
+        return attrString
+    }
 }

@@ -43,15 +43,9 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="3" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Yg8-hz-r1Y">
-                        <rect key="frame" x="22" y="58.666666666666657" width="18" height="38.333333333333343"/>
+                        <rect key="frame" x="22" y="55.666666666666657" width="18" height="38.333333333333343"/>
                         <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="32"/>
                         <nil key="textColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="upload" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a0d-50-JBW">
-                        <rect key="frame" x="44" y="73.666666666666671" width="52" height="20.333333333333329"/>
-                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
-                        <color key="textColor" systemColor="secondaryLabelColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="-17" translatesAutoresizingMaskIntoConstraints="NO" id="gBI-pM-cZ3">
@@ -110,14 +104,12 @@
                 <constraint firstAttribute="trailing" secondItem="6aw-YB-Jt1" secondAttribute="trailing" constant="20" id="7cR-WY-qRw"/>
                 <constraint firstItem="hBf-jD-7To" firstAttribute="centerY" secondItem="zkr-oH-VP6" secondAttribute="centerY" id="ACm-3V-Bxm"/>
                 <constraint firstItem="gBI-pM-cZ3" firstAttribute="trailing" secondItem="6aw-YB-Jt1" secondAttribute="trailing" id="AJw-tv-osx"/>
-                <constraint firstAttribute="bottom" secondItem="Yg8-hz-r1Y" secondAttribute="bottom" constant="9" id="CqD-VB-MQm"/>
+                <constraint firstAttribute="bottom" secondItem="Yg8-hz-r1Y" secondAttribute="bottom" constant="12" id="CqD-VB-MQm"/>
                 <constraint firstItem="6aw-YB-Jt1" firstAttribute="centerY" secondItem="hBf-jD-7To" secondAttribute="centerY" id="HEa-qB-efj"/>
                 <constraint firstItem="a8p-go-icf" firstAttribute="centerY" secondItem="zkr-oH-VP6" secondAttribute="centerY" id="LCe-d2-0M2"/>
                 <constraint firstItem="zkr-oH-VP6" firstAttribute="leading" secondItem="a8p-go-icf" secondAttribute="trailing" constant="8" id="U4T-HJ-z2C"/>
                 <constraint firstItem="a8p-go-icf" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="X0y-QF-YaF"/>
-                <constraint firstItem="a0d-50-JBW" firstAttribute="leading" secondItem="Yg8-hz-r1Y" secondAttribute="trailing" constant="4" id="ZUO-dT-PTY"/>
                 <constraint firstItem="a8p-go-icf" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="20" id="jFv-IZ-VuN"/>
-                <constraint firstAttribute="bottom" secondItem="a0d-50-JBW" secondAttribute="bottom" constant="12" id="wpn-Xv-2EK"/>
             </constraints>
             <size key="customSize" width="335" height="106"/>
             <userDefinedRuntimeAttributes>

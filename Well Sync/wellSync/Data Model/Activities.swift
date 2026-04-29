@@ -65,6 +65,14 @@ struct AssignedActivity: Codable {
         return hasTimer
     }
     
+    var totalExpectedLogs: Int {
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: startDate)
+        let end = calendar.startOfDay(for: endDate)
+        let days = max(0, (calendar.dateComponents([.day], from: start, to: end).day ?? 0)) + 1
+        return days * frequency
+    }
+    
     enum CodingKeys: String, CodingKey {
         case assignedID = "assigned_id"
         case activityID = "activity_id"
