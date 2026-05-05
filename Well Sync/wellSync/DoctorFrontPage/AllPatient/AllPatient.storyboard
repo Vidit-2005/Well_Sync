@@ -37,7 +37,12 @@
                             <outlet property="delegate" destination="LF2-Im-yuo" id="MuU-PU-l1g"/>
                         </connections>
                     </collectionView>
-                    <navigationItem key="navigationItem" title="All Patients" id="jn7-Be-YhP"/>
+                    <navigationItem key="navigationItem" title="All Patients" id="jn7-Be-YhP">
+                        <barButtonItem key="rightBarButtonItem" image="arrow.up.arrow.down" catalog="system" id="srt-Bb-1kQ"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="sortBarButton" destination="srt-Bb-1kQ" id="srt-Cn-2oL"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zvh-u9-91a" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -63,6 +68,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="arrow.up.arrow.down" catalog="system" width="128" height="100"/>
         <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

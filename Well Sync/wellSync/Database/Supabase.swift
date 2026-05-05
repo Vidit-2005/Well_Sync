@@ -942,6 +942,13 @@ final class AccessSupabase {
         
         return updated
     }
+    func deleteSessionNote(sessionID: UUID) async throws {
+        try await supabase
+            .from("session_notes")
+            .delete()
+            .eq("session_id", value: sessionID.uuidString)
+            .execute()
+    }
     func savePatientNote(_ note: PatientNote) async throws -> PatientNote {
         
         let saved: PatientNote = try await supabase

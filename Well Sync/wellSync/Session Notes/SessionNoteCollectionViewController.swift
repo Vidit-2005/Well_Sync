@@ -98,4 +98,55 @@ class SessionNoteCollectionViewController: UICollectionViewController {
         }
     }
     
+    // MARK: - Context Menu for Deletion
+    
+    override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { [weak self] _ in
+            self?.confirmDeleteSession(at: indexPath)
+        }
+        
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            UIMenu(title: "", children: [deleteAction])
+        }
+    }
+    
+    private func confirmDeleteSession(at indexPath: IndexPath) {
+        let session = sessions[indexPath.row]
+        guard let sessionId = session.sessionId else { return }
+        
+        let alert = UIAlertController(
+            title: "Delete Session Note",
+            message: "Are you sure you want to delete this session note? This action cannot be undone.",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            self?.deleteSession(sessionId: sessionId, at: indexPath)
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    private func deleteSession(sessionId: UUID, at indexPath: IndexPath) {
+        Task {
+            do {
+                try await AccessSupabase.shared.deleteSessionNote(sessionID: sessionId)
+                await MainActor.run {
+                    self.sessions.remove(at: indexPath.row)
+                    // If you just delete the item, the index path calculation in cellForItemAt might be off,
+                    // so calling reloadData is safer to update all indices in the UI.
+                    self.loadSessionNotes()
+                }
+            } catch {
+                print("❌ Failed to delete session note: \(error)")
+                await MainActor.run {
+                    let errorAlert = UIAlertController(title: "Error", message: "Failed to delete the session note. Please try again.", preferredStyle: .alert)
+                    errorAlert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(errorAlert, animated: true)
+                }
+            }
+        }
+    }
+
 }

@@ -15,6 +15,17 @@ class AllPatientCollectionViewController: UICollectionViewController {
     var viewModel: AccessSupabase?
     var doctor:Doctor?
 
+    // MARK: - Sort
+
+    @IBOutlet weak var sortBarButton: UIBarButtonItem!
+
+    enum PatientSortOption {
+        case name, condition
+    }
+
+    var currentSort: PatientSortOption = .name
+    var isAscending: Bool = true // ✅ ADDED THIS
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -22,11 +33,70 @@ class AllPatientCollectionViewController: UICollectionViewController {
 
         setupCollectionView()
 
+        // Attach the sort menu to the storyboard bar button
+        sortBarButton.menu = buildSortMenu()
+
         collectionView.setCollectionViewLayout(createLayout(), animated: false)
 
         Task {
             await loadPatients()
         }
+    }
+
+    // MARK: - Sort Menu
+
+    private func buildSortMenu() -> UIMenu {
+        let byName = UIAction(
+            title: "Name",
+            image: UIImage(systemName: "textformat.abc"),
+            state: currentSort == .name ? .on : .off
+        ) { [weak self] _ in
+            self?.applySort(.name)
+        }
+
+        let byCondition = UIAction(
+            title: "Condition",
+            image: UIImage(systemName: "stethoscope"),
+            state: currentSort == .condition ? .on : .off
+        ) { [weak self] _ in
+            self?.applySort(.condition)
+        }
+
+        let orderTitle = isAscending ? "Sort: Ascending" : "Sort: Descending"
+        let orderImage = UIImage(systemName: isAscending ? "arrow.up" : "arrow.down")
+        let toggleOrder = UIAction(title: orderTitle, image: orderImage) { [weak self] _ in
+            guard let self = self else { return }
+            self.isAscending.toggle()
+            self.applySort(self.currentSort)
+        }
+
+        let sortGroup = UIMenu(options: .displayInline, children: [byName, byCondition])
+        let orderGroup = UIMenu(options: .displayInline, children: [toggleOrder])
+
+        return UIMenu(title: "Sort Options", image: nil, children: [sortGroup, orderGroup])
+    }
+
+    private func applySort(_ option: PatientSortOption) {
+        currentSort = option
+
+        switch option {
+        case .name:
+            filteredPatients.sort { 
+                let name0 = $0.name.lowercased()
+                let name1 = $1.name.lowercased()
+                return isAscending ? (name0 < name1) : (name0 > name1)
+            }
+        case .condition:
+            filteredPatients.sort {
+                let cond0 = ($0.condition ?? "").lowercased()
+                let cond1 = ($1.condition ?? "").lowercased()
+                return isAscending ? (cond0 < cond1) : (cond0 > cond1)
+            }
+        }
+
+        // Refresh the menu checkmark
+        sortBarButton.menu = buildSortMenu()
+        collectionView.reloadSections(IndexSet(integer: 1))
     }
     
     func loadPatients() async {
@@ -36,8 +106,6 @@ class AllPatientCollectionViewController: UICollectionViewController {
         do {
             let fetched = try await viewModel?.fetchPatients(for: doctorId)
             patients = fetched ?? []
-            // If you intend to use globalPatient instead, uncomment the next line and remove the previous assignment.
-            // patients = globalPatient
             filteredPatients = patients
             let patientIDs = patients.map { $0.patientID }
 
@@ -45,8 +113,11 @@ class AllPatientCollectionViewController: UICollectionViewController {
                 .fetchCompletedSessionCounts(patientIDs: patientIDs)
 
             sessionCountByPatient = counts
+
+            // Apply current sort after data load
+            applySort(currentSort)
+
         } catch {
-            // Handle error (log, show alert, etc.) and fall back to empty list
             print("Failed to fetch patients: \(error)")
             patients = []
             filteredPatients = []
