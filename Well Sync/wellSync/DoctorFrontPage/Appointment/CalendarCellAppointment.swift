@@ -20,6 +20,7 @@ class CalendarCellAppointment: UICollectionViewCell,
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         setupCalendar()
         
     }

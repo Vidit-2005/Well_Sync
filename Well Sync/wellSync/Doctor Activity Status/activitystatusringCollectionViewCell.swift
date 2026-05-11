@@ -12,6 +12,7 @@ class activitystatusringCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var ringContainer: ActivityStatusRingView!
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
     }
     override func prepareForReuse() {
             super.prepareForReuse()

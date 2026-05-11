@@ -16,6 +16,7 @@ class ImageViewCollectionViewCell: UICollectionViewCell {
     // MARK: - Lifecycle
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         photoImageView?.contentMode  = .scaleAspectFill
         photoImageView?.clipsToBounds = true
         // Rounded corners to match the XIB's layer.cornerRadius = 20

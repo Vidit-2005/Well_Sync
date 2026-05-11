@@ -19,6 +19,7 @@ class FilterCollectionViewCell: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         // Initialization code
         
         labels = [all, Upcoming, Missed, Done]

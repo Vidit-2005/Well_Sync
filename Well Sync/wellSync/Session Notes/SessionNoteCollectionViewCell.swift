@@ -20,4 +20,9 @@ class SessionNoteCollectionViewCell: UICollectionViewCell {
         sessionDateLabel.text = session?.date.formatted(date: .numeric, time: .omitted) ?? ""
         sessionSummaryLabel.text = session?.notes ?? "No Notes"
     }
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        style(self)
+    }
 }

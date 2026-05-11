@@ -44,6 +44,7 @@ class MoodLogCollectionViewCell: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         trackLine?.layer.cornerRadius = 1.5
         trackLine?.clipsToBounds = true
         

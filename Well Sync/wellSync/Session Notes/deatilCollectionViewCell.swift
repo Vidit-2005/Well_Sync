@@ -18,6 +18,7 @@ class deatilCollectionViewCell: UICollectionViewCell,AVAudioPlayerDelegate {
     var timer: Timer?
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         audioPlayer?.delegate = self
     }
     func setupAudioPlayer() {

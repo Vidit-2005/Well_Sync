@@ -39,4 +39,9 @@ class StreakCollectionViewCell: UICollectionViewCell {
             dayCircles[i].layer.cornerRadius = dayCircles[i].frame.height / 2
         }
     }
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        style(self)
+    }
 }

@@ -46,4 +46,9 @@ class BasicCollectionViewCell: UICollectionViewCell {
     @objc private func timerTapped() {
         onTimerTapped?()
     }
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        style(self)
+    }
 }

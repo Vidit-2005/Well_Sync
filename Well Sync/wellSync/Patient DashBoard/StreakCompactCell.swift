@@ -34,6 +34,7 @@ class StreakCompactCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         setupUI()
     }
 

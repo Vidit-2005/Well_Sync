@@ -12,6 +12,7 @@ class ActivityRingCell: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
     }
     override func prepareForReuse() {
             super.prepareForReuse()

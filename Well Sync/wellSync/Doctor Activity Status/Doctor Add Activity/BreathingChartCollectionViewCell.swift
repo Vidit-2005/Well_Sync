@@ -95,6 +95,7 @@ class BreathingChartCollectionViewCell: UICollectionViewCell, ChartViewDelegate 
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
 
         cardView.layer.cornerRadius = 20
         cardView.layer.shadowColor = UIColor.black.cgColor

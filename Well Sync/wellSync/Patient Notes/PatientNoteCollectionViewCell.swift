@@ -17,4 +17,9 @@ class PatientNoteCollectionViewCell: UICollectionViewCell {
         note.text = patient.note
         noteDate.text = patient.date.formatted(date: .numeric, time: .omitted)
     }
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        style(self)
+    }
 }

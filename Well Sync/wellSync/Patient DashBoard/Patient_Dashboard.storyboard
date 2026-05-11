@@ -121,7 +121,7 @@
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mff-G7-ZYd">
                                                     <rect key="frame" x="273" y="38.333333333333336" width="86" height="24"/>
-                                                    <color key="backgroundColor" red="0.7900390625" green="0.9052734375" blue="0.9506835938" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                    <color key="backgroundColor" red="0.78823529411764703" green="0.90588235294117647" blue="0.94901960784313721" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="86" id="K43-F0-uwu"/>
                                                         <constraint firstAttribute="height" constant="24" id="rhx-uN-CZ0"/>

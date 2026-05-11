@@ -11,6 +11,7 @@ class UploadCollectionViewCell: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         // Initialization code
     }
     

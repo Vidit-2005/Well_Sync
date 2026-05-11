@@ -32,6 +32,7 @@ class MoodCountCollectionViewCell: UICollectionViewCell, ChartViewDelegate {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         setupMoodChart()
         moodChart.delegate = self
     }

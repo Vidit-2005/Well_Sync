@@ -11,4 +11,9 @@ class moodLogNoteCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var note: UITextView!
 
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        style(self)
+    }
 }

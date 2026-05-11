@@ -122,6 +122,7 @@
 //
 //    override func awakeFromNib() {
 //        super.awakeFromNib()
+//        style(self)
 //        layer.cornerRadius = 16
 //        backgroundColor = .secondarySystemBackground
 //        barChartView.backgroundColor = .clear

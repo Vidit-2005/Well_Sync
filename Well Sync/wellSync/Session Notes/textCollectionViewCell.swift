@@ -9,4 +9,9 @@ import UIKit
 
 class textCollectionViewCell: UICollectionViewCell {
     @IBOutlet var textNote: UILabel!
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        style(self)
+    }
 }

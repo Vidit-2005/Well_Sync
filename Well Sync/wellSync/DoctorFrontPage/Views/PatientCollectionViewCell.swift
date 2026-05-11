@@ -26,6 +26,7 @@ class PatientCollectionViewCell: UICollectionViewCell {
     private var rightAction: doctorAction?
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         setupTag(conditionLabel)
         setupTag(sessionLabel)
         

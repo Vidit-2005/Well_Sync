@@ -13,6 +13,7 @@ class insightsCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         insight.numberOfLines = 0
         insight.lineBreakMode = .byWordWrapping
     }

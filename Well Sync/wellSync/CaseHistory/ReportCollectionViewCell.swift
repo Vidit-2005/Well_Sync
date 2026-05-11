@@ -16,6 +16,7 @@ class ReportCollectionViewCell: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         // Initialization code
         
         backgroundColor = .clear

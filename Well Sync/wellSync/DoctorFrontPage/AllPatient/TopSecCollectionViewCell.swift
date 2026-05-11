@@ -15,6 +15,7 @@ class TopSecCollectionViewCell: UICollectionViewCell, UISearchBarDelegate {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
 
         searchBar.delegate = self
         searchBar.placeholder = "Search patients..."

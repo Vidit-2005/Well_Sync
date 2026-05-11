@@ -13,6 +13,7 @@ class MoodEntryCollectionViewCell: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
     }
     
     func configureTap(target: Any, action: Selector) {

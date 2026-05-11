@@ -12,4 +12,9 @@ class ImageCollectionViewCell: UICollectionViewCell {
     func configure(with image: UIImage) {
         imageView.image = image
     }
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        style(self)
+    }
 }

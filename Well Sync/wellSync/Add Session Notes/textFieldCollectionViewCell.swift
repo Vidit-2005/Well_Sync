@@ -13,6 +13,7 @@ class textFieldCollectionViewCell: UICollectionViewCell, UITextViewDelegate {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         writtenNote.delegate = self
         writtenNote.isScrollEnabled = false
         writtenNote.backgroundColor = .clear

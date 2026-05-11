@@ -16,6 +16,7 @@ class PatientCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         
         setupTag(conditionLabel)
         setupTag(sessionLabel)

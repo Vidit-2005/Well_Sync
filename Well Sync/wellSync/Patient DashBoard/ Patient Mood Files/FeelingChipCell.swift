@@ -60,4 +60,9 @@ class FeelingChipCell: UICollectionViewCell {
         contentView.backgroundColor = .systemGray5
         titleLabel.textColor = .label
     }
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        style(self)
+    }
 }

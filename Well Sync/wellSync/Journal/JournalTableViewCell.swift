@@ -17,6 +17,7 @@ class JournalTableViewCell: UITableViewCell {
     var tint: UIColor?
     override func awakeFromNib() {
         super.awakeFromNib()
+        styleTableCell(self)
         // Initialization code
         cardView.isUserInteractionEnabled = false
 //        contentView.heightAnchor.constraint(equalToConstant: 130).isActive = true

@@ -14,6 +14,7 @@ class TopSectionCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         // Initialization code        
     }
     func configure(title: String, subtitle: String) {

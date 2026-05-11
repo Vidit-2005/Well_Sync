@@ -12,6 +12,7 @@ class GraphCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var barChart: BarChartView!
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         // Initialization code
         barchart()
     }

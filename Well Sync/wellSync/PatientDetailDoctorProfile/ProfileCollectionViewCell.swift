@@ -24,6 +24,7 @@
 //  
 //    override func awakeFromNib() {
 //        super.awakeFromNib()
+//        style(self)
 //    }
 //    
 ////    func configureCell(with patient: Patient){

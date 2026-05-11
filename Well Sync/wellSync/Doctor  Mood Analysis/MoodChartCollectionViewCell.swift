@@ -115,6 +115,7 @@ class MoodChartCollectionViewCell: UICollectionViewCell, ChartViewDelegate {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         setupChart()
         setData()
     }

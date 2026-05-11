@@ -26,6 +26,7 @@ class MoodDistributionCollectionViewCell: UICollectionViewCell {
     var moodLogs: [MoodLog] = []
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         // Initialization code
     }
     func configure(moodLogs: [MoodLog]) {

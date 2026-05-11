@@ -19,10 +19,31 @@ class TodayTableViewCell: UITableViewCell {
     var onTimerTapped: (() -> Void)?
     
     var onPhotoSourceSelected: ((UIImagePickerController.SourceType) -> Void)?
+    /// Storyboard default for the subtitle-to-card-bottom constraint
+    private var defaultSubtitleBottomConstant: CGFloat = -8
+
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+        styleTableCell(self)
+        // Capture the storyboard value so we can restore it on reuse
+        defaultSubtitleBottomConstant = subtitleBottomConstraint.constant
         setupCard()
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        // Reset every property that differs between the three cell styles
+        subtitleLabel.isHidden   = false
+        addPhotoButton.isHidden  = false
+        addPhotoButton.isEnabled = true
+        addPhotoButton.menu      = nil
+        addPhotoButton.showsMenuAsPrimaryAction = false
+        addPhotoButton.removeTarget(nil, action: nil, for: .touchUpInside)
+        contentView.alpha        = 1.0
+        cardView.backgroundColor = UIColor.tertiarySystemBackground
+        subtitleBottomConstraint.constant = defaultSubtitleBottomConstant
+        onTimerTapped            = nil
+        onPhotoSourceSelected    = nil
     }
 
     private func setupCard() {
@@ -68,7 +89,6 @@ class TodayTableViewCell: UITableViewCell {
         dateLabel.text           = "Total: \(logCount)"
         subtitleLabel.isHidden   = true
         iconImageView.image      = icon(for: iconName)
-//        checkmarkView.isHidden   = true
         subtitleBottomConstraint.constant = 8
         addPhotoButton.isHidden  = true
     }
@@ -78,6 +98,9 @@ class TodayTableViewCell: UITableViewCell {
         subtitleLabel.text     = item.assignment.doctorNote ?? "No additional notes."
         subtitleLabel.isHidden = false
         iconImageView.image    = icon(for: item.activity.iconName)
+
+        // Restore full bottom padding (subtitle is visible)
+        subtitleBottomConstraint.constant = defaultSubtitleBottomConstant
 
         let done                 = item.isCompletedToday
         cardView.backgroundColor = done ? UIColor.systemGray5 : UIColor.tertiarySystemBackground
@@ -93,6 +116,9 @@ class TodayTableViewCell: UITableViewCell {
         subtitleLabel.text     = item.assignment.doctorNote ?? "No additional notes."
         subtitleLabel.isHidden = false
         iconImageView.image    = icon(for: item.activity.iconName)
+
+        // Restore full bottom padding (subtitle is visible)
+        subtitleBottomConstraint.constant = defaultSubtitleBottomConstant
 
         let done                 = item.isCompletedToday
         cardView.backgroundColor = done ? UIColor.systemGray5 : UIColor.tertiarySystemBackground

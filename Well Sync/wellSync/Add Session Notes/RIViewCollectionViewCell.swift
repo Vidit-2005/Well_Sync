@@ -18,6 +18,7 @@ class RIViewCollectionViewCell: UICollectionViewCell {
     // MARK: - Lifecycle
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         // Corner radius already set via XIB userDefinedRuntimeAttribute (20)
     }
 

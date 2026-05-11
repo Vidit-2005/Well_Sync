@@ -23,7 +23,7 @@ class ActivityTableViewController: UITableViewController {
     }
     private let actionHandler = ActivityActionHandler()
     private let spinner       = UIActivityIndicatorView(style: .large)
-    let sectionTitles         = ["Today", "Logs"]
+    let sectionTitles         = ["Current", "Previous"]
 
     private var onboardingSequence: FeatureOnboardingSequence?
 
@@ -168,10 +168,10 @@ class ActivityTableViewController: UITableViewController {
         if section == 0 {
             let completed = todayItems.filter { $0.isCompletedToday }.count
             let pending   = todayItems.count - completed
-            titleLabel.text = "Today"
+            titleLabel.text = "\(sectionTitles[0])"
             subtitleLabel.text = "\(pending) pending · \(completed) completed"
         } else {
-            titleLabel.text = "Logs"
+            titleLabel.text = "\(sectionTitles[1])"
             subtitleLabel.text = "\(logSummaries.count) activities logged"
         }
 
@@ -182,7 +182,7 @@ class ActivityTableViewController: UITableViewController {
 
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
-            titleLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 8),
+            titleLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 0),
 
             subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 2),
@@ -194,7 +194,18 @@ class ActivityTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView,
                             heightForHeaderInSection section: Int) -> CGFloat {
-        60
+        50
+    }
+
+    override func tableView(_ tableView: UITableView,
+                            heightForFooterInSection section: Int) -> CGFloat {
+        8
+    }
+
+    override func tableView(_ tableView: UITableView,
+                            viewForFooterInSection section: Int) -> UIView? {
+        // Return an empty view so the grouped style doesn't add its default footer
+        UIView()
     }
 
     override func tableView(_ tableView: UITableView,

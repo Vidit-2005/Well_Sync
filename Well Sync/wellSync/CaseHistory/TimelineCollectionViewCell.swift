@@ -31,6 +31,7 @@ class TimelineCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         setupTimelineViews()
         styleContainerView()
     }

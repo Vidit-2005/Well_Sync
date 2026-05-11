@@ -19,6 +19,7 @@ class FeelingCollectionViewCell: UICollectionViewCell, UICollectionViewDataSourc
         
     override func awakeFromNib() {
         super.awakeFromNib()
+        style(self)
         
         cardView.layer.cornerRadius = 20
         
