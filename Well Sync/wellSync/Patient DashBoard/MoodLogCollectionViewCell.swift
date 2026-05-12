@@ -23,8 +23,8 @@ class PaddedLabel: UILabel {
 
 class MoodLogCollectionViewCell: UICollectionViewCell {
     @IBOutlet var moodViews: [UIImageView]!
-    @IBOutlet var stepperDots: [UIView]!
-    @IBOutlet weak var trackLine: UIView!
+    @IBOutlet var stepperDots: [UIView]!    // kept for storyboard; hidden at runtime
+    @IBOutlet weak var trackLine: UIView!   // kept for storyboard; hidden at runtime
     @IBOutlet weak var timerLabel: UILabel!
 
     // Mood logging state
@@ -33,23 +33,31 @@ class MoodLogCollectionViewCell: UICollectionViewCell {
     private let cooldown: TimeInterval = 3.5 * 3600
     private let maxDailyLogs = 6
 
-    // Mood-level color mapping: 0=red, 1=orange, 2=yellow, 3=lightGreen, 4=darkGreen
-    private let moodColors: [UIColor] = [
-        UIColor(red: 220/255, green: 53/255,  blue: 69/255,  alpha: 1),  // 0 — Red
-        UIColor(red: 255/255, green: 152/255, blue: 0/255,   alpha: 1),  // 1 — Orange
-        UIColor(red: 255/255, green: 213/255, blue: 79/255,  alpha: 1),  // 2 — Yellow
-        UIColor(red: 139/255, green: 195/255, blue: 74/255,  alpha: 1),  // 3 — Light Green
-        UIColor(red: 56/255,  green: 142/255, blue: 60/255,  alpha: 1),  // 4 — Dark Green
+    // Single dynamic bar
+    private var sectionCard: UIView?      // gray background card behind bar
+    private var barContainer: UIView?
+    private var segmentViews: [UIView] = []
+    private var didSetupTimeline = false
+
+    // Teal shades for each mood level (1–5): lighter = sadder, deeper = happier
+    private let moodTealShades: [UIColor] = [
+        UIColor(red: 175/255, green: 226/255, blue: 230/255, alpha: 1),  // 1 – Very Sad  — palest
+        UIColor(red: 150/255, green: 215/255, blue: 220/255, alpha: 1),  // 2 – Sad
+        UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 1),  // 3 – Neutral   — primary #71C9CE
+        UIColor(red: 80/255,  green: 175/255, blue: 182/255, alpha: 1),  // 4 – Happy
+        UIColor(red: 55/255,  green: 148/255, blue: 158/255, alpha: 1),  // 5 – Very Happy — deepest
     ]
+
+    private let teal = UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 1)
+
+    // MARK: – Lifecycle
 
     override func awakeFromNib() {
         super.awakeFromNib()
         style(self)
-        trackLine?.layer.cornerRadius = 1.5
-        trackLine?.clipsToBounds = true
-        
+
         timerLabel?.layer.masksToBounds = true
-        timerLabel?.backgroundColor = UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 0.20)
+        timerLabel?.backgroundColor = teal.withAlphaComponent(0.20)
     }
 
     func configureTap(target: Any, action: Selector) {
@@ -62,79 +70,109 @@ class MoodLogCollectionViewCell: UICollectionViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        for view in moodViews {
-            view.transform = .identity
-        }
-        stepperDots?.forEach {
-            $0.layer.removeAllAnimations()
-            $0.layer.sublayers?.filter { $0.name == "pulseLayer" }.forEach { $0.removeFromSuperlayer() }
-        }
+        for view in moodViews { view.transform = .identity }
+        barContainer?.layer.removeAllAnimations()
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        stepperDots?.forEach { $0.layer.cornerRadius = $0.bounds.height / 2 }
+        setupTimelineBar()
+        layoutSegments()
+    }
+
+    // MARK: – Single Dynamic Bar Setup
+
+    private func setupTimelineBar() {
+        guard !didSetupTimeline else { return }
+
+        // Hide the old storyboard stepper elements
+        trackLine?.isHidden = true
+        stepperDots?.forEach { $0.isHidden = true }
+        stepperDots?.first?.superview?.isHidden = true
+
+        // Find the card view reliably (first subview of contentView)
+        guard let cardView = contentView.subviews.first else { return }
+
+        // ── Gray section card (background behind the bar) ──
+        let card = UIView()
+        card.backgroundColor = UIColor.systemGray6
+        card.layer.cornerRadius = 12
+        card.clipsToBounds = true
+        card.translatesAutoresizingMaskIntoConstraints = false
+        cardView.addSubview(card)
+
+        NSLayoutConstraint.activate([
+            card.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 8),
+            card.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -8),
+            card.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -6),
+            card.heightAnchor.constraint(equalToConstant: 34)
+        ])
+        sectionCard = card
+
+        // ── Bar container (sits inside the gray card) ──
+        let container = UIView()
+        container.layer.cornerRadius = 7
+        container.clipsToBounds = true
+        container.backgroundColor = UIColor.systemGray5
+        container.translatesAutoresizingMaskIntoConstraints = false
+        card.addSubview(container)
+
+        NSLayoutConstraint.activate([
+            container.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 10),
+            container.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -10),
+            container.centerYAnchor.constraint(equalTo: card.centerYAnchor),
+            container.heightAnchor.constraint(equalToConstant: 12)
+        ])
+
+        barContainer = container
+        didSetupTimeline = true
+
+        // Force constraint resolution so container gets bounds immediately
+        contentView.layoutIfNeeded()
     }
 
     // MARK: – Configure with mood data
 
     func configureMood(_ moods: [MoodLog]) {
+        // Retry setup if it failed during awakeFromNib
+        if !didSetupTimeline { setupTimelineBar() }
+
         totalMood = moods
         let today = Date()
         todayMood = totalMood
             .filter { Calendar.current.isDate($0.date, inSameDayAs: today) }
-            .sorted { $0.date < $1.date }  // earliest first so dot order matches log order
-        updateStepperUI()
+            .sorted { $0.date < $1.date }
+        updateTimelineUI()
     }
 
-    private func updateStepperUI() {
-        guard let dots = stepperDots, !dots.isEmpty else { return }
+    private func updateTimelineUI() {
+        guard let container = barContainer else { return }
+
+        // Clear previous segments
+        segmentViews.forEach { $0.removeFromSuperview() }
+        segmentViews.removeAll()
 
         let loggedCount = todayMood.count
-        let isReady = canLogNow
 
-        for (index, dot) in dots.enumerated() {
-            dot.layer.cornerRadius = dot.bounds.height / 2
-            dot.clipsToBounds = false
-            dot.transform = .identity
-            dot.layer.sublayers?.filter { $0.name == "pulseLayer" }.forEach { $0.removeFromSuperlayer() }
-            dot.layer.shadowOpacity = 0
+        if loggedCount == 0 {
+            container.backgroundColor = UIColor.systemGray5
+        } else {
+            // Gaps between segments reveal the section card bg as thin separators
+            container.backgroundColor = .clear
 
-            if index < loggedCount {
-                // Filled dot — color matches the mood level that was logged
-                let moodLevel = todayMood[index].mood
-                let color = moodColorFor(level: moodLevel)
-                dot.backgroundColor = color
-                dot.layer.borderColor = UIColor.white.cgColor
-                dot.layer.borderWidth = 2
-                dot.transform = CGAffineTransform(scaleX: 1.15, y: 1.15)
-            } else if index == loggedCount && isReady && loggedCount < maxDailyLogs {
-                // Active dot — white fill, teal border, scaled up, glow
-                let teal = UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 1)
-                dot.backgroundColor = .white
-                dot.layer.borderColor = teal.cgColor
-                dot.layer.borderWidth = 3
-                dot.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
-
-                dot.layer.shadowColor = teal.cgColor
-                dot.layer.shadowOpacity = 0.5
-                dot.layer.shadowOffset = .zero
-                dot.layer.shadowRadius = 6
-
-                addPulseAnimation(to: dot, color: teal)
-            } else {
-                // Inactive dot — small, gray
-                dot.backgroundColor = UIColor.systemGray4
-                dot.layer.borderColor = UIColor.systemGray3.cgColor
-                dot.layer.borderWidth = 1
-                dot.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+            for mood in todayMood {
+                let segment = UIView()
+                segment.backgroundColor = tealShadeFor(level: mood.mood)
+                container.addSubview(segment)
+                segmentViews.append(segment)
             }
         }
 
-        // Timer Label update
+        // Timer label update
+        let isReady = canLogNow
         if isReady {
             timerLabel?.text = "Ready to log!"
-            timerLabel?.textColor = UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 1) // #71C9CE
+            timerLabel?.textColor = teal
         } else {
             if loggedCount >= maxDailyLogs {
                 timerLabel?.text = "All Done!"
@@ -144,43 +182,42 @@ class MoodLogCollectionViewCell: UICollectionViewCell {
                 let formatter = DateFormatter()
                 formatter.timeStyle = .short
                 timerLabel?.text = "Next log: \(formatter.string(from: nextTime))"
-                timerLabel?.textColor = UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 1)
+                timerLabel?.textColor = teal
             }
         }
+
+        // Force layout so segments get positioned immediately
+        contentView.layoutIfNeeded()
+        layoutSegments()
     }
 
-    /// Returns the appropriate color for a given mood level (0–4).
-    private func moodColorFor(level: Int) -> UIColor {
-        guard level >= 0 && level < moodColors.count else {
-            return moodColors.last ?? .systemGreen
+    /// Positions segment subviews equally inside the bar container.
+    private func layoutSegments() {
+        guard let container = barContainer, !container.bounds.isEmpty else { return }
+        let count = segmentViews.count
+        guard count > 0 else { return }
+
+        let gap: CGFloat = count > 1 ? 1.5 : 0
+        let totalGaps = CGFloat(count - 1) * gap
+        let segmentWidth = (container.bounds.width - totalGaps) / CGFloat(count)
+
+        for (i, segment) in segmentViews.enumerated() {
+            segment.frame = CGRect(
+                x: CGFloat(i) * (segmentWidth + gap),
+                y: 0,
+                width: segmentWidth,
+                height: container.bounds.height
+            )
         }
-        return moodColors[level-1]
     }
 
-    private func addPulseAnimation(to view: UIView, color: UIColor) {
-        guard view.layer.animation(forKey: "pulse") == nil else { return }
+    // MARK: – Helpers
 
-        let pulseLayer = CALayer()
-        pulseLayer.name = "pulseLayer"
-        pulseLayer.frame = view.bounds
-        pulseLayer.cornerRadius = view.bounds.height / 2
-        pulseLayer.borderColor = color.withAlphaComponent(0.4).cgColor
-        pulseLayer.borderWidth = 2
-        view.layer.addSublayer(pulseLayer)
-
-        let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
-        scaleAnimation.toValue = 2.0
-
-        let opacityAnimation = CABasicAnimation(keyPath: "opacity")
-        opacityAnimation.fromValue = 1.0
-        opacityAnimation.toValue = 0.0
-
-        let group = CAAnimationGroup()
-        group.animations = [scaleAnimation, opacityAnimation]
-        group.duration = 1.8
-        group.repeatCount = .infinity
-
-        pulseLayer.add(group, forKey: "pulse")
+    private func tealShadeFor(level: Int) -> UIColor {
+        guard level >= 1 && level <= moodTealShades.count else {
+            return moodTealShades[2]
+        }
+        return moodTealShades[level - 1]
     }
 
     var canLogNow: Bool {
