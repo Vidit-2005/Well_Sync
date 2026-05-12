@@ -120,6 +120,10 @@ final class breatheCircleViewController: UIViewController {
     private var bubbleGradientLayer = CAGradientLayer()
     private var buttonGradientLayer = CAGradientLayer()
     
+    private var isDarkMode: Bool {
+        traitCollection.userInterfaceStyle == .dark
+    }
+    
     var onSave: (() -> Void)?
     var activityItem: TodayActivityItem?
     var patient: Patient?
@@ -158,7 +162,9 @@ final class breatheCircleViewController: UIViewController {
     }
 
     private func configureUI() {
-        view.backgroundColor = UIColor(red: 0.92, green: 0.97, blue: 0.98, alpha: 1.0)
+        view.backgroundColor = isDarkMode
+            ? UIColor(red: 0.19, green: 0.20, blue: 0.22, alpha: 1.0)
+            : UIColor(red: 0.92, green: 0.97, blue: 0.98, alpha: 1.0)
         [outerRingView, innerRingView, bubbleView, dot1, dot2, dot3, timerUnderlineView].forEach {
             $0?.layer.masksToBounds = true
         }
@@ -171,39 +177,61 @@ final class breatheCircleViewController: UIViewController {
 
         [dot1, dot2, dot3].forEach { $0?.layer.cornerRadius = 4 }
 
-        outerRingView.layer.borderColor = UIColor(red: 0.45, green: 0.76, blue: 0.80, alpha: 0.35).cgColor
+        outerRingView.layer.borderColor = isDarkMode
+            ? UIColor(red: 0.21, green: 0.21, blue: 0.24, alpha: 1.0).cgColor
+            : UIColor(red: 0.45, green: 0.76, blue: 0.80, alpha: 0.35).cgColor
         outerRingView.layer.borderWidth = 1.5
-        innerRingView.layer.borderColor = UIColor(red: 0.45, green: 0.76, blue: 0.80, alpha: 0.25).cgColor
+        innerRingView.layer.borderColor = isDarkMode
+            ? UIColor(red: 0.24, green: 0.24, blue: 0.28, alpha: 1.0).cgColor
+            : UIColor(red: 0.45, green: 0.76, blue: 0.80, alpha: 0.25).cgColor
         innerRingView.layer.borderWidth = 1.0
 
-        bubbleView.layer.borderColor = UIColor.white.withAlphaComponent(0.55).cgColor
+        bubbleView.layer.borderColor = isDarkMode
+            ? UIColor.white.withAlphaComponent(0.08).cgColor
+            : UIColor.white.withAlphaComponent(0.55).cgColor
         bubbleView.layer.borderWidth = 1.2
-        bubbleView.layer.shadowColor = UIColor(red: 0.52, green: 0.80, blue: 0.84, alpha: 1.0).cgColor
+        bubbleView.layer.shadowColor = isDarkMode
+            ? UIColor.black.cgColor
+            : UIColor(red: 0.52, green: 0.80, blue: 0.84, alpha: 1.0).cgColor
         bubbleView.layer.shadowOpacity = 0.22
         bubbleView.layer.shadowRadius = 18
         bubbleView.layer.shadowOffset = CGSize(width: 0, height: 14)
 
         titleLabel.text = "4-7-8 Breathing"
         titleLabel.font = .systemFont(ofSize: 24, weight: .semibold)
-        titleLabel.textColor = UIColor(red: 0.11, green: 0.26, blue: 0.30, alpha: 1.0)
+        titleLabel.textColor = isDarkMode
+            ? UIColor.white.withAlphaComponent(0.95)
+            : UIColor(red: 0.11, green: 0.26, blue: 0.30, alpha: 1.0)
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.minimumScaleFactor = 0.72
         titleLabel.lineBreakMode = .byTruncatingTail
 
         timerLabel.font = .monospacedDigitSystemFont(ofSize: 52, weight: .bold)
-        timerLabel.textColor = UIColor(red: 0.12, green: 0.29, blue: 0.34, alpha: 1.0)
-        timerUnderlineView.backgroundColor = UIColor(red: 0.47, green: 0.81, blue: 0.85, alpha: 1.0)
+        timerLabel.textColor = isDarkMode
+            ? UIColor.white.withAlphaComponent(0.90)
+            : UIColor(red: 0.12, green: 0.29, blue: 0.34, alpha: 1.0)
+        timerUnderlineView.backgroundColor = isDarkMode
+            ? UIColor(red: 0.35, green: 0.52, blue: 0.57, alpha: 1.0)
+            : UIColor(red: 0.47, green: 0.81, blue: 0.85, alpha: 1.0)
         shiftLabel.numberOfLines = 1
-        shiftLabel.textColor = UIColor(red: 0.24, green: 0.44, blue: 0.49, alpha: 1.0)
+        shiftLabel.textColor = isDarkMode
+            ? UIColor.white.withAlphaComponent(0.65)
+            : UIColor(red: 0.24, green: 0.44, blue: 0.49, alpha: 1.0)
         guidanceLabel.numberOfLines = 1
         guidanceLabel.adjustsFontSizeToFitWidth = true
         guidanceLabel.minimumScaleFactor = 0.75
         guidanceLabel.font = .systemFont(ofSize: 18, weight: .semibold)
-        guidanceLabel.textColor = UIColor(red: 0.15, green: 0.33, blue: 0.38, alpha: 1.0)
+        guidanceLabel.textColor = isDarkMode
+            ? UIColor.white.withAlphaComponent(0.82)
+            : UIColor(red: 0.15, green: 0.33, blue: 0.38, alpha: 1.0)
 
         buttonGradientLayer.colors = [
-            UIColor(red: 0.72, green: 0.90, blue: 0.92, alpha: 1.0).cgColor,
-            UIColor(red: 0.62, green: 0.85, blue: 0.88, alpha: 1.0).cgColor
+            (isDarkMode
+             ? UIColor(red: 0.25, green: 0.29, blue: 0.33, alpha: 1.0)
+             : UIColor(red: 0.84, green: 0.94, blue: 0.98, alpha: 1.0)).cgColor,
+            (isDarkMode
+             ? UIColor(red: 0.22, green: 0.25, blue: 0.29, alpha: 1.0)
+             : UIColor(red: 0.74, green: 0.89, blue: 0.96, alpha: 1.0)).cgColor
         ]
         buttonGradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
         buttonGradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
@@ -212,18 +240,30 @@ final class breatheCircleViewController: UIViewController {
         startStopButton.layer.masksToBounds = true
 
         backgroundGradientLayer.colors = [
-            UIColor(red: 0.84, green: 0.92, blue: 0.94, alpha: 1.0).cgColor,
-            UIColor(red: 0.73, green: 0.88, blue: 0.90, alpha: 1.0).cgColor,
-            UIColor(red: 0.53, green: 0.80, blue: 0.82, alpha: 1.0).cgColor
+            (isDarkMode
+             ? UIColor(red: 0.27, green: 0.40, blue: 0.43, alpha: 1.0)
+             : UIColor(red: 0.84, green: 0.92, blue: 0.94, alpha: 1.0)).cgColor,
+            (isDarkMode
+             ? UIColor(red: 0.24, green: 0.35, blue: 0.38, alpha: 1.0)
+             : UIColor(red: 0.73, green: 0.88, blue: 0.90, alpha: 1.0)).cgColor,
+            (isDarkMode
+             ? UIColor(red: 0.18, green: 0.19, blue: 0.22, alpha: 1.0)
+             : UIColor(red: 0.53, green: 0.80, blue: 0.82, alpha: 1.0)).cgColor
         ]
         backgroundGradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
         backgroundGradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
         backgroundGradientView.layer.insertSublayer(backgroundGradientLayer, at: 0)
 
         bubbleGradientLayer.colors = [
-            UIColor(red: 0.82, green: 0.95, blue: 0.97, alpha: 0.98).cgColor,
-            UIColor(red: 0.63, green: 0.84, blue: 0.88, alpha: 0.98).cgColor,
-            UIColor(red: 0.44, green: 0.67, blue: 0.73, alpha: 1.0).cgColor
+            (isDarkMode
+             ? UIColor(red: 0.28, green: 0.37, blue: 0.40, alpha: 1.0)
+             : UIColor(red: 0.82, green: 0.95, blue: 0.97, alpha: 0.98)).cgColor,
+            (isDarkMode
+             ? UIColor(red: 0.24, green: 0.33, blue: 0.36, alpha: 1.0)
+             : UIColor(red: 0.63, green: 0.84, blue: 0.88, alpha: 0.98)).cgColor,
+            (isDarkMode
+             ? UIColor(red: 0.20, green: 0.28, blue: 0.31, alpha: 1.0)
+             : UIColor(red: 0.44, green: 0.67, blue: 0.73, alpha: 1.0)).cgColor
         ]
         bubbleGradientLayer.type = .radial
         bubbleGradientLayer.startPoint = CGPoint(x: 0.35, y: 0.28)
@@ -317,14 +357,12 @@ final class breatheCircleViewController: UIViewController {
 
     private func updateButtonTitle() {
         let title = isSessionActive ? "End Session" : "Start Session"
-        let symbol = isSessionActive ? "stop.circle" : "play.circle"
-        let symbolImage = UIImage(systemName: symbol)?
-            .withTintColor(UIColor(red: 0.09, green: 0.27, blue: 0.33, alpha: 1.0), renderingMode: .alwaysOriginal)
-        let full = NSMutableAttributedString(attachment: NSTextAttachment(image: symbolImage ?? UIImage()))
-        full.append(NSAttributedString(string: "  \(title)", attributes: [
-            .foregroundColor: UIColor(red: 0.09, green: 0.27, blue: 0.33, alpha: 1.0),
+        let full = NSAttributedString(string: title, attributes: [
+            .foregroundColor: isDarkMode
+                ? UIColor.white.withAlphaComponent(0.90)
+                : UIColor(red: 0.09, green: 0.27, blue: 0.33, alpha: 1.0),
             .font: UIFont.systemFont(ofSize: 20, weight: .medium)
-        ]))
+        ])
         startStopButton.setAttributedTitle(full, for: .normal)
     }
     
@@ -343,7 +381,9 @@ final class breatheCircleViewController: UIViewController {
         )
         navigationItem.leftBarButtonItem = close
         navigationItem.rightBarButtonItem = save
-        navigationController?.navigationBar.tintColor = UIColor(red: 0.20, green: 0.52, blue: 0.58, alpha: 1.0)
+        navigationController?.navigationBar.tintColor = isDarkMode
+            ? UIColor.white.withAlphaComponent(0.92)
+            : UIColor(red: 0.20, green: 0.52, blue: 0.58, alpha: 1.0)
     }
     
     @objc private func closeTapped() {
@@ -423,5 +463,19 @@ final class breatheCircleViewController: UIViewController {
         let m = max(0, seconds) / 60
         let s = max(0, seconds) % 60
         return String(format: "%02d:%02d", m, s)
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        guard previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle else { return }
+        backgroundGradientLayer.removeFromSuperlayer()
+        bubbleGradientLayer.removeFromSuperlayer()
+        buttonGradientLayer.removeFromSuperlayer()
+        backgroundGradientLayer = CAGradientLayer()
+        bubbleGradientLayer = CAGradientLayer()
+        buttonGradientLayer = CAGradientLayer()
+        configureUI()
+        layoutLayers()
+        apply(metrics: cycle.metrics(at: min(accumulatedElapsed, cycle.totalSessionDuration)))
     }
 }

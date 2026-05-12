@@ -55,7 +55,11 @@ final class FeatureSpotlightView: UIView {
     private let tooltipView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor { trait in
+            trait.userInterfaceStyle == .dark
+            ? UIColor.tertiarySystemBackground
+            : UIColor.white
+        }
         view.layer.cornerRadius = Style.cornerRadius
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.12
@@ -102,7 +106,11 @@ final class FeatureSpotlightView: UIView {
     private let divider: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor.systemGray4
+        view.backgroundColor = UIColor { trait in
+            trait.userInterfaceStyle == .dark
+            ? UIColor(red: 0.31, green: 0.36, blue: 0.42, alpha: 1.0)
+            : UIColor.systemGray4
+        }
         return view
     }()
 

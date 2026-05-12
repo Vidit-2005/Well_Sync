@@ -414,17 +414,17 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
     }
     
     private func isBreathingActivity(_ item: TodayActivityItem) -> Bool {
-        let name = item.activity.name.lowercased()
-        let note = (item.assignment.doctorNote ?? "").lowercased()
-        let icon = item.activity.iconName.lowercased()
-        
-        return name.contains("breath")
-        || note.contains("breath")
-        || name.contains("mindful")
-        || note.contains("mindful")
-        || name.contains("meditat")
-        || note.contains("meditat")
-        || icon.contains("lungs")
+        let combined = "\(item.activity.name) \(item.assignment.doctorNote ?? "") \(item.activity.iconName)".lowercased()
+
+        // Meditation should always use the timer workflow.
+        if combined.contains("meditat") {
+            return false
+        }
+
+        return combined.contains("breath")
+            || combined.contains("4-7-8")
+            || combined.contains("pranayama")
+            || combined.contains("box breathing")
     }
     
     private func presentBreathingController(for item: TodayActivityItem) {

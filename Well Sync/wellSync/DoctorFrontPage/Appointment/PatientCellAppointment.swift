@@ -13,6 +13,20 @@ enum AppointmentCellAction {
 }
 
 class PatientCellAppointment: UICollectionViewCell {
+    private var tagBlue: UIColor {
+        UIColor { trait in
+            trait.userInterfaceStyle == .dark
+            ? UIColor(red: 0.20, green: 0.32, blue: 0.38, alpha: 1.0)
+            : UIColor(red: 0.82, green: 0.90, blue: 0.92, alpha: 1.0)
+        }
+    }
+    private var tagText: UIColor {
+        UIColor { trait in
+            trait.userInterfaceStyle == .dark
+            ? UIColor(red: 0.88, green: 0.94, blue: 0.97, alpha: 1.0)
+            : UIColor(red: 0.43, green: 0.49, blue: 0.53, alpha: 1.0)
+        }
+    }
     
     @IBOutlet weak var profileImage: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
@@ -42,6 +56,8 @@ class PatientCellAppointment: UICollectionViewCell {
         label.layer.cornerRadius = 10
         label.layer.masksToBounds = true
         label.textAlignment = .center
+        label.backgroundColor = tagBlue
+        label.textColor = tagText
         contentView.layer.cornerRadius = 20
         
         contentView.layer.masksToBounds = true

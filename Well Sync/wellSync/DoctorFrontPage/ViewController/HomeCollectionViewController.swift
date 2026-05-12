@@ -302,7 +302,7 @@ extension HomeCollectionViewController {
             ) as! TopSectionCollectionViewCell
 
             if indexPath.row == 0 {
-                    cell.configure(title: "Active Patients", subtitle: "\(patients.count)")
+                    cell.configure(title: "Total Patients", subtitle: "\(patients.count)")
                     
             } else {
                 cell.configure(title: "Today's Session", subtitle: "\(upcoming.count+done.count+missed.count)")
@@ -403,7 +403,7 @@ extension HomeCollectionViewController {
         at indexPath: IndexPath
     ) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionHeader,
-              indexPath.section == 2 else {
+              indexPath.section == 1 else {
             return UICollectionReusableView()
         }
 
@@ -500,17 +500,7 @@ extension HomeCollectionViewController {
 
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 8
-        
-        let headerSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(40)
-        )
-        let header = NSCollectionLayoutBoundarySupplementaryItem(
-            layoutSize: headerSize,
-            elementKind: UICollectionView.elementKindSectionHeader,
-            alignment: .topLeading
-        )
-        section.boundarySupplementaryItems = [header]
+        section.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 0, bottom: 0, trailing: 0)
 
         return section
     }
@@ -528,6 +518,17 @@ extension HomeCollectionViewController {
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+
+        let headerSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(40)
+        )
+        let header = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: headerSize,
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .topLeading
+        )
+        section.boundarySupplementaryItems = [header]
         return section
     }
     
@@ -631,7 +632,7 @@ extension HomeCollectionViewController{
                     guard let self else { return nil }
                     if let header = self.collectionView.supplementaryView(
                         forElementKind: UICollectionView.elementKindSectionHeader,
-                        at: IndexPath(item: 0, section: 2)
+                        at: IndexPath(item: 0, section: 1)
                     ) {
                         return header
                     }

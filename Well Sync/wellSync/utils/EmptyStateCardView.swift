@@ -13,6 +13,26 @@ final class EmptyStateCardView: UIView {
     private let subtitleLabel = UILabel()
     private let iconView = UIImageView()
     private let cardView = UIView()
+    
+    private var cardBackgroundColor: UIColor {
+        UIColor { trait in
+            trait.userInterfaceStyle == .dark
+            ? UIColor.tertiarySystemBackground
+            : UIColor.white
+        }
+    }
+    
+    private var cardBorderColor: UIColor {
+        UIColor { trait in
+            trait.userInterfaceStyle == .dark
+            ? UIColor.clear
+            : UIColor.systemGray5
+        }
+    }
+    
+    private var cardBorderWidth: CGFloat {
+        traitCollection.userInterfaceStyle == .dark ? 0 : 1
+    }
 
     init(title: String, subtitle: String, iconSystemName: String = "tray") {
         super.init(frame: .zero)
@@ -28,12 +48,12 @@ final class EmptyStateCardView: UIView {
         backgroundColor = .clear
 
         cardView.translatesAutoresizingMaskIntoConstraints = false
-        cardView.backgroundColor = .white
+        cardView.backgroundColor = cardBackgroundColor
         cardView.layer.cornerRadius = 20
-        cardView.layer.borderWidth = 1
-        cardView.layer.borderColor = UIColor.systemGray5.cgColor
+        cardView.layer.borderWidth = cardBorderWidth
+        cardView.layer.borderColor = cardBorderColor.cgColor
         cardView.layer.shadowColor = UIColor.black.cgColor
-        cardView.layer.shadowOpacity = 0.03
+        cardView.layer.shadowOpacity = 0.10
         cardView.layer.shadowRadius = 4
         cardView.layer.shadowOffset = CGSize(width: 0, height: 2)
 
@@ -82,5 +102,12 @@ final class EmptyStateCardView: UIView {
             subtitleLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -18),
             subtitleLabel.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -20)
         ])
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        cardView.backgroundColor = cardBackgroundColor
+        cardView.layer.borderWidth = cardBorderWidth
+        cardView.layer.borderColor = cardBorderColor.cgColor
     }
 }

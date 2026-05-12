@@ -14,9 +14,19 @@ class ProfileTableViewController: BaseInsetGroupedTableViewController {
     @IBOutlet var doctorAgeLabel: UILabel!
     @IBOutlet var doctorExperienceLabel: UILabel!
     @IBOutlet var doctorMailLabel: UILabel!
+    
+    private var profileCellBlue: UIColor {
+        UIColor { trait in
+            trait.userInterfaceStyle == .dark
+            ? UIColor(red: 0.18, green: 0.28, blue: 0.34, alpha: 1.0)
+            : UIColor(red: 0.82, green: 0.90, blue: 0.92, alpha: 1.0)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        filldata();
+        filldata()
+        tableView.reloadData()
     }
     func filldata(){
         if SessionManager.shared.currentDoctor == nil{
@@ -55,5 +65,12 @@ class ProfileTableViewController: BaseInsetGroupedTableViewController {
         }
 
         navigationController?.pushViewController(detailVC, animated: true)
+    }
+    
+    override func tableView(_ tableView: UITableView,
+                            willDisplay cell: UITableViewCell,
+                            forRowAt indexPath: IndexPath) {
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
+        cell.contentView.backgroundColor = profileCellBlue
     }
 }
