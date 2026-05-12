@@ -7,7 +7,7 @@
 
 import UIKit
 
-class JournalTableViewController: UITableViewController {
+class JournalTableViewController: BaseInsetGroupedTableViewController {
     
     // MARK: - Properties
     var currentAssignmentLogs: [JournalEntry] = []  // Logs for THIS assignment only

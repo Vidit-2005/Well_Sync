@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DoctorSettingTableViewController: UITableViewController {
+class DoctorSettingTableViewController: BaseInsetGroupedTableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

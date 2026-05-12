@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AddActivityTableViewController: UITableViewController {
+class AddActivityTableViewController: BaseInsetGroupedTableViewController {
 
     @IBOutlet weak var activityListButton: UIButton!
     @IBOutlet weak var frequencyButton: UIButton!

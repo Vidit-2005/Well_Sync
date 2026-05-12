@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfileTableViewController: UITableViewController {
+class ProfileTableViewController: BaseInsetGroupedTableViewController {
 
     @IBOutlet var doctorNameLabel: UILabel!
     @IBOutlet var doctorCityLabel: UILabel!

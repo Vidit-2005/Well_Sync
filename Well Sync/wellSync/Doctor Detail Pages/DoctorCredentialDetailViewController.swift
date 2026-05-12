@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class DoctorCredentialDetailViewController: UITableViewController {
+final class DoctorCredentialDetailViewController: BaseInsetGroupedTableViewController {
 
     var screenType: DoctorCredentialScreenType = .education
 

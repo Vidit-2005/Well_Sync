@@ -7,7 +7,7 @@
 
 import UIKit
 
-class VitalLogTableViewController: UITableViewController {
+class VitalLogTableViewController: BaseInsetGroupedTableViewController {
     
     @IBOutlet weak var textField2: UITextField!
     @IBOutlet weak var label1: UILabel!

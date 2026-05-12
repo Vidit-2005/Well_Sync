@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BasicDetailsTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
+class BasicDetailsTableViewController: BaseInsetGroupedTableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
     @IBOutlet weak var DoctorImageView: UIImageView!
     @IBOutlet weak var addPhotoButton: UIButton!

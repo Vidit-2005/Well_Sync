@@ -8,7 +8,7 @@
 import StoreKit
 import UIKit
 
-final class DoctorSupportDetailViewController: UITableViewController {
+final class DoctorSupportDetailViewController: BaseInsetGroupedTableViewController {
 
     var screenType: DoctorSupportScreenType = .aboutUs
 

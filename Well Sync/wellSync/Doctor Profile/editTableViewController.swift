@@ -7,7 +7,7 @@
 
 import UIKit
 
-class editTableViewController: UITableViewController {
+class editTableViewController: BaseInsetGroupedTableViewController {
 
     @IBOutlet weak var name: UITextField!
     @IBOutlet weak var address: UITextField!

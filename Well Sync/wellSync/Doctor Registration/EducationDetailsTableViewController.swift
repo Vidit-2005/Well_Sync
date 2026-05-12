@@ -8,7 +8,7 @@
 import UIKit
 import UniformTypeIdentifiers
 
-class EducationDetailsTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIDocumentPickerDelegate {
+class EducationDetailsTableViewController: BaseInsetGroupedTableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIDocumentPickerDelegate {
     
     @IBOutlet weak var educationImageView: UIImageView!
     @IBOutlet weak var educationCertificateLabel: UILabel!

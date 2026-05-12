@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PateintSettingTableViewController: UITableViewController {
+class PateintSettingTableViewController: BaseInsetGroupedTableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

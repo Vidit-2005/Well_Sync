@@ -8,9 +8,14 @@
 import UIKit
 import Foundation
  
-class AddPatientTableViewController: UITableViewController,
+class AddPatientTableViewController: BaseInsetGroupedTableViewController,
                                      UIImagePickerControllerDelegate,
                                      UINavigationControllerDelegate {
+    
+    override var unshadowedSections: Set<Int> {
+        return [0]
+    }
+    
     var doctor: Doctor?
     
     var patient:   Patient?

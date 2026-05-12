@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PatientProfileTableViewController: UITableViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+class PatientProfileTableViewController: BaseInsetGroupedTableViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
     var patient: Patient? {
         didSet {
