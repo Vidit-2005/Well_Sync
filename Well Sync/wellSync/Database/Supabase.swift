@@ -13,6 +13,23 @@ final class AccessSupabase {
     private let supabase = SupabaseManager.shared.client
     
     private init() {}
+
+    private struct DevicePushTokenUpsert: Encodable {
+        let token: String
+        let platform: String
+        let role: String
+        let patient_id: String?
+        let doctor_id: String?
+        let is_active: Bool
+    }
+
+    private func sessionDateTimeText(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale.current
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
     
     func saveDoctor(doctor: Doctor) async throws {
         let saved: Doctor = try await supabase
@@ -22,6 +39,27 @@ final class AccessSupabase {
             .single()
             .execute()
             .value
+    }
+
+    func upsertDevicePushToken(
+        token: String,
+        role: String,
+        patientID: UUID?,
+        doctorID: UUID?
+    ) async throws {
+        let payload = DevicePushTokenUpsert(
+            token: token,
+            platform: "ios",
+            role: role,
+            patient_id: patientID?.uuidString,
+            doctor_id: doctorID?.uuidString,
+            is_active: true
+        )
+
+        try await supabase
+            .from("device_push_tokens")
+            .upsert(payload, onConflict: "token")
+            .execute()
     }
     
     func fetchDoctor(by docID: UUID) async throws -> Doctor {
@@ -165,6 +203,7 @@ final class AccessSupabase {
             .single()
             .execute()
             .value
+        NotificationCenter.default.post(name: .wellSyncActivityLogsChanged, object: nil)
         return saved
     }
     
@@ -455,6 +494,7 @@ final class AccessSupabase {
                 .insert(mappings)
                 .execute()
         }
+        NotificationCenter.default.post(name: .wellSyncMoodLogsChanged, object: nil)
     }
     func fetchMoodLogs(patientID: UUID) async throws -> [MoodLog] {
         
@@ -562,7 +602,16 @@ final class AccessSupabase {
             .single()
             .execute()
             .value
-        
+        NotificationCenter.default.post(name: .wellSyncAppointmentsChanged, object: nil)
+        if SessionManager.shared.currentRole == .doctor {
+            let scheduleText = sessionDateTimeText(from: appointment.scheduledAt)
+            _ = await PushNotificationService.shared.sendPatientRemotePush(
+                patientID: appointment.patientId,
+                title: "Session Scheduled",
+                body: "Your session is scheduled on \(scheduleText).",
+                kind: "session_scheduled"
+            )
+        }
         return saved
     }
     
@@ -580,7 +629,16 @@ final class AccessSupabase {
             .single()
             .execute()
             .value
-        
+        NotificationCenter.default.post(name: .wellSyncAppointmentsChanged, object: nil)
+        if SessionManager.shared.currentRole == .doctor, appointment.status == .scheduled {
+            let scheduleText = sessionDateTimeText(from: appointment.scheduledAt)
+            _ = await PushNotificationService.shared.sendPatientRemotePush(
+                patientID: appointment.patientId,
+                title: "Session Rescheduled",
+                body: "Your session has been rescheduled to \(scheduleText).",
+                kind: "session_rescheduled"
+            )
+        }
         return updated
     }
     
@@ -610,13 +668,22 @@ final class AccessSupabase {
         
         return data
     }
-    func deleteAppointment(id: UUID) async throws {
+    func deleteAppointment(id: UUID, patientID: UUID? = nil) async throws {
         
         try await supabase
             .from("appointments")
             .delete()
             .eq("appointment_id", value: id.uuidString)
             .execute()
+        NotificationCenter.default.post(name: .wellSyncAppointmentsChanged, object: nil)
+        if SessionManager.shared.currentRole == .doctor, let patientID {
+            _ = await PushNotificationService.shared.sendPatientRemotePush(
+                patientID: patientID,
+                title: "Session Canceled",
+                body: "Your scheduled session has been canceled.",
+                kind: "session_canceled"
+            )
+        }
     }
     // mark status
     func updateAppointmentStatus(id: UUID, status: String) async throws {
@@ -628,6 +695,7 @@ final class AccessSupabase {
             ])
             .eq("appointment_id", value: id.uuidString)
             .execute()
+        NotificationCenter.default.post(name: .wellSyncAppointmentsChanged, object: nil)
     }
     
     func markMissedAppointments(for doctorID: UUID) async throws {
@@ -641,6 +709,7 @@ final class AccessSupabase {
             .eq("status", value: "scheduled")
             .lt("scheduled_at", value: now)
             .execute()
+        NotificationCenter.default.post(name: .wellSyncAppointmentsChanged, object: nil)
     }
     
     func fetchTodayAppointmentsWithPatients(doctorID: UUID) async throws -> [AppointmentWithPatient] {
