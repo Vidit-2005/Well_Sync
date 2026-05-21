@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseCore
+import UserNotifications
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,7 +18,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         FirebaseApp.configure()
         UIViewController.swizzleGlobalBackground()
+        NotificationScheduler.shared.start()
         return true
+    }
+
+    func application(_ application: UIApplication,
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        PushNotificationService.shared.registerAPNsDeviceToken(deviceToken)
+        PushNotificationService.shared.syncCurrentUserDeviceTokenIfPossible()
+    }
+
+    func application(_ application: UIApplication,
+                     didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("APNs registration failed: \(error.localizedDescription)")
     }
 
     // MARK: UISceneSession Lifecycle
@@ -36,4 +49,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 }
-

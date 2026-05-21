@@ -532,7 +532,10 @@ extension PatientDetailCollectionViewController: ProfileCellDelegate {
                         $0.status == .scheduled &&
                         !Calendar.current.isDateInToday($0.scheduledAt)
                     }), let id = apptToDelete.appointmentId {
-                        try await AccessSupabase.shared.deleteAppointment(id: id)
+                        try await AccessSupabase.shared.deleteAppointment(
+                            id: id,
+                            patientID: patient.patientID
+                        )
                         print("✅ Appointment deleted")
                     }
                     
@@ -633,19 +636,16 @@ extension PatientDetailCollectionViewController: ProfileCellDelegate {
                             )
 
                         } else {
-                            // ✅ Different day → delete old, create new
-                            try await AccessSupabase.shared.deleteAppointment(id: oldID)
-                            print("✅ Old appointment deleted")
-
-                            let newAppointment = Appointment(
-                                appointmentId: UUID(),
-                                patientId: patient.patientID,
-                                doctorId: patient.docID,
+                            // ✅ Different day → update in place so patient receives one reschedule notification
+                            let updatedAppt = Appointment(
+                                appointmentId: oldID,
+                                patientId: selected.patientId,
+                                doctorId: selected.doctorId,
                                 scheduledAt: newDate,
                                 status: .scheduled
                             )
-                            let created = try await AccessSupabase.shared.createAppointment(newAppointment)
-                            print("✅ New appointment created: \(created.scheduledAt)")
+                            let created = try await AccessSupabase.shared.updateAppointment(updatedAppt)
+                            print("✅ Different-day reschedule: appointment updated")
 
                             self.selectedAppointment = AppointmentWithPatient(
                                 appointmentId: created.appointmentId!,

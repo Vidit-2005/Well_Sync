@@ -389,7 +389,7 @@ extension HomeCollectionViewController {
                     self.showMarkAsDoneAlert(for: item, at: indexPath)
 
                 case .notify:
-                    self.notifyPatient(patient)
+                    self.notifyPatient(for: item)
                 }
             }
             style(cell)
@@ -656,8 +656,53 @@ extension HomeCollectionViewController{
         }
     }
     
-    func notifyPatient(_ patient: Patient) {
-        print("Notify \(patient.name)")
+    func notifyPatient(for item: AppointmentWithPatient) {
+        let confirmAlert = UIAlertController(
+            title: "Notify Patient",
+            message: "Send a session reminder to \(item.patient.name)?",
+            preferredStyle: .alert
+        )
+
+        confirmAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        confirmAlert.addAction(UIAlertAction(title: "Send", style: .default) { [weak self] _ in
+            let doctorName = self?.doctor?.name ?? "your doctor"
+            Task { @MainActor in
+                let now = Date()
+                let tenMinutesFromNow = now.addingTimeInterval(10 * 60)
+                let isWithinTenMinutes = item.scheduledAt <= tenMinutesFromNow
+
+                let body: String
+                if isWithinTenMinutes {
+                    body = "Session with \(doctorName) starts in 10 minutes."
+                } else {
+                    let formatter = DateFormatter()
+                    formatter.locale = Locale.current
+                    formatter.dateStyle = .medium
+                    formatter.timeStyle = .short
+                    let scheduleText = formatter.string(from: item.scheduledAt)
+                    body = "Your session with \(doctorName) is scheduled on \(scheduleText)."
+                }
+
+                let sent = await PushNotificationService.shared.sendPatientRemotePush(
+                    patientID: item.patient.patientID,
+                    title: "Session Reminder",
+                    body: body,
+                    kind: "manual_notify"
+                )
+
+                let sentAlert = UIAlertController(
+                    title: sent ? "Notification Sent" : "Send Failed",
+                    message: sent
+                    ? "A reminder has been sent for \(item.patient.name)."
+                    : "Could not send reminder right now. Please try again.",
+                    preferredStyle: .alert
+                )
+                sentAlert.addAction(UIAlertAction(title: "OK", style: .default))
+                self?.present(sentAlert, animated: true)
+            }
+        })
+
+        present(confirmAlert, animated: true)
     }
 
     func addSessionNote(for patient: Patient) {

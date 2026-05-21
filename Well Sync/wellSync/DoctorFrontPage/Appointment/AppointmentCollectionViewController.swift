@@ -339,13 +339,24 @@ class AppointmentCollectionViewController: UICollectionViewController {
                 do {
                     let id = appointment.appointmentId   // ✅ FIXED
                     
-                    try await AccessSupabase.shared.deleteAppointment(id: id)
+                    try await AccessSupabase.shared.deleteAppointment(
+                        id: id,
+                        patientID: appointment.patient.patientID
+                    )
                     
                     try await AccessSupabase.shared
                         .clearNextSessionDate(patientID: appointment.patient.patientID)
                     
                     await MainActor.run {
+                        NotificationScheduler.shared.sendImmediatePatientCancellation(patientName: appointment.patient.name)
                         self.loadAppointments()
+                        let successAlert = UIAlertController(
+                            title: "Appointment Canceled",
+                            message: "Session with \(appointment.patient.name) has been canceled.",
+                            preferredStyle: .alert
+                        )
+                        successAlert.addAction(UIAlertAction(title: "OK", style: .default))
+                        self.present(successAlert, animated: true)
                     }
                     
                 } catch {

@@ -243,14 +243,16 @@ final class DoctorSupportDetailViewController: BaseInsetGroupedTableViewControll
     }
 
     private func requestReview() {
-        guard let scene = view.window?.windowScene ??
-                UIApplication.shared.connectedScenes.first as? UIWindowScene else {
+        let activeScene = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive }
+
+        guard let scene = view.window?.windowScene ?? activeScene else {
             showAlert(title: "Rate Us", message: "The review prompt is not available right now.")
             return
         }
 
         SKStoreReviewController.requestReview(in: scene)
-        showAlert(title: "Thanks", message: "Your feedback helps improve the Well Sync experience.")
     }
 
     private func copyIssueTemplate() {

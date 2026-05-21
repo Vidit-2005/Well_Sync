@@ -60,6 +60,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     authID:   authID,          // ← persist authID
                     doctorID: doctor.docID
                 )
+                PushNotificationService.shared.syncCurrentUserDeviceTokenIfPossible()
+                NotificationScheduler.shared.refreshForCurrentSession()
                 showDoctorDashboard(doctor: doctor)
 
             case .patient:
@@ -70,6 +72,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     authID:    authID,         // ← persist authID
                     patientID: patient.patientID
                 )
+                PushNotificationService.shared.syncCurrentUserDeviceTokenIfPossible()
+                NotificationScheduler.shared.refreshForCurrentSession()
                 showPatientDashboard(patient: patient)
 
             case .none:
@@ -173,7 +177,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {}
-    func sceneDidBecomeActive(_ scene: UIScene) {}
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        NotificationScheduler.shared.refreshForCurrentSession()
+    }
     func sceneWillResignActive(_ scene: UIScene) {}
     func sceneWillEnterForeground(_ scene: UIScene) {}
     func sceneDidEnterBackground(_ scene: UIScene) {}
