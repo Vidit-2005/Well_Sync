@@ -19,6 +19,15 @@ class insightsCollectionViewCell: UICollectionViewCell {
     }
 
     func configur(with text: String) {
-        insight.text = text
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 6 // Added line spacing for better paragraph readability
+        
+        let attributedString = NSAttributedString(string: text, attributes: [
+            .paragraphStyle: paragraphStyle,
+            .font: UIFont.preferredFont(forTextStyle: .body),
+            .foregroundColor: UIColor.label
+        ])
+        
+        insight.attributedText = attributedString
     }
 }

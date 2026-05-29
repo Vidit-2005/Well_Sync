@@ -323,7 +323,7 @@ class MoodAnalysisCollectionViewController: UICollectionViewController {
             default: height = .estimated(300)
             }
             
-            let itemSize  = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
+            let itemSize  = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: height)
             let item      = NSCollectionLayoutItem(layoutSize: itemSize)
             let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: height)
             let group     = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
@@ -383,34 +383,16 @@ class MoodAnalysisCollectionViewController: UICollectionViewController {
         Mood Logs:
         \(logsText)
 
-        Analyze the data above and provide insights in the following structure:
-
-        Mood Trend
-        Identify whether mood is improving, declining, fluctuating, or stable over time. \
-        Reference specific dates or periods if a shift is visible.
-
-        Emotional Patterns
-        Identify recurring feelings or feeling combinations. Note if certain emotions appear \
-        clustered (e.g., anxiety + sadness appearing together repeatedly).
-
-        High & Low Points
-        Call out the peak mood periods and the lowest mood periods. If a note accompanies \
-        these extremes, reference its context briefly.
-
-        Volatility
-        Is the mood consistent day-to-day, or are there sharp swings? Quantify where possible \
-        (e.g., "mood swings between 2 and 5 within the same week").
-
-        Noteworthy Signals
-        Flag anything clinically significant — prolonged low mood (3+ consecutive days below 3), \
-        emotional numbness (repeated "No note" + low mood), or a sudden drop after a high period.
+        Analyze the data above and provide a concise, single-paragraph clinical summary.
 
         Rules:
-        - Be specific — cite mood scores and dates
-        - Do NOT give advice or recommendations
-        - Do NOT use vague language like "seems" or "might"
-        - Keep each section to 2–3 sentences max
-        - If data is insufficient to determine a pattern, state that explicitly
+        - Maximum 4 sentences and 60-80 words.
+        - Write in a single, cohesive paragraph. Do not use bullet points, bold text, or sections.
+        - Identify mood trends, recurring feelings, and any significant anomalies.
+        - Be specific — cite mood scores and dates if highly relevant.
+        - Do NOT give advice or recommendations.
+        - Use professional, objective tone.
+        - If data is insufficient to determine a pattern, state that explicitly.
         """
         
         let model = SystemLanguageModel.default
