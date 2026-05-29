@@ -1,0 +1,9 @@
+{
+  "imports": {
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.49.8",
+    "jose": "npm:jose@5.9.6"
+  },
+  "compilerOptions": {
+    "lib": ["deno.window"]
+  }
+}
