@@ -16,13 +16,14 @@ class VitalsCollectionViewController: UICollectionViewController, VitalsBarRange
 
     private let allVitals: [(title: String, color: UIColor)] = [
         ("Sleep", UIColor(red: 50/255, green: 140/255, blue: 145/255, alpha: 1.0)),
-        ("Steps", UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 1.0))
+        ("Steps", UIColor(red: 50/255, green: 140/255, blue: 145/255, alpha: 1.0))
     ]
     
     private var displayedVitals: [(title: String, color: UIColor)] = [
         ("Sleep", UIColor(red: 50/255, green: 140/255, blue: 145/255, alpha: 1.0)),
-        ("Steps", UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 1.0))
+        ("Steps", UIColor(red: 50/255, green: 140/255, blue: 145/255, alpha: 1.0))
     ]
+//    UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 1.0)
     
     private var displayRange: DisplayRange = .weekly {
         didSet {
