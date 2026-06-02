@@ -23,6 +23,16 @@ class EducationDetailsTableViewController: BaseInsetGroupedTableViewController, 
     @IBOutlet weak var registrationTextField: UITextField!
     @IBOutlet weak var identityTextField: UITextField!
     var selectedFileName: String?
+    
+    struct UploadableDocument {
+        let data: Data
+        let fileName: String
+        let mimeType: String
+    }
+    
+    var educationDoc: UploadableDocument?
+    var registrationDoc: UploadableDocument?
+    var identityDoc: UploadableDocument?
     enum AttachmentType {
         case education
         case registration
@@ -95,6 +105,24 @@ class EducationDetailsTableViewController: BaseInsetGroupedTableViewController, 
            present(picker, animated: true)
        }
     
+    func resizeImage(_ image: UIImage, targetSize: CGSize = CGSize(width: 800, height: 800)) -> UIImage {
+        let size = image.size
+        let widthRatio  = targetSize.width  / size.width
+        let heightRatio = targetSize.height / size.height
+        let newSize: CGSize
+        if(widthRatio > heightRatio) {
+            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
+        } else {
+            newSize = CGSize(width: size.width * widthRatio,  height: size.height * widthRatio)
+        }
+        let rect = CGRect(origin: .zero, size: newSize)
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+        image.draw(in: rect)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage ?? image
+    }
+
     func imagePickerController(_ picker: UIImagePickerController,
                                    didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
 
@@ -105,19 +133,26 @@ class EducationDetailsTableViewController: BaseInsetGroupedTableViewController, 
                selectedImage = originalImage
             }
         guard let image = selectedImage else {return}
+        let resized = resizeImage(image)
+        guard let data = resized.jpegData(compressionQuality: 0.5) else {return}
+        let doc = UploadableDocument(data: data, fileName: "\(UUID().uuidString).jpg", mimeType: "image/jpeg")
+        
         switch currentAttachmentType {
             case .education:
                 educationImageView.image = image
+                educationDoc = doc
                 educationCertificateLabel.text = "Document Added"
                 educationCertificateLabel.textColor = .label
                 
             case .registration:
                 registrationImageView.image = image
+                registrationDoc = doc
                 registrationDocumentLabel.text = "Document Added"
                 registrationDocumentLabel.textColor = .label
                 
             case .identity:
                 identityImageView.image = image
+                identityDoc = doc
                 identityDocumentLabel.text = "Document Added"
                 identityDocumentLabel.textColor = .label
                 
@@ -146,78 +181,68 @@ class EducationDetailsTableViewController: BaseInsetGroupedTableViewController, 
            
            guard let url = urls.first else { return }
            
-           let fileName = url.lastPathComponent
-           switch currentAttachmentType {
+           let shouldAccess = url.startAccessingSecurityScopedResource()
+           defer {
+               if shouldAccess {
+                   url.stopAccessingSecurityScopedResource()
+               }
+           }
+           
+           do {
+               var data = try Data(contentsOf: url)
+               let isPDF = url.pathExtension.lowercased() == "pdf"
+               
+               if !isPDF, let image = UIImage(data: data) {
+                   let resized = resizeImage(image)
+                   if let compressedData = resized.jpegData(compressionQuality: 0.5) {
+                       data = compressedData
+                   }
+               }
+               
+               let mimeType = isPDF ? "application/pdf" : "image/jpeg"
+               let doc = UploadableDocument(data: data, fileName: url.lastPathComponent, mimeType: mimeType)
+               
+               switch currentAttachmentType {
                case .education:
-                   educationCertificateLabel.text = fileName
+                   educationDoc = doc
+                   educationCertificateLabel.text = url.lastPathComponent
                    educationCertificateLabel.textColor = .label
                    
                case .registration:
-                   registrationDocumentLabel.text = fileName
+                   registrationDoc = doc
+                   registrationDocumentLabel.text = url.lastPathComponent
                    registrationDocumentLabel.textColor = .label
                    
                case .identity:
-                   identityDocumentLabel.text = fileName
+                   identityDoc = doc
+                   identityDocumentLabel.text = url.lastPathComponent
                    identityDocumentLabel.textColor = .label
                    
                default:
                    break
                }
+           } catch {
+               print("Failed to read document data: \(error)")
+           }
            controller.dismiss(animated: true)
        }
-//@IBAction func saveButtonTapped(_ sender: Any) {
-//    let qualification = qualificationTextField.text
-//    let registrationNumber = registrationTextField.text
-//    let identityNumber = identityTextField.text
-//    let educationImage = educationImageView.image
-//    let educationImagePath = ""
-//    let identityImage = identityImageView.image
-//    let identityImageDataPath = ""
-//    let registrationImage = registrationImageView.image
-//    let registrationImagePath = ""
-//    
-//    let dateFormatter = DateFormatter()
-//    dateFormatter.dateFormat = "yyyy-MM-dd" // Adjust to your actual input format if different
-//    let parsedDOB = dob != nil ? dateFormatter.date(from: dob!) ?? Date() : Date()
-//    
-//    let doctor = Doctor(
-//        docID: UUID(), username: username,
-//        email: email,
-//        password: password,
-//        name: name,
-//        dob: parsedDOB,
-//        address: address,
-//        experience: experience,
-//        doctorImage: "",
-//        qualification: "",
-//        registrationNumber: registrationNumber,
-//        identityNumber: identityNumber,
-//        educationImageData: educationImagePath,
-//        registrationImageData: registrationImagePath,
-//        identityImageData: identityImageDataPath
-//    )
-////    let doctor = currentDoctor!
-//    print("Doctor object created")
-//    print(doctor)
-//    UserDoctors.append(doctor)
-//    print("the array of user doctors")
-//    print(UserDoctors)
-//    performSegue(withIdentifier: "successFull", sender: nil)
-//    }
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == "successFull" {
-//            self.navigationController?.isNavigationBarHidden = true
-//        }
-//    }
     @IBAction func saveButtonTapped(_ sender: Any) {
-        guard let qualification = qualificationTextField.text, !qualification.isEmpty else {
+        guard let qualification = qualificationTextField.text, !qualification.isEmpty,
+              let registrationNumber = registrationTextField.text, !registrationNumber.isEmpty,
+              let identityNumber = identityTextField.text, !identityNumber.isEmpty else {
             showAlert(message: "Please fill in all fields.")
+            return
+        }
+        
+        guard let eduDoc = educationDoc,
+              let regDoc = registrationDoc,
+              let idDoc = identityDoc else {
+            showAlert(message: "Please upload all required documents.")
             return
         }
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-//        let parsedDOB = dob != nil ? dateFormatter.date(from: dob!) ?? Date() : Date()
         
         let parsedDOB: Date
 
@@ -238,36 +263,90 @@ class EducationDetailsTableViewController: BaseInsetGroupedTableViewController, 
                     email: email,
                     password: password
                 )
-                var imagePath: String? = nil
-                if let image = docImage {
-                    imagePath = try await AccessSupabase.shared.uploadProfileImage(image)
-                }
-                // Step 2: Save doctor profile to doctors table, linking auth_id
-                let doctor = Doctor(
-                    docID: UUID(),
-                    authID: authID,           // ← Link to Supabase Auth
+                
+                let docID = UUID()
+                
+                // Step 2: Save doctor profile FIRST (without document paths)
+                // This is needed because the storage RLS policy requires the user
+                // to exist in the doctors table before allowing uploads.
+                var doctor = Doctor(
+                    docID: docID,
+                    authID: authID,
                     username: username,
                     email: email,
-                    // No password field anymore
+                    name: name,
+                    dob: parsedDOB,
+                    address: address,
+                    experience: experience,
+                    doctorImage: nil,
+                    qualification: qualification,
+                    registrationNumber: registrationNumber,
+                    identityNumber: identityNumber,
+                    educationImageData: nil,
+                    registrationImageData: nil,
+                    identityImageData: nil
+                )
+                
+                try await AccessSupabase.shared.saveDoctor(doctor: doctor)
+                
+                // Step 3: Upload profile image
+                var imagePath: String? = nil
+                if let image = docImage {
+                    let resized = resizeImage(image)
+                    if let imageData = resized.jpegData(compressionQuality: 0.5) {
+                        imagePath = try await SupabaseManager.shared.uploadDoctorRegistrationFile(
+                            data: imageData,
+                            fileName: "profile.jpg",
+                            contentType: "image/jpeg"
+                        )
+                    }
+                }
+                
+                // Step 4: Upload mandatory documents (each uses a fresh TCP connection)
+                let educationPath = try await SupabaseManager.shared.uploadDoctorRegistrationFile(
+                    data: eduDoc.data,
+                    fileName: eduDoc.fileName,
+                    contentType: eduDoc.mimeType
+                )
+                
+                let registrationPath = try await SupabaseManager.shared.uploadDoctorRegistrationFile(
+                    data: regDoc.data,
+                    fileName: regDoc.fileName,
+                    contentType: regDoc.mimeType
+                )
+                
+                let identityPath = try await SupabaseManager.shared.uploadDoctorRegistrationFile(
+                    data: idDoc.data,
+                    fileName: idDoc.fileName,
+                    contentType: idDoc.mimeType
+                )
+                
+                // Step 5: Update doctor record with document paths
+                doctor.doctorImage = imagePath
+                doctor = Doctor(
+                    docID: docID,
+                    authID: authID,
+                    username: username,
+                    email: email,
                     name: name,
                     dob: parsedDOB,
                     address: address,
                     experience: experience,
                     doctorImage: imagePath,
                     qualification: qualification,
-                    registrationNumber: registrationTextField.text,
-                    identityNumber: identityTextField.text,
-                    educationImageData: "",
-                    registrationImageData: "",
-                    identityImageData: ""
+                    registrationNumber: registrationNumber,
+                    identityNumber: identityNumber,
+                    educationImageData: educationPath,
+                    registrationImageData: registrationPath,
+                    identityImageData: identityPath
                 )
                 
-                try await AccessSupabase.shared.saveDoctor(doctor: doctor)
+                let updatedDoctor = try await AccessSupabase.shared.updateDoctor(doctor)
                 
                 await MainActor.run {
                     alert.dismiss(animated: true) {
-                        SessionManager.shared.currentDoctor = doctor
-                        SessionManager.shared.saveSession(role: .doctor, authID: authID, doctorID: doctor.docID)
+                        SessionManager.shared.currentDoctor = updatedDoctor
+                        SessionManager.shared.saveSession(role: .doctor, authID: authID, doctorID: docID)
 
                         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                            let window = scene.windows.first {
@@ -284,7 +363,8 @@ class EducationDetailsTableViewController: BaseInsetGroupedTableViewController, 
             } catch {
                 await MainActor.run {
                     alert.dismiss(animated: true) {
-                        self.showAlert(message: "Registration failed: \(error.localizedDescription)")
+                        print("Supabase Error: \(String(describing: error))")
+                        self.showAlert(message: "Registration failed: \(String(describing: error))")
                     }
                     
                 }

@@ -13,9 +13,9 @@ class BasicDetailsTableViewController: BaseInsetGroupedTableViewController, UIIm
     @IBOutlet weak var addPhotoButton: UIButton!
     
     @IBOutlet weak var nameTextField: UITextField!
-    @IBOutlet weak var dobTextField: UITextField!
+    @IBOutlet weak var dobDatePicker: UIDatePicker!
     @IBOutlet weak var addressTextField: UITextField!
-    @IBOutlet weak var experienceTextField: UITextField!
+    @IBOutlet weak var joiningDatePicker: UIDatePicker!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,14 +64,34 @@ class BasicDetailsTableViewController: BaseInsetGroupedTableViewController, UIIm
             dismiss(animated: true)
         }
     
-@IBAction func nextButtonTapped(_ sender: Any) {
-        guard let name = nameTextField.text, !name.isEmpty,
-              let dob = dobTextField.text, !dob.isEmpty,
-              let address = addressTextField.text, !address.isEmpty,
-              let experience = experienceTextField.text, !experience.isEmpty else{
-            showAlert(message: "Please fill all fields")
-            return
+    @IBAction func nextButtonTapped(_ sender: Any) {
+        // Validation is handled in shouldPerformSegue
+    }
+    
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if identifier == "basic_to_education" {
+            guard let name = nameTextField.text, !name.isEmpty,
+                  let address = addressTextField.text, !address.isEmpty else {
+                showAlert(message: "Please fill in all fields")
+                return false
+            }
+            
+            guard let docImage = DoctorImageView.image, docImage != UIImage(named: "profile") else {
+                showAlert(message: "Please upload a profile image")
+                return false
+            }
+            
+            if dobDatePicker.date >= Date() {
+                showAlert(message: "Date of Birth must be in the past")
+                return false
+            }
+            
+            if joiningDatePicker.date > Date() {
+                showAlert(message: "First joining date cannot be in the future")
+                return false
+            }
         }
+        return true
     }
     
     func showAlert(message: String){
@@ -79,6 +99,7 @@ class BasicDetailsTableViewController: BaseInsetGroupedTableViewController, UIIm
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "basic_to_education"{
             if let destinationVC = segue.destination as? EducationDetailsTableViewController{
@@ -86,11 +107,17 @@ class BasicDetailsTableViewController: BaseInsetGroupedTableViewController, UIIm
                 destinationVC.email = email
                 destinationVC.password = password
                 destinationVC.name = nameTextField.text
-                destinationVC.dob = dobTextField.text
+                
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd"
+                destinationVC.dob = dateFormatter.string(from: dobDatePicker.date)
+                
                 destinationVC.docImage = DoctorImageView.image
                 destinationVC.address = addressTextField.text
-                destinationVC.experience = Int(experienceTextField.text!)
                 
+                let calendar = Calendar.current
+                let components = calendar.dateComponents([.year], from: joiningDatePicker.date, to: Date())
+                destinationVC.experience = components.year ?? 0
             }
         }
     }

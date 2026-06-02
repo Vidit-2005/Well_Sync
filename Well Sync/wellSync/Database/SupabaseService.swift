@@ -206,6 +206,53 @@ extension SupabaseManager {
         return "\(base)/\(storagePath)"
     }
 
+    func publicURLForRegistration(for storagePath: String) -> String {
+        let base = "https://qzcfmkjvenxbrndlgowp.supabase.co/storage/v1/object/public/doctor-registration"
+        return "\(base)/\(storagePath)"
+    }
+
+    /// Uploads a file to the `doctor-registration` bucket using a fresh
+    /// ephemeral URLSession so that rapid sequential uploads don't crash
+    /// the shared HTTP/2 connection (iOS -1005 bug).
+    func uploadDoctorRegistrationFile(data: Data, fileName: String, contentType: String) async throws -> String {
+        let storagePath = "registration/\(UUID().uuidString)_\(fileName)"
+        let bucket = "doctor-registration"
+
+        let urlString = "https://qzcfmkjvenxbrndlgowp.supabase.co/storage/v1/object/\(bucket)/\(storagePath)"
+        guard let url = URL(string: urlString) else {
+            throw UploadError.imageConversionFailed
+        }
+
+        // Auth token from the current Supabase session
+        let session = try await client.auth.session
+        let token = session.accessToken
+
+        // Fresh connection every time → no HTTP/2 reuse crash
+        let ephemeral = URLSession(configuration: .ephemeral)
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue(sKey, forHTTPHeaderField: "apikey")
+        request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        request.setValue("max-age=3600", forHTTPHeaderField: "Cache-Control")
+        request.httpBody = data
+
+        let (responseData, response) = try await ephemeral.data(for: request)
+
+        guard let http = response as? HTTPURLResponse,
+              (200...299).contains(http.statusCode) else {
+            let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+            let body = String(data: responseData, encoding: .utf8) ?? ""
+            print("❌ Upload failed (\(code)): \(body)")
+            throw NSError(domain: "UploadError", code: code,
+                          userInfo: [NSLocalizedDescriptionKey: "Upload failed (\(code)): \(body)"])
+        }
+
+        print("✅ Upload succeeded: \(storagePath)")
+        return storagePath
+    }
+
     enum UploadError: LocalizedError {
         case imageConversionFailed
 

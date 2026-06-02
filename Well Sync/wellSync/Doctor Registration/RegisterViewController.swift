@@ -19,19 +19,26 @@ class RegisterViewController: UIViewController {
 
     }
 @IBAction func SignupButton(_ sender: Any) {
-        guard let username = usernameTextField.text, !username.isEmpty,
-          let email = emailTextField.text, !email.isEmpty,
-          let password = passwordTextField.text, !password.isEmpty,
-          let confirmPassword = confirmPasswordTextField.text, !confirmPassword.isEmpty else {
-        showAlert(message: "Please fill in all fields.")
-        return
+        // Validation is now handled in shouldPerformSegue to prevent auto-transition of storyboard segue
     }
     
-    guard password == confirmPassword else{
-        showAlert(message: "Passwords do not match.")
-        return
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if identifier == "register_to_basic" {
+            guard let username = usernameTextField.text, !username.isEmpty,
+                  let email = emailTextField.text, !email.isEmpty,
+                  let password = passwordTextField.text, !password.isEmpty,
+                  let confirmPassword = confirmPasswordTextField.text, !confirmPassword.isEmpty else {
+                showAlert(message: "Please fill in all fields.")
+                return false
+            }
+            
+            guard password == confirmPassword else {
+                showAlert(message: "Passwords do not match.")
+                return false
+            }
+        }
+        return true
     }
-}
     
     private func showAlert(message: String) {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)

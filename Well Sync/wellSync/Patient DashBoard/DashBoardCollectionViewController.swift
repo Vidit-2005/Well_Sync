@@ -178,6 +178,59 @@ class DashboardCollectionViewController: UICollectionViewController, UICollectio
         checkUnreadPatientNotifications()
         startNotificationPolling()
         startOnboardingIfPossible()
+
+        // Delay HealthKit check slightly to avoid racing with other presentations
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.checkHealthKitPermissions()
+        }
+    }
+
+    /// Checks HealthKit authorization every time the dashboard appears.
+    /// - If permission is not yet determined, triggers the system authorization dialog.
+    /// - If the user has already denied permission, shows an alert directing them to Settings.
+    private func checkHealthKitPermissions() {
+        guard isViewLoaded, view.window != nil else { return }
+
+        let hk = AccessHealthKit.healthKit
+
+        guard hk.isFullyAuthorized() == false else { return }
+
+        // Try requesting — iOS will show the system dialog if status is .notDetermined.
+        // If the user already denied, requestAuthorization completes immediately without a prompt.
+        hk.requestPermissionWithCompletion { [weak self] success in
+            guard let self = self,
+                  self.isViewLoaded,
+                  self.view.window != nil else { return }
+
+            // Re-check after the request completes
+            if !hk.isFullyAuthorized() {
+                self.showHealthKitSettingsAlert()
+            }
+        }
+    }
+
+    private func showHealthKitSettingsAlert() {
+        // Ensure the VC is still on screen and no other modal is showing
+        guard isViewLoaded, view.window != nil,
+              presentedViewController == nil else { return }
+
+        let alert = UIAlertController(
+            title: "Health Access Required",
+            message: "Well Sync needs access to your Health data (sleep & steps) to track your vitals. Please enable access in Settings → Health → Data Access.",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Open Settings", style: .default) { _ in
+            if let url = URL(string: "x-apple-health://") {
+                UIApplication.shared.open(url)
+            } else if let url = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(url)
+            }
+        })
+
+        alert.addAction(UIAlertAction(title: "Later", style: .cancel))
+
+        present(alert, animated: true)
     }
 
     override func viewWillDisappear(_ animated: Bool) {

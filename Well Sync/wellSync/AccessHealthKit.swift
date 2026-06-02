@@ -26,13 +26,52 @@ class AccessHealthKit {
               let stepType  = HKObjectType.quantityType(forIdentifier: .stepCount) else { return }
 
         let readTypes:  Set<HKObjectType>  = [stepType, sleepType]
-        let writeTypes: Set<HKSampleType>  = [sleepType]
+        let writeTypes: Set<HKSampleType>  = [sleepType, stepType]
 
         healthStore.requestAuthorization(toShare: writeTypes, read: readTypes) { success, error in
             if success {
                 print("HealthKit permission granted")
             } else {
                 print("Permission error: \(error?.localizedDescription ?? "unknown")")
+            }
+        }
+    }
+
+    /// Checks whether HealthKit write permissions are granted for sleep and steps.
+    /// - Returns: `true` if both sleep and step write access are authorized.
+    ///
+    /// Note: HealthKit does NOT expose read authorization status for privacy reasons,
+    /// so we can only reliably check write (sharing) authorization.
+    func isFullyAuthorized() -> Bool {
+        guard HKHealthStore.isHealthDataAvailable() else { return false }
+        guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis),
+              let stepType  = HKObjectType.quantityType(forIdentifier: .stepCount) else { return false }
+
+        let sleepAuth = healthStore.authorizationStatus(for: sleepType)
+        let stepAuth  = healthStore.authorizationStatus(for: stepType)
+
+        return sleepAuth == .sharingAuthorized && stepAuth == .sharingAuthorized
+    }
+
+    /// Requests HealthKit authorization and calls the completion handler with the result.
+    /// Use this to re-prompt when permissions are missing.
+    func requestPermissionWithCompletion(_ completion: @escaping (Bool) -> Void) {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            completion(false)
+            return
+        }
+        guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis),
+              let stepType  = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+            completion(false)
+            return
+        }
+
+        let readTypes:  Set<HKObjectType>  = [stepType, sleepType]
+        let writeTypes: Set<HKSampleType>  = [sleepType, stepType]
+
+        healthStore.requestAuthorization(toShare: writeTypes, read: readTypes) { success, error in
+            DispatchQueue.main.async {
+                completion(success)
             }
         }
     }
@@ -219,7 +258,7 @@ class AccessHealthKit {
 
                     if logsToWriteToHK.isEmpty {
                         print("DB→HK: nothing new to write")
-                    } else {
+                    } else if self.isFullyAuthorized() {
                         for log in logsToWriteToHK {
                             try await self.saveSleepToHealthKit(
                                 startTime: log.start_time,
@@ -227,6 +266,8 @@ class AccessHealthKit {
                             )
                         }
                         print("DB→HK: wrote \(logsToWriteToHK.count) records to HealthKit")
+                    } else {
+                        print("DB→HK: skipping sleep write — HealthKit write permission not granted")
                     }
 
                 } catch {
@@ -236,42 +277,73 @@ class AccessHealthKit {
         }
     }
 
-    // MARK: - Sync Steps: HealthKit → Supabase (One-Way)
+    // MARK: - Sync Steps: HealthKit ↔ Supabase (Two-Way)
 
     func syncStepsToSupabase(patientID: UUID, daysBack: Int) {
 
+        let calendar  = Calendar.current
         let endDate   = Date()
-        let startDate = Calendar.current.date(byAdding: .day, value: -daysBack, to: endDate)!
+        let startDate = calendar.date(byAdding: .day, value: -daysBack, to: endDate)!
 
-        getSteps(from: startDate, to: endDate) { hkStepsByDay in
-
-            print("📱 HealthKit days with steps:", hkStepsByDay.count)
-            guard !hkStepsByDay.isEmpty else {
-                print("❌ No steps data from HealthKit")
-                return
-            }
+        getSteps(from: startDate, to: endDate) { [weak self] hkStepsByDay in
+            guard let self = self else { return }
 
             Task {
                 do {
-                    let calendar = Calendar.current
-
-                    var dedupedByDay: [Date: Double] = [:]
+                    // --- Aggregate HealthKit steps by day ---
+                    var hkByDay: [Date: Double] = [:]
                     for (date, steps) in hkStepsByDay {
                         let day = calendar.startOfDay(for: date)
-                        dedupedByDay[day, default: 0] += steps
+                        hkByDay[day, default: 0] += steps
                     }
+                    print("📱 HealthKit days with steps:", hkByDay.count)
 
-                    let logs: [StepsVital] = dedupedByDay.map { (date, steps) in
-                        StepsVital(
+                    // --- Fetch existing DB records ---
+                    let dbLogs = try await AccessSupabase.shared.fetchStepsLogs(patient_id: patientID)
+                    print("🗄️ Supabase step records:", dbLogs.count)
+
+                    // --- HK → DB: insert only days not already in DB ---
+                    let dbDays = Set(dbLogs.map { calendar.startOfDay(for: $0.log_date) })
+
+                    let logsToInsert: [StepsVital] = hkByDay.compactMap { (day, steps) in
+                        guard !dbDays.contains(day) else { return nil }
+                        return StepsVital(
                             id:         nil,
                             patient_id: patientID,
-                            log_date:   date,
+                            log_date:   day,
                             step_count: steps
                         )
                     }
 
-                    try await AccessSupabase.shared.saveStepsLogs(logs)
-                    print("Synced \(logs.count) step logs to Supabase")
+                    if logsToInsert.isEmpty {
+                        print("HK→DB: nothing new to insert for steps")
+                    } else {
+                        try await AccessSupabase.shared.saveStepsLogs(logsToInsert)
+                        print("HK→DB: inserted \(logsToInsert.count) step records")
+                    }
+
+                    // --- DB → HK: write back days that exist in DB but not in HK ---
+                    let hkDays = Set(hkByDay.keys)
+
+                    let logsToWriteToHK = dbLogs.filter { db in
+                        let day = calendar.startOfDay(for: db.log_date)
+                        guard day >= startDate else { return false }
+                        return !hkDays.contains(day)
+                    }
+
+                    if logsToWriteToHK.isEmpty {
+                        print("DB→HK: nothing new to write for steps")
+                    } else if self.isFullyAuthorized() {
+                        for log in logsToWriteToHK {
+                            try await self.saveStepsToHealthKit(
+                                stepCount: log.step_count,
+                                date: log.log_date
+                            )
+                        }
+                        print("DB→HK: wrote \(logsToWriteToHK.count) step records to HealthKit")
+                    } else {
+                        print("DB→HK: skipping steps write — HealthKit write permission not granted")
+                    }
 
                 } catch {
                     print("Steps sync error:", error)
@@ -308,6 +380,37 @@ class AccessHealthKit {
         )
 
         try await withCheckedThrowingContinuation { cont in
+            healthStore.save(sample) { success, error in
+                if success {
+                    cont.resume()
+                } else {
+                    cont.resume(throwing: error ?? NSError(domain: "HK", code: 2))
+                }
+            }
+        }
+    }
+
+    // MARK: - Write Steps Record to HealthKit
+
+    func saveStepsToHealthKit(stepCount: Double, date: Date) async throws {
+        guard let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount) else {
+            throw NSError(domain: "HK", code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "Step count type unavailable"])
+        }
+
+        let calendar  = Calendar.current
+        let startOfDay = calendar.startOfDay(for: date)
+        let endOfDay   = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+
+        let quantity = HKQuantity(unit: .count(), doubleValue: stepCount)
+        let sample   = HKQuantitySample(
+            type:      stepType,
+            quantity:  quantity,
+            start:     startOfDay,
+            end:       endOfDay
+        )
+
+        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
             healthStore.save(sample) { success, error in
                 if success {
                     cont.resume()
