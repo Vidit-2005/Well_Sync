@@ -61,17 +61,6 @@ class BaseInsetGroupedTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let navigationBar = navigationController?.navigationBar {
-            let standardAppearance = UINavigationBarAppearance()
-            standardAppearance.configureWithDefaultBackground()
-            
-            let scrollEdgeAppearance = UINavigationBarAppearance()
-            scrollEdgeAppearance.configureWithTransparentBackground()
-            
-            navigationBar.standardAppearance = standardAppearance
-            navigationBar.scrollEdgeAppearance = scrollEdgeAppearance
-            navigationBar.compactAppearance = standardAppearance
-        }
     }
     
     override func viewDidLayoutSubviews() {

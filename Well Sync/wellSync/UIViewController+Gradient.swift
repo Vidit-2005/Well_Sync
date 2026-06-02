@@ -26,16 +26,15 @@ class GlobalGradientBackgroundView: UIView {
     }
     
     private func setupGradient() {
-        // App's primary teal/accent color (#71C9CE)
         let themeColor = UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 1.0)
         
         gradientLayer.colors = [
-            themeColor.withAlphaComponent(0.40).cgColor, // 40% opacity at top
-            themeColor.withAlphaComponent(0.00).cgColor  // 0% opacity at bottom
+            themeColor.withAlphaComponent(0.40).cgColor,
+            themeColor.withAlphaComponent(0.00).cgColor
         ]
         gradientLayer.locations = [0.0, 1.0]
-        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0) // Top
-        gradientLayer.endPoint = CGPoint(x: 0.5, y: 0.7)   // Bottom
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0)
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 0.7)
         
         self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.isUserInteractionEnabled = false

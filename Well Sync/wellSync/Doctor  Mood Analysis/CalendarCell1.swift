@@ -27,6 +27,10 @@ class CalendarCell1: UICollectionViewCell,
                      FSCalendarDelegate,
                      FSCalendarDelegateAppearance {
 
+    // App theme teal (#71C9CE) and a darker shade for text readability
+    private let themeColor = UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 1.0)
+    private let themeDarkText = UIColor(red: 50/255, green: 140/255, blue: 145/255, alpha: 1.0)
+
     @IBOutlet weak var calendar: FSCalendar!
 
     var onHeightChange: ((CGFloat) -> Void)?
@@ -107,15 +111,15 @@ class CalendarCell1: UICollectionViewCell,
         calendar.appearance.titleWeekendColor   = UIColor.label
 
         calendar.appearance.selectionColor      = .clear
-        calendar.appearance.titleSelectionColor = UIColor.systemIndigo
+        calendar.appearance.titleSelectionColor = themeDarkText
 
         calendar.appearance.todayColor          = .clear
-        calendar.appearance.titleTodayColor     = UIColor.systemIndigo
+        calendar.appearance.titleTodayColor     = themeDarkText
 
         calendar.appearance.borderRadius = 1.0
         calendar.appearance.eventOffset  = .zero
 
-        calendar.select(nil)
+        calendar.allowsSelection = false
         calendar.setCurrentPage(Date(), animated: false)
     }
 

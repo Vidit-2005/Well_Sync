@@ -14,6 +14,10 @@ class ScheduleViewController: UIViewController, FSCalendarDelegate, FSCalendarDa
     let calendar = FSCalendar()
     let timePicker = UIDatePicker()
     let scheduleButton = UIButton()
+
+    // App theme teal (#71C9CE) and a darker shade for text readability
+    private let themeColor = UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 1.0)
+    private let themeDarkText = UIColor(red: 50/255, green: 140/255, blue: 145/255, alpha: 1.0)
     
     var onScheduleConfirmed: ((Date) -> Void)?
     var onScheduleCancelled: (() -> Void)?
@@ -145,12 +149,12 @@ class ScheduleViewController: UIViewController, FSCalendarDelegate, FSCalendarDa
         
         calendar.appearance.headerDateFormat = "MMMM yyyy"
         calendar.appearance.headerTitleFont = .systemFont(ofSize: 16, weight: .semibold)
-        calendar.appearance.headerTitleColor = .systemIndigo
+        calendar.appearance.headerTitleColor = themeDarkText
         calendar.appearance.headerMinimumDissolvedAlpha = 0
         
         calendar.appearance.weekdayFont = .systemFont(ofSize: 12, weight: .medium)
         calendar.appearance.titleFont = .systemFont(ofSize: 14)
-        calendar.appearance.weekdayTextColor = .systemIndigo
+        calendar.appearance.weekdayTextColor = themeDarkText
         
         calendar.appearance.titleFont = .systemFont(ofSize: 15, weight: .regular)
            calendar.appearance.titleDefaultColor = .label

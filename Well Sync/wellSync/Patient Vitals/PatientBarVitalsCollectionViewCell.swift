@@ -324,8 +324,8 @@ class PatientBarVitalsCollectionViewCell: UICollectionViewCell {
     private let hk = AccessHealthKit.healthKit
 
     private let visuals: [(icon: String, color: UIColor)] = [
-        ("powersleep",      .systemIndigo),
-        ("shoeprints.fill", .systemOrange)
+        ("powersleep",      UIColor(red: 50/255, green: 140/255, blue: 145/255, alpha: 1.0)),
+        ("shoeprints.fill", UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 1.0))
     ]
 
     override func awakeFromNib() {

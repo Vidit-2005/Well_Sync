@@ -1,4 +1,5 @@
 import UIKit
+import AVFoundation
 class TimerRingView: UIView {
 
     private let trackLayer = CAShapeLayer()
@@ -65,6 +66,7 @@ class timerViewController: UIViewController {
     @IBOutlet weak var playButton: UIButton!
     var isRunning = false
     var isPaused = false
+    var audioPlayer: AVAudioPlayer?
     
     var onSave: (() -> Void)?
     var activityItem: TodayActivityItem?
@@ -87,7 +89,20 @@ class timerViewController: UIViewController {
         durationSelector.datePickerMode = .countDownTimer
         doctorsRecommandation.text = activityItem?.assignment.doctorNote
 
+        setupAudioPlayer()
         updateUI()
+    }
+
+    private func setupAudioPlayer() {
+        if let soundURL = Bundle.main.url(forResource: "sound", withExtension: "mp3") {
+            do {
+                audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+                audioPlayer?.numberOfLoops = -1 // loop endlessly
+                audioPlayer?.prepareToPlay()
+            } catch {
+                print("Error loading sound file: \(error.localizedDescription)")
+            }
+        }
     }
 
     // MARK: - Start / Stop / Resume
@@ -192,6 +207,9 @@ class timerViewController: UIViewController {
                 timer?.invalidate()
                 timer = nil
 
+                audioPlayer?.stop()
+                audioPlayer?.currentTime = 0
+
                 isRunning = false
                 isPaused = false
 
@@ -228,6 +246,7 @@ class timerViewController: UIViewController {
                 durationSelector.isUserInteractionEnabled = false
 
                 startTimer()
+                audioPlayer?.play()
             }
         }
 
@@ -241,6 +260,7 @@ class timerViewController: UIViewController {
                 isPaused = false
                 sender.setImage(UIImage(systemName: "pause.fill"), for: .normal)
                 startTimer()
+                audioPlayer?.play()
             } else {
                 // ⏸ PAUSE
                 timer?.invalidate()
@@ -248,6 +268,7 @@ class timerViewController: UIViewController {
 
                 isPaused = true
                 sender.setImage(UIImage(systemName: "play.fill"), for: .normal)
+                audioPlayer?.pause()
             }
         }
 
@@ -266,6 +287,9 @@ class timerViewController: UIViewController {
                 // ✅ Completed
                 timer?.invalidate()
                 timer = nil
+
+                audioPlayer?.stop()
+                audioPlayer?.currentTime = 0
 
                 isRunning = false
                 isPaused = false
@@ -324,6 +348,7 @@ class timerViewController: UIViewController {
 
         timer?.invalidate()
         isRunning = false
+        audioPlayer?.stop()
 
         Task {
             do {
@@ -370,6 +395,7 @@ class timerViewController: UIViewController {
     // MARK: - Close
     @IBAction func close(_ sender: UIBarButtonItem) {
         timer?.invalidate()
+        audioPlayer?.stop()
         dismiss(animated: true)
     }
 }

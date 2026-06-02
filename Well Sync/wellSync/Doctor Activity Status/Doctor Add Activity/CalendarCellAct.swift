@@ -11,6 +11,10 @@ class CalendarCellAct: UICollectionViewCell,
                        FSCalendarDelegate,
                        FSCalendarDelegateAppearance {
 
+    // App theme teal (#71C9CE) and a darker shade for text readability
+    private let themeColor = UIColor(red: 113/255, green: 201/255, blue: 206/255, alpha: 1.0)
+    private let themeDarkText = UIColor(red: 50/255, green: 140/255, blue: 145/255, alpha: 1.0)
+
     @IBOutlet weak var calendar: FSCalendar!
 
     var onHeightChange: ((CGFloat) -> Void)?
@@ -56,7 +60,7 @@ class CalendarCellAct: UICollectionViewCell,
         calendar.appearance.titleDefaultColor     = UIColor.label
         calendar.appearance.titleWeekendColor     = UIColor.label
 
-        calendar.appearance.selectionColor        = UIColor.systemIndigo
+        calendar.appearance.selectionColor        = themeColor
         calendar.appearance.titleSelectionColor   = UIColor.label
 
         calendar.appearance.todayColor            = .clear
@@ -95,13 +99,13 @@ class CalendarCellAct: UICollectionViewCell,
     func calendar(_ calendar: FSCalendar,
                   appearance: FSCalendarAppearance,
                   fillTodayColorFor date: Date) -> UIColor? {
-        UIColor.systemIndigo.withAlphaComponent(0.15)
+        themeColor.withAlphaComponent(0.15)
     }
 
     func calendar(_ calendar: FSCalendar,
                   appearance: FSCalendarAppearance,
                   fillSelectionColorFor date: Date) -> UIColor? {
-        UIColor.systemIndigo.withAlphaComponent(0.7)
+        themeColor.withAlphaComponent(0.7)
     }
 
     // MARK: - Height change (week ↔ month scope animation)
