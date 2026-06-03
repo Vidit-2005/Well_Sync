@@ -9,12 +9,65 @@ import UIKit
 
 class DoctorSettingTableViewController: BaseInsetGroupedTableViewController {
 
+    private var isRemindersEnabled = true
+    private var isDarkModeEnabled = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.largeTitleDisplayMode = .never
+        
+        isRemindersEnabled = UserDefaults.standard.object(forKey: "wellsync_doctor_reminders_enabled") as? Bool ?? true
+        isDarkModeEnabled = UserDefaults.standard.object(forKey: "wellsync_theme_dark_mode") as? Bool ?? false
     }
 
-    // MARK: - Table View Delegate
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+
+    // MARK: - Table View DataSource / Delegate
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        
+        if indexPath.section == 0 && indexPath.row == 1 {
+            // Theme row
+            if let themeSwitch = cell.contentView.subviews.compactMap({ $0 as? UISwitch }).first {
+                themeSwitch.isOn = isDarkModeEnabled
+                themeSwitch.removeTarget(nil, action: nil, for: .allEvents)
+                themeSwitch.addTarget(self, action: #selector(themeSwitchChanged(_:)), for: .valueChanged)
+            }
+        } else if indexPath.section == 1 && indexPath.row == 0 {
+            // Reminders Enable row
+            if let reminderSwitch = cell.contentView.subviews.compactMap({ $0 as? UISwitch }).first {
+                reminderSwitch.isOn = isRemindersEnabled
+                reminderSwitch.removeTarget(nil, action: nil, for: .allEvents)
+                reminderSwitch.addTarget(self, action: #selector(reminderSwitchChanged(_:)), for: .valueChanged)
+            }
+        }
+        
+        return cell
+    }
+
+    @objc private func reminderSwitchChanged(_ sender: UISwitch) {
+        isRemindersEnabled = sender.isOn
+        UserDefaults.standard.set(isRemindersEnabled, forKey: "wellsync_doctor_reminders_enabled")
+        
+        // Sync token with Supabase (updates active state)
+        PushNotificationService.shared.syncCurrentUserDeviceTokenIfPossible()
+        
+        // Refresh local scheduling
+        NotificationScheduler.shared.refreshForCurrentSession()
+    }
+
+    @objc private func themeSwitchChanged(_ sender: UISwitch) {
+        isDarkModeEnabled = sender.isOn
+        UserDefaults.standard.set(isDarkModeEnabled, forKey: "wellsync_theme_dark_mode")
+        
+        // Override user interface style for the window
+        if let window = view.window {
+            window.overrideUserInterfaceStyle = isDarkModeEnabled ? .dark : .light
+        }
+    }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 

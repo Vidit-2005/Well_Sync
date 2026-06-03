@@ -659,7 +659,7 @@ extension HomeCollectionViewController{
     func notifyPatient(for item: AppointmentWithPatient) {
         let confirmAlert = UIAlertController(
             title: "Notify Patient",
-            message: "Send a session reminder to \(item.patient.name)?",
+            message: "Send a missed session notification to \(item.patient.name)?",
             preferredStyle: .alert
         )
 
@@ -667,21 +667,7 @@ extension HomeCollectionViewController{
         confirmAlert.addAction(UIAlertAction(title: "Send", style: .default) { [weak self] _ in
             let doctorName = self?.doctor?.name ?? "your doctor"
             Task { @MainActor in
-                let now = Date()
-                let tenMinutesFromNow = now.addingTimeInterval(10 * 60)
-                let isWithinTenMinutes = item.scheduledAt <= tenMinutesFromNow
-
-                let body: String
-                if isWithinTenMinutes {
-                    body = "Session with \(doctorName) starts in 10 minutes."
-                } else {
-                    let formatter = DateFormatter()
-                    formatter.locale = Locale.current
-                    formatter.dateStyle = .medium
-                    formatter.timeStyle = .short
-                    let scheduleText = formatter.string(from: item.scheduledAt)
-                    body = "Your session with \(doctorName) is scheduled on \(scheduleText)."
-                }
+                let body = "You missed your session today. Please contact your psychologist to reschedule."
 
                 let dashboardSaved: Bool
                 let pushDelivery: PushNotificationService.DeliveryResult
@@ -690,7 +676,7 @@ extension HomeCollectionViewController{
                     _ = try await AccessSupabase.shared.createPatientNotification(
                         patientID: item.patient.patientID,
                         doctorID: item.doctorId,
-                        title: "Session Reminder",
+                        title: "Missed Session",
                         body: body,
                         kind: "manual_notify"
                     )
@@ -702,7 +688,7 @@ extension HomeCollectionViewController{
 
                 pushDelivery = await PushNotificationService.shared.sendPatientRemotePush(
                     patientID: item.patient.patientID,
-                    title: "Session Reminder",
+                    title: "Missed Session",
                     body: body,
                     kind: "manual_notify"
                 )

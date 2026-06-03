@@ -119,10 +119,24 @@ class BaseInsetGroupedTableViewController: UITableViewController {
     // MARK: - Cell Rendering
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         cell.backgroundColor = .clear
-        cell.contentView.backgroundColor = .secondarySystemGroupedBackground
         
-        // Remove any individual cell shadows
+        let clearView = UIView()
+        clearView.backgroundColor = .clear
+        cell.backgroundView = clearView
+        cell.selectedBackgroundView = clearView
+        
+        if #available(iOS 14.0, *) {
+            cell.automaticallyUpdatesBackgroundConfiguration = false
+            cell.backgroundConfiguration = .clear()
+        }
+        
+        // Remove any storyboard-defined individual cell shadows and corner radius
+        cell.layer.cornerRadius = 0
         cell.layer.shadowOpacity = 0
+        cell.layer.shadowRadius = 0
+        cell.layer.shadowOffset = .zero
+        
+        cell.contentView.backgroundColor = .secondarySystemGroupedBackground
         cell.contentView.layer.masksToBounds = true
         
         // Handle unshadowed sections (like profile headers)
@@ -179,16 +193,44 @@ final class NotificationScheduler: NSObject {
             switch SessionManager.shared.currentRole {
             case .doctor:
                 guard let doctorID = SessionManager.shared.currentDoctor?.docID else { return }
-                await scheduleDoctorAppointmentReminders(for: doctorID)
+                let remindersEnabled = UserDefaults.standard.object(forKey: "wellsync_doctor_reminders_enabled") as? Bool ?? true
+                if remindersEnabled {
+                    await scheduleDoctorAppointmentReminders(for: doctorID)
+                    await MainActor.run {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
+                } else {
+                    await clearDoctorNotificationRequests()
+                }
                 clearPatientNotificationRequests()
             case .patient:
                 guard let patientID = SessionManager.shared.currentPatient?.patientID else { return }
-                await schedulePatientMoodReminders()
-                await schedulePatientIncompleteActivityReminder(for: patientID)
-                await schedulePatientSessionMorningReminder(for: patientID)
-                clearDoctorNotificationRequests()
+                let remindersEnabled = UserDefaults.standard.object(forKey: "wellsync_patient_reminders_enabled") as? Bool ?? true
+                if remindersEnabled {
+                    let moodLogEnabled = UserDefaults.standard.object(forKey: "wellsync_patient_mood_log_enabled") as? Bool ?? true
+                    if moodLogEnabled {
+                        await schedulePatientMoodReminders()
+                    } else {
+                        clearPatientMoodNotificationRequests()
+                    }
+                    
+                    let activityEnabled = UserDefaults.standard.object(forKey: "wellsync_patient_activity_enabled") as? Bool ?? true
+                    if activityEnabled {
+                        await schedulePatientIncompleteActivityReminder(for: patientID)
+                    } else {
+                        clearPatientCompletionNotificationRequests()
+                    }
+                    
+                    await schedulePatientSessionMorningReminder(for: patientID)
+                    await MainActor.run {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
+                } else {
+                    clearPatientNotificationRequests()
+                }
+                await clearDoctorNotificationRequests()
             case .none:
-                clearAllWellSyncNotifications()
+                await clearAllWellSyncNotifications()
             }
         }
     }
@@ -243,11 +285,22 @@ final class NotificationScheduler: NSObject {
 
     private func scheduleDoctorAppointmentReminders(for doctorID: UUID) async {
         do {
-            let appointments = try await AccessSupabase.shared.fetchAllAppointmentsWithPatients(doctorID: doctorID)
-                .filter { $0.status == .scheduled && $0.scheduledAt > Date() }
+            let allApps = try await AccessSupabase.shared.fetchAllAppointmentsWithPatients(doctorID: doctorID)
+            let now = Date()
+            
+            // Clean up notified keys for past appointments older than 24 hours
+            let oneDayAgo = now.addingTimeInterval(-24 * 60 * 60)
+            let pastApps = allApps.filter { $0.scheduledAt <= oneDayAgo }
+            for app in pastApps {
+                let key = "wellsync_notified_doctor_appointment_\(app.appointmentId.uuidString)"
+                UserDefaults.standard.removeObject(forKey: key)
+            }
+
+            let appointments = allApps
+                .filter { $0.status == .scheduled && $0.scheduledAt > now }
                 .prefix(30)
 
-            clearDoctorNotificationRequests()
+            await clearDoctorNotificationRequests()
             var seenSlots = Set<String>()
 
             for appointment in appointments {
@@ -258,24 +311,38 @@ final class NotificationScheduler: NSObject {
                 let slotKey = "\(appointment.patientId.uuidString)-\(slot.year ?? 0)-\(slot.month ?? 0)-\(slot.day ?? 0)-\(slot.hour ?? 0)-\(slot.minute ?? 0)"
                 guard seenSlots.insert(slotKey).inserted else { continue }
 
-                let now = Date()
                 let appointmentTime = appointment.scheduledAt
-                guard appointmentTime > now else { continue }
+                let appointmentId = appointment.appointmentId.uuidString
+                let notifiedKey = "wellsync_notified_doctor_appointment_\(appointmentId)"
 
                 let intendedFireDate = appointmentTime.addingTimeInterval(-5 * 60)
-                guard intendedFireDate > now else { continue }
-
+                let trigger: UNNotificationTrigger
                 let content = UNMutableNotificationContent()
                 content.title = "Appointment Reminder"
-                content.body = "Session with \(appointment.patient.name) in 5 minutes."
                 content.sound = .default
 
-                let triggerDate = Calendar.current.dateComponents(
-                    [.year, .month, .day, .hour, .minute, .second],
-                    from: intendedFireDate
-                )
-                let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
-                let identifier = "doctor.appointment.\(appointment.appointmentId.uuidString)"
+                if intendedFireDate > now {
+                    content.body = "Session with \(appointment.patient.name) in 5 minutes."
+                    let triggerDate = Calendar.current.dateComponents(
+                        [.year, .month, .day, .hour, .minute, .second],
+                        from: intendedFireDate
+                    )
+                    trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
+                    // Mark as scheduled so we don't trigger the fallback on subsequent refreshes
+                    UserDefaults.standard.set(true, forKey: notifiedKey)
+                } else {
+                    // Check if we already scheduled/fired a notification for this appointment.
+                    // If so, skip the fallback to avoid duplicate "starting soon" alerts.
+                    guard !UserDefaults.standard.bool(forKey: notifiedKey) else { continue }
+                    
+                    content.body = "Session with \(appointment.patient.name) is starting soon."
+                    trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2, repeats: false)
+                    
+                    // Mark as notified immediately
+                    UserDefaults.standard.set(true, forKey: notifiedKey)
+                }
+
+                let identifier = "doctor.appointment.\(appointmentId)"
                 let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
 
                 center.add(request) { error in
@@ -378,6 +445,9 @@ final class NotificationScheduler: NSObject {
             guard let appointmentID = appointment.appointmentId?.uuidString else { return }
             let reminderHandledID = "\(appointmentID)-\(Int(appointment.scheduledAt.timeIntervalSince1970))"
 
+            let doctor = try await AccessSupabase.shared.fetchDoctor(by: appointment.doctorId)
+            let psychologistName = doctor.name ?? "your psychologist"
+
             let calendar = Calendar.current
             let morningReminderDate = calendar.date(
                 bySettingHour: 8,
@@ -386,41 +456,75 @@ final class NotificationScheduler: NSObject {
                 of: appointment.scheduledAt
             ) ?? appointment.scheduledAt
 
-            let reminderDate: Date
+            let appointmentTimeFormatter = DateFormatter()
+            appointmentTimeFormatter.locale = Locale.current
+            appointmentTimeFormatter.dateStyle = .none
+            appointmentTimeFormatter.timeStyle = .short
+            let exactTimeText = appointmentTimeFormatter.string(from: appointment.scheduledAt)
+
+            // 1. Morning Reminder (8:00 AM)
+            var reminderDate: Date? = nil
             if morningReminderDate <= now {
-                guard UserDefaults.standard.string(forKey: patientSessionReminderHandledKey) != reminderHandledID else {
-                    return
+                if UserDefaults.standard.string(forKey: patientSessionReminderHandledKey) != reminderHandledID {
+                    reminderDate = now.addingTimeInterval(5)
                 }
-                reminderDate = now.addingTimeInterval(5)
             } else {
                 reminderDate = morningReminderDate
             }
 
-            let appointmentTime = DateFormatter()
-            appointmentTime.locale = Locale.current
-            appointmentTime.dateStyle = .none
-            appointmentTime.timeStyle = .short
+            if let rDate = reminderDate {
+                let content = UNMutableNotificationContent()
+                content.title = "Session Today"
+                content.body = "You have a session scheduled with \(psychologistName) at \(exactTimeText)."
+                content.sound = .default
 
-            let content = UNMutableNotificationContent()
-            content.title = "Session Today"
-            content.body = "You have a session scheduled today at \(appointmentTime.string(from: appointment.scheduledAt))."
-            content.sound = .default
+                let components = calendar.dateComponents(
+                    [.year, .month, .day, .hour, .minute, .second],
+                    from: rDate
+                )
+                let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+                let request = UNNotificationRequest(
+                    identifier: "patient.session.morning",
+                    content: content,
+                    trigger: trigger
+                )
 
-            let components = calendar.dateComponents(
-                [.year, .month, .day, .hour, .minute, .second],
-                from: reminderDate
-            )
-            let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-            let request = UNNotificationRequest(
-                identifier: "patient.session.morning",
-                content: content,
-                trigger: trigger
-            )
+                UserDefaults.standard.set(reminderHandledID, forKey: patientSessionReminderHandledKey)
+                center.add(request) { error in
+                    if let error {
+                        print("Patient session morning reminder scheduling failed: \(error.localizedDescription)")
+                    }
+                }
+            }
 
-            UserDefaults.standard.set(reminderHandledID, forKey: patientSessionReminderHandledKey)
-            center.add(request) { error in
-                if let error {
-                    print("Patient session morning reminder scheduling failed: \(error.localizedDescription)")
+            // 2. 30-minute Reminder (Half hour before)
+            let halfHourBeforeDate = appointment.scheduledAt.addingTimeInterval(-30 * 60)
+            
+            // If the 30-minute reminder time is the same as the morning reminder time (within 1 minute),
+            // skip the 30-minute reminder to avoid duplicate notifications firing simultaneously.
+            let isSameAsMorning = abs(morningReminderDate.timeIntervalSince(halfHourBeforeDate)) < 60
+
+            if halfHourBeforeDate > now && !isSameAsMorning {
+                let content30 = UNMutableNotificationContent()
+                content30.title = "Appointment Reminder"
+                content30.body = "You have an appointment scheduled in 30 minutes."
+                content30.sound = .default
+
+                let components30 = calendar.dateComponents(
+                    [.year, .month, .day, .hour, .minute, .second],
+                    from: halfHourBeforeDate
+                )
+                let trigger30 = UNCalendarNotificationTrigger(dateMatching: components30, repeats: false)
+                let request30 = UNNotificationRequest(
+                    identifier: "patient.session.halfhour",
+                    content: content30,
+                    trigger: trigger30
+                )
+
+                center.add(request30) { error in
+                    if let error {
+                        print("Patient session 30-minute reminder scheduling failed: \(error.localizedDescription)")
+                    }
                 }
             }
         } catch {
@@ -561,21 +665,25 @@ final class NotificationScheduler: NSObject {
         UserDefaults.standard.set(data, forKey: key)
     }
 
-    private func clearAllWellSyncNotifications() {
+    private func clearAllWellSyncNotifications() async {
         center.removePendingNotificationRequests(withIdentifiers: [
             "patient.activity.completion",
-            "patient.session.morning"
+            "patient.session.morning",
+            "patient.session.halfhour"
         ])
-        clearDoctorNotificationRequests()
+        await clearDoctorNotificationRequests()
         clearPatientMoodNotificationRequests()
     }
 
-    private func clearDoctorNotificationRequests() {
-        center.getPendingNotificationRequests { requests in
-            let identifiers = requests
-                .map(\.identifier)
-                .filter { $0.hasPrefix("doctor.appointment.") }
-            self.center.removePendingNotificationRequests(withIdentifiers: identifiers)
+    private func clearDoctorNotificationRequests() async {
+        await withCheckedContinuation { continuation in
+            center.getPendingNotificationRequests { requests in
+                let identifiers = requests
+                    .map(\.identifier)
+                    .filter { $0.hasPrefix("doctor.appointment.") }
+                self.center.removePendingNotificationRequests(withIdentifiers: identifiers)
+                continuation.resume()
+            }
         }
     }
 
@@ -595,7 +703,8 @@ final class NotificationScheduler: NSObject {
 
     private func clearPatientSessionNotificationRequests() {
         center.removePendingNotificationRequests(withIdentifiers: [
-            "patient.session.morning"
+            "patient.session.morning",
+            "patient.session.halfhour"
         ])
     }
 

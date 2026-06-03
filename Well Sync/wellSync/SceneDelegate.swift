@@ -20,6 +20,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Create the window
         window = UIWindow(windowScene: windowScene)
 
+        let isDarkMode = UserDefaults.standard.bool(forKey: "wellsync_theme_dark_mode")
+        window?.overrideUserInterfaceStyle = isDarkMode ? .dark : .light
+
         showSplashAndRoute()
     }
     
