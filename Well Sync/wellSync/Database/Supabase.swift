@@ -64,13 +64,20 @@ final class AccessSupabase {
         patientID: UUID?,
         doctorID: UUID?
     ) async throws {
+        let remindersEnabled: Bool
+        if role == "doctor" {
+            remindersEnabled = UserDefaults.standard.object(forKey: "wellsync_doctor_reminders_enabled") as? Bool ?? true
+        } else {
+            remindersEnabled = UserDefaults.standard.object(forKey: "wellsync_patient_reminders_enabled") as? Bool ?? true
+        }
+
         let payload = DevicePushTokenUpsert(
             token: token,
             platform: "ios",
             role: role,
             patient_id: patientID?.uuidString,
             doctor_id: doctorID?.uuidString,
-            is_active: true
+            is_active: remindersEnabled
         )
 
         try await supabase

@@ -9,12 +9,87 @@ import UIKit
 
 class PateintSettingTableViewController: BaseInsetGroupedTableViewController {
 
+    private var isRemindersEnabled = true
+    private var isMoodLogEnabled = true
+    private var isActivityEnabled = true
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.largeTitleDisplayMode = .never
+        
+        isRemindersEnabled = UserDefaults.standard.object(forKey: "wellsync_patient_reminders_enabled") as? Bool ?? true
+        isMoodLogEnabled = UserDefaults.standard.object(forKey: "wellsync_patient_mood_log_enabled") as? Bool ?? true
+        isActivityEnabled = UserDefaults.standard.object(forKey: "wellsync_patient_activity_enabled") as? Bool ?? true
     }
 
-    // MARK: - Table View Delegate
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+
+    // MARK: - Table View DataSource / Delegate
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        
+        if indexPath.section == 1 {
+            if indexPath.row == 0 {
+                // Enable row
+                if let reminderSwitch = cell.contentView.subviews.compactMap({ $0 as? UISwitch }).first {
+                    reminderSwitch.isOn = isRemindersEnabled
+                    reminderSwitch.removeTarget(nil, action: nil, for: .allEvents)
+                    reminderSwitch.addTarget(self, action: #selector(reminderSwitchChanged(_:)), for: .valueChanged)
+                }
+            } else if indexPath.row == 1 {
+                // Mood Log
+                cell.accessoryType = (isRemindersEnabled && isMoodLogEnabled) ? .checkmark : .none
+                if let label = cell.contentView.subviews.compactMap({ $0 as? UILabel }).first {
+                    label.textColor = isRemindersEnabled ? .label : .secondaryLabel
+                }
+            } else if indexPath.row == 2 {
+                // Activity
+                cell.accessoryType = (isRemindersEnabled && isActivityEnabled) ? .checkmark : .none
+                if let label = cell.contentView.subviews.compactMap({ $0 as? UILabel }).first {
+                    label.textColor = isRemindersEnabled ? .label : .secondaryLabel
+                }
+            }
+        }
+        
+        return cell
+    }
+
+    @objc private func reminderSwitchChanged(_ sender: UISwitch) {
+        isRemindersEnabled = sender.isOn
+        UserDefaults.standard.set(isRemindersEnabled, forKey: "wellsync_patient_reminders_enabled")
+        
+        // Sync token with Supabase (updates active state)
+        PushNotificationService.shared.syncCurrentUserDeviceTokenIfPossible()
+        
+        // Refresh local scheduling
+        NotificationScheduler.shared.refreshForCurrentSession()
+        
+        // Update visible cells directly without reloading
+        updateReminderCellsUI()
+    }
+
+    private func updateReminderCellsUI() {
+        // Row 1: Mood Log
+        let moodIndexPath = IndexPath(row: 1, section: 1)
+        if let moodCell = tableView.cellForRow(at: moodIndexPath) {
+            moodCell.accessoryType = (isRemindersEnabled && isMoodLogEnabled) ? .checkmark : .none
+            if let label = moodCell.contentView.subviews.compactMap({ $0 as? UILabel }).first {
+                label.textColor = isRemindersEnabled ? .label : .secondaryLabel
+            }
+        }
+        
+        // Row 2: Activity
+        let activityIndexPath = IndexPath(row: 2, section: 1)
+        if let activityCell = tableView.cellForRow(at: activityIndexPath) {
+            activityCell.accessoryType = (isRemindersEnabled && isActivityEnabled) ? .checkmark : .none
+            if let label = activityCell.contentView.subviews.compactMap({ $0 as? UILabel }).first {
+                label.textColor = isRemindersEnabled ? .label : .secondaryLabel
+            }
+        }
+    }
 
     override func tableView(
         _ tableView: UITableView,
@@ -26,6 +101,30 @@ class PateintSettingTableViewController: BaseInsetGroupedTableViewController {
         if indexPath.section == 0 && indexPath.row == 0 {
             showCurrentPasswordAlert()
             return
+        }
+
+        // Section 1: Reminders toggling (checkmark cells)
+        if indexPath.section == 1 {
+            guard isRemindersEnabled else { return }
+            if indexPath.row == 1 {
+                // Toggle Mood Log
+                isMoodLogEnabled.toggle()
+                UserDefaults.standard.set(isMoodLogEnabled, forKey: "wellsync_patient_mood_log_enabled")
+                if let cell = tableView.cellForRow(at: indexPath) {
+                    cell.accessoryType = isMoodLogEnabled ? .checkmark : .none
+                }
+                NotificationScheduler.shared.refreshForCurrentSession()
+                return
+            } else if indexPath.row == 2 {
+                // Toggle Activity
+                isActivityEnabled.toggle()
+                UserDefaults.standard.set(isActivityEnabled, forKey: "wellsync_patient_activity_enabled")
+                if let cell = tableView.cellForRow(at: indexPath) {
+                    cell.accessoryType = isActivityEnabled ? .checkmark : .none
+                }
+                NotificationScheduler.shared.refreshForCurrentSession()
+                return
+            }
         }
 
         if indexPath.section == 2 {

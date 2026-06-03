@@ -11,14 +11,14 @@ class PatientCell: UICollectionViewCell {
         UIColor { trait in
             trait.userInterfaceStyle == .dark
             ? UIColor(red: 0.20, green: 0.32, blue: 0.38, alpha: 1.0)
-            : UIColor(red: 0.82, green: 0.90, blue: 0.92, alpha: 1.0)
+            : UIColor(red: 227/255, green: 245/255, blue: 245/255, alpha: 1.0)
         }
     }
     private var tagText: UIColor {
         UIColor { trait in
             trait.userInterfaceStyle == .dark
             ? UIColor(red: 0.88, green: 0.94, blue: 0.97, alpha: 1.0)
-            : UIColor(red: 0.43, green: 0.49, blue: 0.53, alpha: 1.0)
+            : UIColor(red: 112/255, green: 201/255, blue: 205/255, alpha: 1.0)
         }
     }
     
